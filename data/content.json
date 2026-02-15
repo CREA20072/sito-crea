@@ -1,7 +1,8 @@
 {
   "settings": {
     "logo": "logo.png",
-    "formspreeUrl": "https://formspree.io/f/xreaqvkg"
+    "brandColor": "#E3A500",
+    "honeyLight": "#FFF8E6"
   },
   "hero": {
     "title": "Non aspettiamo che succeda qualcosa. <span class='text-crea-honey whitespace-nowrap'>Lo organizziamo.</span>",
@@ -32,7 +33,7 @@
       { "n": "07", "t": "Telefoni con misura", "d": "Viviamo l’evento con presenza e attenzione, senza distrazioni.", "i": "smartphone" },
       { "n": "08", "t": "Tono sereno, sempre", "d": "Le differenze si affrontano con calma, rispetto e dialogo.", "i": "message-circle" },
       { "n": "09", "t": "Facciamo spazio a tutti", "d": "Una comunità vera include, accoglie e valorizza ogni persona.", "i": "users" },
-      { "n": "10", "t": "Torniamo migliori", "d": "Se stiamo bene insieme, stiamo costruendo qualcosa di importante.", "i": "award" }
+      { "n": "10", "t": "Torniamo a casa migliori", "d": "Se stiamo bene insieme, stiamo costruendo qualcosa di importante.", "i": "award" }
     ]
   },
   "featuredEvent": {
@@ -44,7 +45,7 @@
     "place": "Auditorium Sant'Alessandro",
     "prices": "10€ bambini – 5€ adulti",
     "desc": "Preparati a restare a bocca aperta! Uno spettacolo magico per famiglie, dove l'impossibile diventa realtà e lo stupore è garantito per grandi e piccoli.",
-    "wa": "https://wa.me/393334455666",
+    "wa": "https://wa.me/39123456789",
     "img": "mago.png"
   },
   "archive": [
