@@ -5,33 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CREA 20072 - Associazione Culturale Pieve Emanuele</title>
     
-    <!-- Meta Tags -->
-    <meta name="description" content="Associazione di genitori e cittadini attivi a Pieve Emanuele.">
-    <meta property="og:title" content="CREA 20072 – Costruiamo insieme">
+    <meta name="description" content="Associazione di genitori e cittadini attivi. Organizziamo eventi, cultura e momenti di comunità.">
     <meta property="og:image" content="logo.png">
 
-    <!-- Librerie -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* STILI DI BASE */
         body { font-family: 'Montserrat', sans-serif; scroll-behavior: smooth; color: #1F2933; background-color: #FFFFFF; }
-        
         .headline-strong { font-weight: 800; letter-spacing: -0.025em; line-height: 1.15; }
         .text-body-crea { font-weight: 400; line-height: 1.8; color: #333; }
-
-        /* Colori Identitari */
         .text-crea-honey { color: #E3A500; }
         .bg-crea-honey { background-color: #E3A500; }
         .bg-crea-soft { background-color: #F7F7F7; }
-        
-        /* Animazioni */
-        .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+        .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
         .fade-up.visible { opacity: 1; transform: translateY(0); }
 
-        /* Bottoni */
         .cta-button {
             background-color: #E3A500; color: white; border-radius: 999px;
             padding: 1rem 2.5rem; font-weight: 700; transition: all 0.3s ease;
@@ -40,36 +31,21 @@
         }
         .cta-button:hover { transform: translateY(-4px); background-color: #C28D00; box-shadow: 0 10px 25px rgba(227, 165, 0, 0.3); }
 
-        /* Decalogo Card */
+        .img-fit-fix { width: 100%; height: 100%; object-fit: contain; background-color: #f3f4f6; }
+
         .decalogo-card { 
             background: white; border-radius: 20px; border: 1px solid #f0f0f0; padding: 2.2rem; 
             transition: all 0.4s ease; display: flex; flex-direction: column; gap: 1rem; 
         }
-        .decalogo-card:hover { background-color: #FFF8E6; transform: translateY(-5px); border-color: #E3A500; box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
+        .decalogo-card:hover { background-color: #FFF8E6; transform: translateY(-5px); border-color: #E3A500; box-shadow: 0 15px 40px rgba(0,0,0,0.05); }
 
-        /* Archivio e Immagini */
-        .archive-card { position: relative; overflow: hidden; border-radius: 20px; background: white; border: 1px solid #f0f0f0; transition: all 0.3s ease; }
+        .archive-card { position: relative; overflow: hidden; border-radius: 20px; background: white; border: 1px solid #f0f0f0; transition: all 0.3s ease; cursor: pointer; }
         .archive-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
-        
-        /* FIX IMMAGINI: object-contain mostra tutta la foto senza tagliarla */
-        .img-fit-fix {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; 
-            background-color: #f3f4f6; /* Sfondo grigio chiaro per riempire spazi vuoti */
-        }
-
         .archive-overlay { 
             position: absolute; inset: 0; background: linear-gradient(180deg, rgba(227,165,0,0.1) 0%, rgba(227,165,0,0.9) 100%);
             display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; transition: all 0.4s ease;
         }
         .archive-card:hover .archive-overlay { opacity: 1; }
-
-        .date-badge {
-            position: absolute; top: 1.5rem; left: 1.5rem; background-color: #E3A500; color: white;
-            padding: 0.8rem 0.6rem; border-radius: 12px; z-index: 10; min-width: 70px; text-align: center;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
 
         .filter-btn { padding: 0.6rem 1.4rem; border-radius: 999px; border: 1px solid #eee; color: #6B7280; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; transition: 0.3s; }
         .filter-btn.active { background-color: #E3A500; color: white; border-color: #E3A500; }
@@ -80,40 +56,41 @@
         .section-padding { padding-top: 80px; padding-bottom: 80px; }
         @media (min-width: 1024px) { .section-padding { padding-top: 120px; padding-bottom: 120px; } }
         
-        .logo-img { height: 40px; width: auto; object-fit: contain; }
-        @media (min-width: 768px) { .logo-img { height: 50px; } }
+        .logo-img { height: 45px; width: auto; object-fit: contain; }
+        .date-badge {
+            position: absolute; top: 1.5rem; left: 1.5rem; background-color: #E3A500; color: white;
+            padding: 0.8rem 0.6rem; border-radius: 12px; z-index: 10; min-width: 70px; text-align: center;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
         
-        .poster-shadow { box-shadow: 0 30px 60px rgba(0,0,0,0.15); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Form */
         .form-input {
             background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
             color: white; border-radius: 12px; padding: 1rem; width: 100%; transition: all 0.3s ease;
         }
         .form-input:focus { outline: none; border-color: #E3A500; background-color: rgba(255,255,255,0.15); }
+
+        /* MODALE EVENTO */
+        #modal-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        #modal-overlay.open { opacity: 1; pointer-events: auto; }
+        #modal-content { transform: scale(0.95); opacity: 0; transition: all 0.3s ease; }
+        #modal-overlay.open #modal-content { transform: scale(1); opacity: 1; }
     </style>
 </head>
 <body class="overflow-x-hidden">
 
     <!-- NAVIGAZIONE -->
-    <nav class="fixed w-full z-[100] bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
+    <nav class="fixed w-full z-[90] bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
         <div class="container mx-auto px-5 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
-                <div id="nav-logo-container">
-                    <img src="logo.png" alt="Logo" class="logo-img" onerror="this.outerHTML='<span class=\'text-3xl\'>🐝</span>'">
-                </div>
+                <div id="nav-logo-container"><img src="logo.png" alt="Logo" class="logo-img" onerror="this.outerHTML='<span class=\'text-3xl\'>🐝</span>'"></div>
                 <span class="text-xl md:text-2xl font-bold tracking-tighter uppercase headline-strong">CREA 20072</span>
             </div>
-            
             <div class="hidden lg:flex space-x-10 font-bold text-[11px] uppercase tracking-[0.2em] text-gray-500">
                 <a href="#chi-siamo" class="hover:text-crea-honey transition-colors">Chi Siamo</a>
                 <a href="#decalogo" class="hover:text-crea-honey transition-colors">Decalogo</a>
                 <a href="#eventi" class="hover:text-crea-honey transition-colors">Eventi</a>
                 <a href="#contatti" class="hover:text-crea-honey transition-colors">Contatti</a>
             </div>
-
             <button onclick="toggleMenu(true)" class="lg:hidden p-2 text-crea-honey"><i data-lucide="menu"></i></button>
         </div>
     </nav>
@@ -125,6 +102,16 @@
         <a href="#decalogo" onclick="toggleMenu(false)" class="text-2xl font-bold uppercase tracking-widest text-gray-800">Decalogo</a>
         <a href="#eventi" onclick="toggleMenu(false)" class="text-2xl font-bold uppercase tracking-widest text-gray-800">Eventi</a>
         <a href="#contatti" onclick="toggleMenu(false)" class="text-2xl font-bold uppercase tracking-widest text-gray-800">Contatti</a>
+    </div>
+
+    <!-- MODALE EVENTO (Nascosta di default) -->
+    <div id="modal-overlay" class="fixed inset-0 z-[200] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm" onclick="closeModal()">
+        <div id="modal-content" class="bg-white rounded-[2rem] w-full max-w-4xl max-h-[90vh] overflow-y-auto relative" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 p-2 rounded-full z-10"><i data-lucide="x" class="text-black"></i></button>
+            
+            <!-- Contenuto Iniettato via JS -->
+            <div id="modal-body"></div>
+        </div>
     </div>
 
     <!-- HERO SECTION -->
@@ -143,7 +130,7 @@
         <div class="container mx-auto px-6">
             <div class="max-w-4xl mx-auto mb-20">
                 <h2 id="about-title" class="text-3xl md:text-5xl font-bold uppercase tracking-tight headline-strong text-black"></h2>
-                <div class="h-1 w-20 bg-honey mx-auto mt-6 rounded-full"></div>
+                <div class="h-1 w-20 bg-crea-honey mx-auto mt-6 rounded-full"></div>
                 <p id="about-text" class="mt-8 text-lg md:text-xl font-light text-body-crea opacity-90"></p>
             </div>
             <div id="values-grid" class="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto mb-16 text-center"></div>
@@ -152,10 +139,10 @@
     </section>
 
     <!-- DECALOGO -->
-    <section id="decalogo" class="section-padding bg-soft border-y border-gray-100 text-center">
+    <section id="decalogo" class="section-padding bg-crea-soft border-y border-gray-100 text-center">
         <div class="container mx-auto px-6">
             <div class="mb-20">
-                <h2 id="decalogo-title" class="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight headline-strong text-black"></h2>
+                <h2 id="decalogo-title" class="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight headline-strong text-black">Il Decalogo di CREA 20072</h2>
                 <p id="decalogo-subtitle" class="text-gray-500 font-bold text-xs tracking-widest uppercase"></p>
             </div>
             <div id="decalogo-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto text-left"></div>
@@ -165,11 +152,10 @@
     <!-- EVENTI -->
     <section id="eventi" class="section-padding bg-white">
         <div class="container mx-auto px-5 md:px-6">
-            
-            <!-- Prossimo Evento -->
+            <!-- Prossimo -->
             <div class="mb-32 text-center">
                 <div class="mb-16">
-                    <span class="text-honey bg-yellow-50 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest inline-block mb-4">Prossimo Appuntamento</span>
+                    <span class="text-crea-honey bg-yellow-50 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest inline-block mb-4">Prossimo Appuntamento</span>
                     <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-tight headline-strong text-black">Cosa stiamo preparando</h2>
                 </div>
                 <div id="featured-event-slot" class="max-w-6xl mx-auto text-left"></div>
@@ -179,10 +165,8 @@
             <div id="archive-section" class="pt-24 border-t border-gray-100 text-center">
                 <h2 class="text-3xl font-bold uppercase tracking-tight headline-strong mb-4 text-black">I momenti di comunità</h2>
                 <p class="text-gray-400 text-xs uppercase tracking-widest font-bold mb-12">Eventi costruiti insieme</p>
-                
                 <div id="filter-bar" class="flex flex-wrap justify-center gap-3 mb-16"></div>
                 <div id="archive-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left"></div>
-                
                 <div class="mt-24 text-center px-4">
                     <p id="strategic-quote" class="text-lg md:text-2xl font-light max-w-3xl mx-auto italic text-gray-400"></p>
                 </div>
@@ -190,130 +174,103 @@
         </div>
     </section>
 
-    <!-- FOOTER CON FORM -->
+    <!-- FOOTER -->
     <footer id="contatti" class="bg-black text-white py-20 px-6">
         <div class="container mx-auto max-w-7xl">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
                 
-                <!-- Colonna Sinistra: Info e Social -->
+                <!-- Colonna Sinistra -->
                 <div class="flex flex-col justify-between">
                     <div>
                         <div class="flex items-center gap-4 mb-8">
-                            <div id="footer-logo-container">
-                                <img src="logo.png" alt="Logo" class="logo-img h-10 w-auto" onerror="this.outerHTML='<span class=\'text-3xl\'>🐝</span>'">
-                            </div>
+                            <div id="footer-logo-container"><img src="logo.png" alt="Logo" class="logo-img" onerror="this.outerHTML='<span class=\'text-3xl\'>🐝</span>'"></div>
                             <span class="text-2xl font-bold tracking-tighter uppercase headline-strong">CREA 20072</span>
                         </div>
-                        <p class="text-gray-400 leading-relaxed mb-8 max-w-md">
-                            Siamo qui per costruire insieme. Hai idee, proposte o vuoi semplicemente unirti a noi? Scrivici o seguici sui social.
-                        </p>
-                        
-                        <!-- Social Icons GRANDI -->
-                        <div id="social-links" class="flex gap-6 mb-10"></div>
-                        
+                        <div id="contact-methods" class="flex flex-col gap-4 text-sm text-gray-400 font-medium"></div>
+                        <div id="social-links" class="flex gap-8 mt-8"></div>
                     </div>
-                    
-                    <div class="hidden lg:block text-xs text-gray-500 uppercase tracking-widest mt-12">
-                        &copy; 2026 CREA 20072 - Progetto Indipendente
-                    </div>
+                    <div class="hidden lg:block text-xs text-gray-500 uppercase tracking-widest mt-12">&copy; 2026 CREA 20072 - Progetto Indipendente</div>
                 </div>
 
-                <!-- Colonna Destra: Form di Contatto -->
+                <!-- Colonna Destra: Form -->
                 <div class="bg-white/5 p-8 md:p-10 rounded-3xl border border-white/10">
                     <h3 class="text-2xl font-bold mb-6 headline-strong">Scrivici un messaggio</h3>
                     <form name="contatti-crea" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" class="space-y-4">
                         <div hidden><input name="bot-field"></div>
                         <input type="hidden" name="form-name" value="contatti-crea">
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Nome</label>
-                            <input type="text" name="nome" required class="form-input" placeholder="Il tuo nome">
-                        </div>
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Email</label>
-                            <input type="email" name="email" required class="form-input" placeholder="tua@email.com">
-                        </div>
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Messaggio</label>
-                            <textarea name="messaggio" required rows="4" class="form-input" placeholder="Cosa vuoi dirci?"></textarea>
-                        </div>
+                        <div><label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Nome</label><input type="text" name="nome" required class="form-input" placeholder="Il tuo nome"></div>
+                        <div><label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Email</label><input type="email" name="email" required class="form-input" placeholder="tua@email.com"></div>
+                        <div><label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Messaggio</label><textarea name="messaggio" required rows="4" class="form-input" placeholder="Cosa vuoi dirci?"></textarea></div>
                         <button type="submit" class="cta-button w-full mt-4 border-0">Invia Messaggio</button>
                     </form>
                 </div>
-
-                <div class="lg:hidden text-center text-xs text-gray-500 uppercase tracking-widest mt-8">
-                    &copy; 2026 CREA 20072
-                </div>
+                <div class="lg:hidden text-center text-xs text-gray-500 uppercase tracking-widest mt-8">&copy; 2026 CREA 20072</div>
             </div>
         </div>
     </footer>
 
-    <!-- SCRIPT DATI & LOGICA -->
-    <script>
-        const DATA_STORE = {
-            settings: { logo: "logo.png" },
-            hero: {
-                title: "Non aspettiamo che succeda qualcosa. <span class='text-crea-honey whitespace-nowrap'>Lo organizziamo.</span>",
-                subtitle: "Eventi, cultura e momenti per famiglie e cittadini che vogliono vivere davvero Pieve Emanuele.",
-                cta: "Guarda cosa stiamo preparando 🔥",
-                bg: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2000&auto=format&fit=crop"
-            },
-            about: {
-                title: "Perché lo facciamo",
-                text: "CREA 20072 nasce dalla voglia concreta di fare qualcosa per Pieve Emanuele. Siamo genitori, amici e cittadini che hanno scelto di organizzare ciò che spesso si dice manchi: occasioni per incontrarsi e stare insieme.",
-                tagline: "Un progetto indipendente, costruito con le nostre forze.",
-                pillars: [
-                    { icon: "users", t: "Comunità", d: "Creiamo occasioni per incontrarsi." },
-                    { icon: "sparkles", t: "Creatività", d: "Trasformiamo idee in eventi." },
-                    { icon: "heart", t: "Condivisione", d: "Costruiamo momenti che restano." }
-                ]
-            },
-            decalogo: {
-                title: "Il Decalogo di CREA 20072",
-                subtitle: "I valori che ci guidano ogni giorno",
-                items: [
-                    { n: "01", t: "Rispettiamo gli spazi", d: "Prendiamoci cura dei luoghi che ci ospitano, come fossero casa nostra.", i: "home" },
-                    { n: "02", t: "Salutiamo con un sorriso", d: "La gentilezza è contagiosa: facciamola circolare.", i: "smile" },
-                    { n: "03", t: "I bambini al centro", d: "Mettiamo i più piccoli al centro, perché da loro nasce il futuro.", i: "baby" },
-                    { n: "04", t: "Collaboriamo", d: "Ogni evento funziona meglio quando ognuno dà il proprio contributo.", i: "handshake" },
-                    { n: "05", t: "Ascoltiamo con attenzione", d: "Le idee crescono quando ci ascoltiamo davvero.", i: "ear" },
-                    { n: "06", t: "Rispettiamo gli orari", d: "Piccole regole rendono i momenti insieme più sereni.", i: "clock" },
-                    { n: "07", t: "Telefoni con misura", d: "Viviamo l’evento con presenza e attenzione, senza distrazioni.", i: "smartphone" },
-                    { n: "08", t: "Tono sereno, sempre", d: "Le differenze si affrontano con calma, rispetto e dialogo.", i: "message-circle" },
-                    { n: "09", t: "Facciamo spazio a tutti", d: "Una comunità vera include, accoglie e valorizza ogni persona.", i: "users" },
-                    { n: "10", t: "Torniamo a casa migliori", d: "Se stiamo bene insieme, stiamo costruendo qualcosa di importante.", i: "award" }
-                ]
-            },
-            featuredEvent: {
-                title: "Magic Show", sub: "Mago Daniel", day: "01", month: "MAR", fullDate: "Domenica 1 Marzo - Ore 16:00", place: "Auditorium Sant'Alessandro", prices: "10€ bambini – 5€ adulti", desc: "Preparati a restare a bocca aperta! Uno spettacolo magico per famiglie, dove l'impossibile diventa realtà.", wa: "https://wa.me/393334455666", img: "mago.png"
-            },
-            archive: [
-                { tag: "tradizioni", t: "Falò di Sant'Antonio", d: "Gennaio 2026", n: "150+ Partecipanti", img: "falo.png" },
-                { tag: "famiglie", t: "Festa di Natale", d: "Dicembre 2025", n: "100 Bambini", img: "natale.png" },
-                { tag: "spettacoli", t: "Serata Cinema", d: "Novembre 2025", n: "Sold Out", img: "cinema.png" },
-                { tag: "famiglie", t: "Halloween Party", d: "Ottobre 2025", n: "120+ Maschere", img: "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?w=800&q=70&auto=format" }
-            ],
-            footer: {
-                socials: [
-                    { name: "Facebook", url: "https://www.facebook.com/profile.php?id=61583120865063", icon: "facebook" },
-                    { name: "Instagram", url: "https://www.instagram.com/crea20072/", icon: "instagram" }
-                ],
-                quote: "Ogni evento è un passo in più per rendere Pieve Emanuele un luogo vivo, accogliente e partecipato."
-            }
-        };
+    <!-- COLLEGAMENTO AL FILE DATI -->
+    <script src="data/content.js"></script>
 
+    <!-- LOGICA DEL SITO -->
+    <script>
         function toggleMenu(open) { 
             const menu = document.getElementById('mobile-menu'); 
             menu.classList.toggle('active', open); 
             document.body.style.overflow = open ? 'hidden' : 'auto'; 
         }
-        
+
+        // --- GESTIONE MODALE ---
+        function openModal(id) {
+            const item = window.DATA_STORE.archive.find(e => e.id === id);
+            if (!item) return;
+
+            const galleryHtml = item.gallery ? item.gallery.map(img => `<img src="${img}" class="h-32 w-full object-cover rounded-xl cursor-pointer hover:opacity-80 transition" onclick="window.open(this.src, '_blank')">`).join('') : '';
+
+            document.getElementById('modal-body').innerHTML = `
+                <div class="h-64 md:h-96 w-full relative">
+                    <img src="${item.img}" class="w-full h-full object-cover rounded-t-[2rem]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8 text-white">
+                        <span class="bg-crea-honey text-black px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider w-fit mb-3">${item.tag}</span>
+                        <h2 class="text-3xl md:text-5xl headline-strong uppercase">${item.t}</h2>
+                        <p class="text-sm opacity-90 mt-2 font-medium tracking-wide uppercase">${item.d}</p>
+                    </div>
+                </div>
+                <div class="p-8 md:p-12">
+                    <div class="prose max-w-none text-gray-600 mb-10 text-lg leading-relaxed">
+                        <p>${item.fullDesc || item.desc}</p>
+                    </div>
+                    ${galleryHtml ? `
+                        <h4 class="text-sm font-bold uppercase tracking-widest text-black mb-6 border-b border-gray-100 pb-2">Galleria Evento</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">${galleryHtml}</div>
+                    ` : ''}
+                </div>
+            `;
+
+            const modal = document.getElementById('modal-overlay');
+            modal.classList.remove('hidden');
+            // Piccolo timeout per permettere l'animazione CSS
+            setTimeout(() => modal.classList.add('open'), 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal-overlay');
+            modal.classList.remove('open');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+
         function renderArchive(tag = 'all') {
             const grid = document.getElementById('archive-grid'); 
             grid.innerHTML = '';
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.id === `btn-${tag}`));
-            DATA_STORE.archive.filter(item => tag === 'all' || item.tag === tag).forEach(item => {
+            
+            window.DATA_STORE.archive.filter(item => tag === 'all' || item.tag === tag).forEach(item => {
                 grid.innerHTML += `
-                    <div class="archive-card group">
+                    <div class="archive-card group" onclick="openModal(${item.id})">
                         <div class="h-64 overflow-hidden bg-gray-100 flex items-center justify-center">
                             <img src="${item.img}" loading="lazy" class="w-full h-full img-fit-fix" alt="Locandina ${item.t}">
                         </div>
@@ -323,7 +280,7 @@
                             <h3 class="text-xl font-bold mb-2 uppercase headline-strong text-black">${item.t}</h3>
                             <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
                                 <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">${item.n}</span>
-                                <span class="text-xs font-bold uppercase tracking-tighter text-gray-800 group-hover:text-crea-honey transition-colors">Vedi foto →</span>
+                                <span class="text-xs font-bold uppercase tracking-tighter text-gray-800 group-hover:text-crea-honey transition-colors">Apri scheda →</span>
                             </div>
                         </div>
                     </div>`;
@@ -331,30 +288,27 @@
         }
 
         window.onload = function() {
-            window.addEventListener("scroll", () => { document.querySelector("nav").classList.toggle("shadow-md", window.scrollY > 30); });
+            window.addEventListener("scroll", () => { document.querySelector("nav").classList.toggle("shadow-lg", window.scrollY > 30); });
             setTimeout(() => { document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible')); }, 200);
 
-            // Popola Hero e About
-            document.getElementById('hero-title').innerHTML = DATA_STORE.hero.title;
-            document.getElementById('hero-subtitle').innerText = DATA_STORE.hero.subtitle;
-            document.getElementById('hero-cta').innerText = DATA_STORE.hero.cta;
-            document.getElementById('hero-bg').style.backgroundImage = `url('${DATA_STORE.hero.bg}')`;
-            document.getElementById('about-title').innerText = DATA_STORE.about.title;
-            document.getElementById('about-text').innerText = DATA_STORE.about.text;
-            document.getElementById('about-tagline').innerText = DATA_STORE.about.tagline;
+            const D = window.DATA_STORE;
+            document.getElementById('hero-title').innerHTML = D.hero.title;
+            document.getElementById('hero-subtitle').innerText = D.hero.subtitle;
+            document.getElementById('hero-cta').innerText = D.hero.cta;
+            document.getElementById('hero-bg').style.backgroundImage = `url('${D.hero.bg}')`;
+            document.getElementById('about-title').innerText = D.about.title;
+            document.getElementById('about-text').innerText = D.about.text;
+            document.getElementById('about-tagline').innerText = D.about.tagline;
             const valGrid = document.getElementById('values-grid');
-            DATA_STORE.about.pillars.forEach(p => { 
+            D.about.pillars.forEach(p => { 
                 valGrid.innerHTML += `<div class="flex flex-col items-center"><div class="w-20 h-20 bg-crea-soft rounded-3xl flex items-center justify-center mb-6 text-crea-honey"><i data-lucide="${p.icon}" class="w-10 h-10"></i></div><h3 class="text-xl font-bold mb-3 headline-strong text-black uppercase">${p.t}</h3><p class="text-sm text-gray-500 max-w-[200px] text-body-crea">${p.d}</p></div>`; 
             });
 
-            // FIX DECALOGO 10: Ora è centrale (lg:col-start-2)
+            // Decalogo: niente "c" (classi speciali) per l'ultimo elemento
             const decGrid = document.getElementById('decalogo-grid');
-            DATA_STORE.decalogo.items.forEach((v, i) => {
-                const isLast = i === 9; 
-                // Logica: se è l'ultimo, lo mettiamo nella colonna 2 (centrale)
-                const c = isLast ? 'lg:col-start-2' : '';
+            D.decalogo.items.forEach((v) => {
                 decGrid.innerHTML += `
-                    <div class="decalogo-card ${c}">
+                    <div class="decalogo-card">
                         <div class="font-bold tracking-widest text-crea-honey text-xs mb-2">${v.n}</div>
                         <div class="mb-4 text-gray-800"><i data-lucide="${v.i}" class="w-8 h-8"></i></div>
                         <div>
@@ -364,15 +318,11 @@
                     </div>`;
             });
 
-            // Featured Event
-            const ev = DATA_STORE.featuredEvent;
+            const ev = D.featuredEvent;
             document.getElementById('featured-event-slot').innerHTML = `
                 <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden flex flex-col lg:flex-row card-hover">
                     <div class="relative lg:w-5/12 h-96 lg:h-auto bg-gray-100 flex items-center justify-center">
-                        <div class="date-badge">
-                            <span class="text-3xl font-extrabold leading-none">${ev.day}</span>
-                            <span class="text-xs font-bold tracking-widest mt-1">${ev.month}</span>
-                        </div>
+                        <div class="date-badge"><span class="text-3xl font-extrabold leading-none">${ev.day}</span><span class="text-xs font-bold tracking-widest mt-1">${ev.month}</span></div>
                         <img src="${ev.img || 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800'}" class="w-full h-full img-fit-fix" alt="Locandina ${ev.title}">
                     </div>
                     <div class="p-8 lg:p-16 lg:w-7/12 flex flex-col justify-center text-left">
@@ -391,29 +341,27 @@
                     </div>
                 </div>`;
 
-            // Archive
             const filterBar = document.getElementById('filter-bar');
             ['all', 'famiglie', 'tradizioni', 'spettacoli'].forEach(f => { filterBar.innerHTML += `<button onclick="renderArchive('${f}')" class="filter-btn ${f==='all'?'active':''}" id="btn-${f}">${f==='all'?'Tutti':f}</button>`; });
             renderArchive('all');
 
-            // Footer
-            document.getElementById('strategic-quote').innerText = DATA_STORE.footer.quote;
+            document.getElementById('strategic-quote').innerText = D.footer.quote;
+            document.getElementById('contact-methods').innerHTML = `<a href="mailto:${D.footer.email}" class="flex items-center gap-3 hover:text-crea-honey transition-colors text-gray-400"><i data-lucide="mail" class="w-5 h-5"></i> ${D.footer.email}</a>`;
             const socBox = document.getElementById('social-links');
-            DATA_STORE.footer.socials.forEach(s => {
+            
+            D.footer.socials.forEach(s => {
                 let svgIcon = '';
-                // Icone SVG Ufficiali Facebook e Instagram (più grandi)
                 if(s.icon === 'facebook') svgIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>';
                 else if(s.icon === 'instagram') svgIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>';
                 
                 socBox.innerHTML += `
-                    <a href="${s.url}" target="_blank" class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center hover:bg-crea-honey hover:text-white transition-all text-white">
+                    <a href="${s.url}" target="_blank" class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center hover:bg-crea-honey hover:text-white transition-all text-white">
                         ${svgIcon}
                     </a>`;
             });
 
-            // Logo Loading
             const img = new Image();
-            img.src = DATA_STORE.settings.logo;
+            img.src = D.settings.logo;
             img.className = "logo-img h-10 w-auto";
             img.onload = () => {
                 document.getElementById('nav-logo-container').innerHTML = '';
@@ -421,7 +369,6 @@
                 document.getElementById('footer-logo-container').innerHTML = '';
                 document.getElementById('footer-logo-container').appendChild(img.cloneNode());
             };
-
             lucide.createIcons();
         };
     </script>
