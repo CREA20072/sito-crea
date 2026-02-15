@@ -9,11 +9,8 @@
     <meta name="description" content="Associazione di genitori e cittadini attivi a Pieve Emanuele.">
     <meta property="og:title" content="CREA 20072 – Costruiamo insieme">
     <meta property="og:image" content="logo.png">
-    
-    <!-- !!! FIX IMPORTANTE PER IL LOGIN NETLIFY !!! -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
-    <!-- Frameworks -->
+    <!-- Librerie -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,10 +18,11 @@
     <style>
         /* STILI DI BASE */
         body { font-family: 'Montserrat', sans-serif; scroll-behavior: smooth; color: #1F2933; background-color: #FFFFFF; }
+        
         .headline-strong { font-weight: 800; letter-spacing: -0.025em; line-height: 1.15; }
         .text-body-crea { font-weight: 400; line-height: 1.8; color: #333; }
 
-        /* Colori */
+        /* Colori Identitari */
         .text-crea-honey { color: #E3A500; }
         .bg-crea-honey { background-color: #E3A500; }
         .bg-crea-soft { background-color: #F7F7F7; }
@@ -42,17 +40,24 @@
         }
         .cta-button:hover { transform: translateY(-4px); background-color: #C28D00; box-shadow: 0 10px 25px rgba(227, 165, 0, 0.3); }
 
-        /* Card */
+        /* Decalogo Card */
         .decalogo-card { 
             background: white; border-radius: 20px; border: 1px solid #f0f0f0; padding: 2.2rem; 
             transition: all 0.4s ease; display: flex; flex-direction: column; gap: 1rem; 
         }
-        .decalogo-card:hover { background-color: #FFF8E6; transform: translateY(-5px); border-color: #E3A500; box-shadow: 0 15px 40px rgba(0,0,0,0.05); }
-        
+        .decalogo-card:hover { background-color: #FFF8E6; transform: translateY(-5px); border-color: #E3A500; box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
+
+        /* Archivio e Immagini */
         .archive-card { position: relative; overflow: hidden; border-radius: 20px; background: white; border: 1px solid #f0f0f0; transition: all 0.3s ease; }
         .archive-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
         
-        .img-fit-fix { width: 100%; height: 100%; object-fit: contain; background-color: #f3f3f3; }
+        /* FIX IMMAGINI: object-contain mostra tutta la foto senza tagliarla */
+        .img-fit-fix {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            background-color: #f3f4f6; /* Sfondo grigio chiaro per riempire spazi vuoti */
+        }
 
         .archive-overlay { 
             position: absolute; inset: 0; background: linear-gradient(180deg, rgba(227,165,0,0.1) 0%, rgba(227,165,0,0.9) 100%);
@@ -78,9 +83,10 @@
         .logo-img { height: 40px; width: auto; object-fit: contain; }
         @media (min-width: 768px) { .logo-img { height: 50px; } }
         
+        .poster-shadow { box-shadow: 0 30px 60px rgba(0,0,0,0.15); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
+        
         /* Form */
         .form-input {
             background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
@@ -100,13 +106,15 @@
                 </div>
                 <span class="text-xl md:text-2xl font-bold tracking-tighter uppercase headline-strong">CREA 20072</span>
             </div>
+            
             <div class="hidden lg:flex space-x-10 font-bold text-[11px] uppercase tracking-[0.2em] text-gray-500">
-                <a href="#chi-siamo" class="hover:text-honey transition-colors">Chi Siamo</a>
-                <a href="#decalogo" class="hover:text-honey transition-colors">Decalogo</a>
-                <a href="#eventi" class="hover:text-honey transition-colors">Eventi</a>
-                <a href="#contatti" class="hover:text-honey transition-colors">Contatti</a>
+                <a href="#chi-siamo" class="hover:text-crea-honey transition-colors">Chi Siamo</a>
+                <a href="#decalogo" class="hover:text-crea-honey transition-colors">Decalogo</a>
+                <a href="#eventi" class="hover:text-crea-honey transition-colors">Eventi</a>
+                <a href="#contatti" class="hover:text-crea-honey transition-colors">Contatti</a>
             </div>
-            <button onclick="toggleMenu(true)" class="lg:hidden p-2 text-honey"><i data-lucide="menu"></i></button>
+
+            <button onclick="toggleMenu(true)" class="lg:hidden p-2 text-crea-honey"><i data-lucide="menu"></i></button>
         </div>
     </nav>
 
@@ -171,8 +179,10 @@
             <div id="archive-section" class="pt-24 border-t border-gray-100 text-center">
                 <h2 class="text-3xl font-bold uppercase tracking-tight headline-strong mb-4 text-black">I momenti di comunità</h2>
                 <p class="text-gray-400 text-xs uppercase tracking-widest font-bold mb-12">Eventi costruiti insieme</p>
+                
                 <div id="filter-bar" class="flex flex-wrap justify-center gap-3 mb-16"></div>
                 <div id="archive-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left"></div>
+                
                 <div class="mt-24 text-center px-4">
                     <p id="strategic-quote" class="text-lg md:text-2xl font-light max-w-3xl mx-auto italic text-gray-400"></p>
                 </div>
@@ -180,19 +190,19 @@
         </div>
     </section>
 
-    <!-- FOOTER -->
+    <!-- FOOTER CON FORM -->
     <footer id="contatti" class="bg-black text-white py-20 px-6">
         <div class="container mx-auto max-w-7xl">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
                 
-                <!-- Colonna Sinistra -->
+                <!-- Colonna Sinistra: Info e Social -->
                 <div class="flex flex-col justify-between">
                     <div>
                         <div class="flex items-center gap-4 mb-8">
                             <div id="footer-logo-container">
                                 <img src="logo.png" alt="Logo" class="logo-img h-10 w-auto" onerror="this.outerHTML='<span class=\'text-3xl\'>🐝</span>'">
                             </div>
-                            <span class="text-xl font-bold tracking-tighter uppercase headline-strong">CREA 20072</span>
+                            <span class="text-2xl font-bold tracking-tighter uppercase headline-strong">CREA 20072</span>
                         </div>
                         <p class="text-gray-400 leading-relaxed mb-8 max-w-md">
                             Siamo qui per costruire insieme. Hai idee, proposte o vuoi semplicemente unirti a noi? Scrivici o seguici sui social.
@@ -201,10 +211,6 @@
                         <!-- Social Icons GRANDI -->
                         <div id="social-links" class="flex gap-6 mb-10"></div>
                         
-                        <!-- Mail (senza scritta "Email") -->
-                        <div class="flex items-center gap-3 text-gray-400 hover:text-honey transition-colors">
-                            <i data-lucide="mail" class="w-5 h-5"></i> <a href="mailto:accrea20072@gmail.com">accrea20072@gmail.com</a>
-                        </div>
                     </div>
                     
                     <div class="hidden lg:block text-xs text-gray-500 uppercase tracking-widest mt-12">
@@ -212,10 +218,9 @@
                     </div>
                 </div>
 
-                <!-- Colonna Destra: Form -->
+                <!-- Colonna Destra: Form di Contatto -->
                 <div class="bg-white/5 p-8 md:p-10 rounded-3xl border border-white/10">
                     <h3 class="text-2xl font-bold mb-6 headline-strong">Scrivici un messaggio</h3>
-                    <!-- Form Netlify con honeypot antispam -->
                     <form name="contatti-crea" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" class="space-y-4">
                         <div hidden><input name="bot-field"></div>
                         <input type="hidden" name="form-name" value="contatti-crea">
@@ -242,24 +247,60 @@
         </div>
     </footer>
 
-    <!-- SCRIPT FIX LOGIN NETLIFY (Indispensabile!) -->
+    <!-- SCRIPT DATI & LOGICA -->
     <script>
-        if (window.netlifyIdentity) {
-            window.netlifyIdentity.on("init", user => {
-                if (!user) {
-                    window.netlifyIdentity.on("login", () => {
-                        document.location.href = "/admin/";
-                    });
-                }
-            });
-        }
-    </script>
+        const DATA_STORE = {
+            settings: { logo: "logo.png" },
+            hero: {
+                title: "Non aspettiamo che succeda qualcosa. <span class='text-crea-honey whitespace-nowrap'>Lo organizziamo.</span>",
+                subtitle: "Eventi, cultura e momenti per famiglie e cittadini che vogliono vivere davvero Pieve Emanuele.",
+                cta: "Guarda cosa stiamo preparando 🔥",
+                bg: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2000&auto=format&fit=crop"
+            },
+            about: {
+                title: "Perché lo facciamo",
+                text: "CREA 20072 nasce dalla voglia concreta di fare qualcosa per Pieve Emanuele. Siamo genitori, amici e cittadini che hanno scelto di organizzare ciò che spesso si dice manchi: occasioni per incontrarsi e stare insieme.",
+                tagline: "Un progetto indipendente, costruito con le nostre forze.",
+                pillars: [
+                    { icon: "users", t: "Comunità", d: "Creiamo occasioni per incontrarsi." },
+                    { icon: "sparkles", t: "Creatività", d: "Trasformiamo idee in eventi." },
+                    { icon: "heart", t: "Condivisione", d: "Costruiamo momenti che restano." }
+                ]
+            },
+            decalogo: {
+                title: "Il Decalogo di CREA 20072",
+                subtitle: "I valori che ci guidano ogni giorno",
+                items: [
+                    { n: "01", t: "Rispettiamo gli spazi", d: "Prendiamoci cura dei luoghi che ci ospitano, come fossero casa nostra.", i: "home" },
+                    { n: "02", t: "Salutiamo con un sorriso", d: "La gentilezza è contagiosa: facciamola circolare.", i: "smile" },
+                    { n: "03", t: "I bambini al centro", d: "Mettiamo i più piccoli al centro, perché da loro nasce il futuro.", i: "baby" },
+                    { n: "04", t: "Collaboriamo", d: "Ogni evento funziona meglio quando ognuno dà il proprio contributo.", i: "handshake" },
+                    { n: "05", t: "Ascoltiamo con attenzione", d: "Le idee crescono quando ci ascoltiamo davvero.", i: "ear" },
+                    { n: "06", t: "Rispettiamo gli orari", d: "Piccole regole rendono i momenti insieme più sereni.", i: "clock" },
+                    { n: "07", t: "Telefoni con misura", d: "Viviamo l’evento con presenza e attenzione, senza distrazioni.", i: "smartphone" },
+                    { n: "08", t: "Tono sereno, sempre", d: "Le differenze si affrontano con calma, rispetto e dialogo.", i: "message-circle" },
+                    { n: "09", t: "Facciamo spazio a tutti", d: "Una comunità vera include, accoglie e valorizza ogni persona.", i: "users" },
+                    { n: "10", t: "Torniamo a casa migliori", d: "Se stiamo bene insieme, stiamo costruendo qualcosa di importante.", i: "award" }
+                ]
+            },
+            featuredEvent: {
+                title: "Magic Show", sub: "Mago Daniel", day: "01", month: "MAR", fullDate: "Domenica 1 Marzo - Ore 16:00", place: "Auditorium Sant'Alessandro", prices: "10€ bambini – 5€ adulti", desc: "Preparati a restare a bocca aperta! Uno spettacolo magico per famiglie, dove l'impossibile diventa realtà.", wa: "https://wa.me/393334455666", img: "mago.png"
+            },
+            archive: [
+                { tag: "tradizioni", t: "Falò di Sant'Antonio", d: "Gennaio 2026", n: "150+ Partecipanti", img: "falo.png" },
+                { tag: "famiglie", t: "Festa di Natale", d: "Dicembre 2025", n: "100 Bambini", img: "natale.png" },
+                { tag: "spettacoli", t: "Serata Cinema", d: "Novembre 2025", n: "Sold Out", img: "cinema.png" },
+                { tag: "famiglie", t: "Halloween Party", d: "Ottobre 2025", n: "120+ Maschere", img: "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?w=800&q=70&auto=format" }
+            ],
+            footer: {
+                socials: [
+                    { name: "Facebook", url: "https://www.facebook.com/profile.php?id=61583120865063", icon: "facebook" },
+                    { name: "Instagram", url: "https://www.instagram.com/crea20072/", icon: "instagram" }
+                ],
+                quote: "Ogni evento è un passo in più per rendere Pieve Emanuele un luogo vivo, accogliente e partecipato."
+            }
+        };
 
-    <!-- COLLEGAMENTO AL FILE DATI -->
-    <script src="data/content.js"></script>
-
-    <!-- LOGICA DEL SITO -->
-    <script>
         function toggleMenu(open) { 
             const menu = document.getElementById('mobile-menu'); 
             menu.classList.toggle('active', open); 
@@ -270,9 +311,7 @@
             const grid = document.getElementById('archive-grid'); 
             grid.innerHTML = '';
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.id === `btn-${tag}`));
-            
-            // Fix: window.DATA_STORE per accesso globale
-            window.DATA_STORE.archive.filter(item => tag === 'all' || item.tag === tag).forEach(item => {
+            DATA_STORE.archive.filter(item => tag === 'all' || item.tag === tag).forEach(item => {
                 grid.innerHTML += `
                     <div class="archive-card group">
                         <div class="h-64 overflow-hidden bg-gray-100 flex items-center justify-center">
@@ -280,11 +319,11 @@
                         </div>
                         <div class="absolute top-4 right-4 bg-white/95 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold uppercase text-black tracking-wider shadow-sm">${item.tag}</div>
                         <div class="p-8">
-                            <p class="text-xs font-bold text-honey uppercase tracking-widest mb-2">${item.d}</p>
+                            <p class="text-xs font-bold text-crea-honey uppercase tracking-widest mb-2">${item.d}</p>
                             <h3 class="text-xl font-bold mb-2 uppercase headline-strong text-black">${item.t}</h3>
                             <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
                                 <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">${item.n}</span>
-                                <span class="text-xs font-bold uppercase tracking-tighter text-gray-800 group-hover:text-honey transition-colors">Vedi foto →</span>
+                                <span class="text-xs font-bold uppercase tracking-tighter text-gray-800 group-hover:text-crea-honey transition-colors">Vedi foto →</span>
                             </div>
                         </div>
                     </div>`;
@@ -292,38 +331,31 @@
         }
 
         window.onload = function() {
-            // Navbar Shadow
-            window.addEventListener("scroll", () => { document.querySelector("nav").classList.toggle("shadow-lg", window.scrollY > 30); });
+            window.addEventListener("scroll", () => { document.querySelector("nav").classList.toggle("shadow-md", window.scrollY > 30); });
             setTimeout(() => { document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible')); }, 200);
 
-            const D = window.DATA_STORE;
-
-            // Popola Hero
-            document.getElementById('hero-title').innerHTML = D.hero.title;
-            document.getElementById('hero-subtitle').innerText = D.hero.subtitle;
-            document.getElementById('hero-cta').innerText = D.hero.cta;
-            document.getElementById('hero-bg').style.backgroundImage = `url('${D.hero.bg}')`;
-
-            // Popola About
-            document.getElementById('about-title').innerText = D.about.title;
-            document.getElementById('about-text').innerText = D.about.text;
-            document.getElementById('about-tagline').innerText = D.about.tagline;
+            // Popola Hero e About
+            document.getElementById('hero-title').innerHTML = DATA_STORE.hero.title;
+            document.getElementById('hero-subtitle').innerText = DATA_STORE.hero.subtitle;
+            document.getElementById('hero-cta').innerText = DATA_STORE.hero.cta;
+            document.getElementById('hero-bg').style.backgroundImage = `url('${DATA_STORE.hero.bg}')`;
+            document.getElementById('about-title').innerText = DATA_STORE.about.title;
+            document.getElementById('about-text').innerText = DATA_STORE.about.text;
+            document.getElementById('about-tagline').innerText = DATA_STORE.about.tagline;
             const valGrid = document.getElementById('values-grid');
-            D.about.pillars.forEach(p => { 
-                valGrid.innerHTML += `
-                <div class="flex flex-col items-center">
-                    <div class="w-20 h-20 bg-crea-soft rounded-3xl flex items-center justify-center mb-6 text-crea-honey"><i data-lucide="${p.icon}" class="w-10 h-10"></i></div>
-                    <h3 class="text-xl font-bold mb-3 headline-strong text-black uppercase">${p.t}</h3>
-                    <p class="text-sm text-gray-500 max-w-[200px] text-body-crea">${p.d}</p>
-                </div>`; 
+            DATA_STORE.about.pillars.forEach(p => { 
+                valGrid.innerHTML += `<div class="flex flex-col items-center"><div class="w-20 h-20 bg-crea-soft rounded-3xl flex items-center justify-center mb-6 text-crea-honey"><i data-lucide="${p.icon}" class="w-10 h-10"></i></div><h3 class="text-xl font-bold mb-3 headline-strong text-black uppercase">${p.t}</h3><p class="text-sm text-gray-500 max-w-[200px] text-body-crea">${p.d}</p></div>`; 
             });
 
-            // Popola Decalogo (Tutti standard)
+            // FIX DECALOGO 10: Ora è centrale (lg:col-start-2)
             const decGrid = document.getElementById('decalogo-grid');
-            D.decalogo.items.forEach((v) => {
+            DATA_STORE.decalogo.items.forEach((v, i) => {
+                const isLast = i === 9; 
+                // Logica: se è l'ultimo, lo mettiamo nella colonna 2 (centrale)
+                const c = isLast ? 'lg:col-start-2' : '';
                 decGrid.innerHTML += `
-                    <div class="decalogo-card">
-                        <div class="font-bold tracking-widest text-honey text-xs mb-2">${v.n}</div>
+                    <div class="decalogo-card ${c}">
+                        <div class="font-bold tracking-widest text-crea-honey text-xs mb-2">${v.n}</div>
                         <div class="mb-4 text-gray-800"><i data-lucide="${v.i}" class="w-8 h-8"></i></div>
                         <div>
                             <h3 class="font-bold text-lg mb-2 uppercase headline-strong text-black">${v.t}</h3>
@@ -333,7 +365,7 @@
             });
 
             // Featured Event
-            const ev = D.featuredEvent;
+            const ev = DATA_STORE.featuredEvent;
             document.getElementById('featured-event-slot').innerHTML = `
                 <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden flex flex-col lg:flex-row card-hover">
                     <div class="relative lg:w-5/12 h-96 lg:h-auto bg-gray-100 flex items-center justify-center">
@@ -347,13 +379,11 @@
                         <h3 class="text-4xl md:text-6xl headline-strong mb-4 uppercase text-black leading-tight">${ev.title}</h3>
                         <h4 class="text-xl font-bold text-gray-400 mb-8 uppercase tracking-tight">${ev.sub}</h4>
                         <p class="text-lg text-body-crea mb-12 font-light">${ev.desc}</p>
-                        
                         <div class="space-y-6 mb-12 border-t border-b border-gray-100 py-10">
-                            <div class="flex items-center gap-4"><i data-lucide="calendar" class="text-honey w-6 h-6"></i> <div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Quando</span><span class="font-bold text-sm uppercase">${ev.fullDate}</span></div></div>
-                            <div class="flex items-center gap-4"><i data-lucide="map-pin" class="text-honey w-6 h-6"></i> <div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Luogo</span><span class="font-bold text-sm uppercase">${ev.place}</span></div></div>
-                            <div class="flex items-center gap-4"><i data-lucide="ticket" class="text-honey w-6 h-6"></i> <div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Contributo</span><span class="font-bold text-sm uppercase">${ev.prices}</span></div></div>
+                            <div class="flex items-center gap-4"><i data-lucide="calendar" class="text-crea-honey w-6 h-6"></i> <div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Quando</span><span class="font-bold text-sm uppercase">${ev.fullDate}</span></div></div>
+                            <div class="flex items-center gap-4"><i data-lucide="map-pin" class="text-crea-honey w-6 h-6"></i> <div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Luogo</span><span class="font-bold text-sm uppercase">${ev.place}</span></div></div>
+                            <div class="flex items-center gap-4"><i data-lucide="ticket" class="text-crea-honey w-6 h-6"></i> <div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Contributo</span><span class="font-bold text-sm uppercase">${ev.prices}</span></div></div>
                         </div>
-                        
                         <div class="flex flex-col lg:flex-row items-center gap-6">
                             <a href="${ev.wa}" target="_blank" class="cta-button w-full lg:w-auto">Prenota il tuo posto</a>
                             <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Posti Limitati</span>
@@ -366,25 +396,24 @@
             ['all', 'famiglie', 'tradizioni', 'spettacoli'].forEach(f => { filterBar.innerHTML += `<button onclick="renderArchive('${f}')" class="filter-btn ${f==='all'?'active':''}" id="btn-${f}">${f==='all'?'Tutti':f}</button>`; });
             renderArchive('all');
 
-            // Footer Socials
-            document.getElementById('strategic-quote').innerText = D.footer.quote;
+            // Footer
+            document.getElementById('strategic-quote').innerText = DATA_STORE.footer.quote;
             const socBox = document.getElementById('social-links');
-            
-            // Social Icons più grandi (SVG)
-            D.footer.socials.forEach(s => {
+            DATA_STORE.footer.socials.forEach(s => {
                 let svgIcon = '';
+                // Icone SVG Ufficiali Facebook e Instagram (più grandi)
                 if(s.icon === 'facebook') svgIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>';
                 else if(s.icon === 'instagram') svgIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>';
                 
                 socBox.innerHTML += `
-                    <a href="${s.url}" target="_blank" class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center hover:bg-honey hover:text-white transition-all text-white">
+                    <a href="${s.url}" target="_blank" class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center hover:bg-crea-honey hover:text-white transition-all text-white">
                         ${svgIcon}
                     </a>`;
             });
 
             // Logo Loading
             const img = new Image();
-            img.src = D.settings.logo;
+            img.src = DATA_STORE.settings.logo;
             img.className = "logo-img h-10 w-auto";
             img.onload = () => {
                 document.getElementById('nav-logo-container').innerHTML = '';
