@@ -33,7 +33,7 @@
       { "n": "07", "t": "Telefoni con misura", "d": "Viviamo l’evento con presenza e attenzione, senza distrazioni.", "i": "smartphone" },
       { "n": "08", "t": "Tono sereno, sempre", "d": "Le differenze si affrontano con calma, rispetto e dialogo.", "i": "message-circle" },
       { "n": "09", "t": "Facciamo spazio a tutti", "d": "Una comunità vera include, accoglie e valorizza ogni persona.", "i": "users" },
-      { "n": "10", "t": "Torniamo a casa migliori", "d": "Se stiamo bene insieme, stiamo costruendo qualcosa di importante.", "i": "award" }
+      { "n": "10", "t": "Torniamo migliori", "d": "Se stiamo bene insieme, stiamo costruendo qualcosa di importante.", "i": "award" }
     ]
   },
   "featuredEvent": {
@@ -45,14 +45,54 @@
     "place": "Auditorium Sant'Alessandro",
     "prices": "10€ bambini – 5€ adulti",
     "desc": "Preparati a restare a bocca aperta! Uno spettacolo magico per famiglie, dove l'impossibile diventa realtà e lo stupore è garantito per grandi e piccoli.",
-    "wa": "https://wa.me/39123456789",
+    "wa": "https://wa.me/393334455666",
     "img": "mago.png"
   },
   "archive": [
-    { "tag": "tradizioni", "t": "Falò di Sant'Antonio", "d": "Gennaio 2026", "n": "150+ Partecipanti", "desc": "La tradizione che scalda l'inverno.", "img": "falo.png" },
-    { "tag": "famiglie", "t": "Festa di Natale", "d": "Dicembre 2025", "n": "100 Bambini", "desc": "Musica e gioia per i piccoli.", "img": "natale.png" },
-    { "tag": "spettacoli", "t": "Serata Cinema", "d": "Novembre 2025", "n": "Sold Out", "desc": "Cinema condiviso in Auditorium.", "img": "cinema.png" },
-    { "tag": "famiglie", "t": "Halloween Party", "d": "Ottobre 2025", "n": "120+ Maschere", "desc": "La notte più spaventosa.", "img": "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?w=800&q=70&auto=format" }
+    { 
+      "id": 1,
+      "tag": "tradizioni", 
+      "t": "Falò di Sant'Antonio", 
+      "d": "Gennaio 2026", 
+      "n": "150+ Partecipanti", 
+      "desc": "La tradizione che scalda l'inverno.",
+      "fullDesc": "Una serata magica attorno al fuoco per riscoprire le antiche tradizioni contadine. Tra vin brulé, chiacchiere e il calore della comunità, abbiamo celebrato Sant'Antonio come si faceva una volta.",
+      "img": "falo.png",
+      "gallery": ["falo.png", "logo.png"] 
+    },
+    { 
+      "id": 2,
+      "tag": "famiglie", 
+      "t": "Festa di Natale", 
+      "d": "Dicembre 2025", 
+      "n": "100 Bambini", 
+      "desc": "Musica e gioia per i piccoli.",
+      "fullDesc": "Un pomeriggio di festa dedicato ai più piccoli, con laboratori creativi, canti natalizi e l'arrivo a sorpresa di Babbo Natale che ha portato doni per tutti.",
+      "img": "natale.png",
+      "gallery": ["natale.png", "logo.png"]
+    },
+    { 
+      "id": 3,
+      "tag": "spettacoli", 
+      "t": "Serata Cinema", 
+      "d": "Novembre 2025", 
+      "n": "Sold Out", 
+      "desc": "Cinema condiviso in Auditorium.",
+      "fullDesc": "Il cinema come momento di aggregazione. Abbiamo riempito l'auditorium per una proiezione speciale, seguita da un dibattito e un momento conviviale.",
+      "img": "cinema.png",
+      "gallery": ["cinema.png", "logo.png"]
+    },
+    { 
+      "id": 4,
+      "tag": "famiglie", 
+      "t": "Halloween Party", 
+      "d": "Ottobre 2025", 
+      "n": "120+ Maschere", 
+      "desc": "La notte più spaventosa.",
+      "fullDesc": "Dolcetto o scherzetto? Una sfilata in maschera per le vie di Pieve Emanuele che ha colorato di allegria (e qualche brivido) il nostro quartiere.",
+      "img": "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?w=800&q=70&auto=format",
+      "gallery": ["logo.png"]
+    }
   ],
   "footer": {
     "email": "accrea20072@gmail.com",
