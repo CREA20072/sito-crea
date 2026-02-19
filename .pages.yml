@@ -1,40 +1,33 @@
 # ================================================================
 #  CREA 20072 — Configurazione PagesCMS
 #  Percorso: pages.yml  (nella cartella principale del sito)
-# ================================================================
-#
-#  Questo file dice a PagesCMS quali campi mostrare nell'editor.
-#  NON modificarlo: è già configurato per funzionare con il sito.
-#
+#  NON modificare questo file.
 # ================================================================
 
 media:
-  input: ""       # Le immagini vanno caricate nella cartella principale
+  input: ""
   output: ""
 
 content:
   - name: site_data
-    label: "✏️ Contenuti Sito"
+    label: "Contenuti Sito"
     type: file
-    path: data/content.js        # ← punta al file JS corretto
-    format: javascript-export    # formato window.DATA_STORE = { ... }
+    path: data/content.json
     fields:
 
-      # -------------------------------------------------------
       - name: settings
-        label: "⚙️ Impostazioni"
+        label: "Impostazioni"
         type: object
         fields:
           - name: logo
             label: Logo del sito
             type: image
           - name: formspreeUrl
-            label: "Link Formspree (opzionale — per ricevere email dal form)"
+            label: "Link Formspree (opzionale - per ricevere email dal form contatti)"
             type: string
 
-      # -------------------------------------------------------
       - name: hero
-        label: "🖼️ Copertina"
+        label: "Copertina"
         type: object
         fields:
           - name: title
@@ -50,9 +43,8 @@ content:
             label: Immagine di sfondo
             type: image
 
-      # -------------------------------------------------------
       - name: about
-        label: "👋 Chi Siamo"
+        label: "Chi Siamo"
         type: object
         fields:
           - name: title
@@ -78,25 +70,24 @@ content:
                 label: Descrizione
                 type: string
 
-      # -------------------------------------------------------
       - name: featuredEvent
-        label: "🌟 Prossimo Evento"
+        label: "Prossimo Evento"
         type: object
         fields:
           - name: title
             label: Nome evento
             type: string
           - name: sub
-            label: Sottotitolo / Artista
+            label: Sottotitolo o Artista
             type: string
           - name: day
             label: "Giorno (2 cifre: 01, 15, 28...)"
             type: string
           - name: month
-            label: "Mese abbreviato (GEN, FEB, MAR...)"
+            label: "Mese abbreviato maiuscolo (GEN, FEB, MAR, APR, MAG, GIU, LUG, AGO, SET, OTT, NOV, DIC)"
             type: string
           - name: fullDate
-            label: "Data completa (es: Domenica 1 Marzo 2026 – Ore 16:00)"
+            label: "Data completa (es: Domenica 1 Marzo 2026 - Ore 16:00)"
             type: string
           - name: place
             label: Luogo
@@ -111,22 +102,24 @@ content:
             label: "Link WhatsApp prenotazioni (es: https://wa.me/393402231735)"
             type: string
           - name: img
-            label: Locandina
+            label: "Locandina - consigliato 600x900px (verticale). I flyer Instagram vanno benissimo."
             type: image
 
-      # -------------------------------------------------------
       - name: archive
-        label: "📁 Archivio Eventi Passati"
+        label: "Archivio Eventi Passati"
         type: list
         fields:
           - name: id
-            label: "ID (numero progressivo: 1, 2, 3...)"
+            label: "ID univoco (numero progressivo: 1, 2, 3...)"
             type: number
+          - name: date
+            label: "Data per ordinamento automatico (formato: AAAA-MM-GG, es: 2026-03-01)"
+            type: string
           - name: t
             label: Nome evento
             type: string
           - name: d
-            label: "Data (es: Ottobre 2025)"
+            label: "Data leggibile (es: Marzo 2026) - mostrata nel sito"
             type: string
           - name: tag
             label: Categoria
@@ -139,28 +132,27 @@ content:
               - value: spettacoli
                 label: Spettacoli
           - name: n
-            label: "Info extra (es: Sold Out, 150+ persone...)"
+            label: "Info breve (es: Sold Out, 150+ persone, 100 bambini...)"
             type: string
           - name: desc
-            label: Descrizione breve (visibile nella card)
+            label: "Descrizione breve - mostrata nella card della griglia"
             type: string
           - name: fullDesc
-            label: Descrizione completa (visibile aprendo la scheda)
+            label: "Descrizione completa - mostrata aprendo la scheda evento"
             type: text
           - name: img
-            label: Immagine di copertina
+            label: "Immagine card - consigliato 800x600px (orizzontale) o 800x800px (quadrata)"
             type: image
           - name: gallery
-            label: Galleria foto (opzionale)
+            label: "Foto galleria (opzionale) - cliccabili a schermo intero"
             type: list
             fields:
               - name: url
                 label: Foto
                 type: image
 
-      # -------------------------------------------------------
       - name: decalogo
-        label: "📜 Decalogo"
+        label: "Decalogo"
         type: object
         fields:
           - name: title
@@ -174,7 +166,7 @@ content:
             type: list
             fields:
               - name: n
-                label: "Numero (01, 02...)"
+                label: "Numero (01, 02, 03...)"
                 type: string
               - name: t
                 label: Titolo regola
@@ -183,12 +175,11 @@ content:
                 label: Descrizione
                 type: string
               - name: i
-                label: "Icona (nome Lucide, es: home, smile, clock...)"
+                label: "Icona Lucide (es: home, smile, clock, users, award...)"
                 type: string
 
-      # -------------------------------------------------------
       - name: footer
-        label: "📬 Footer e Contatti"
+        label: "Footer e Contatti"
         type: object
         fields:
           - name: email
@@ -202,7 +193,7 @@ content:
             type: list
             fields:
               - name: icon
-                label: "Piattaforma (facebook, instagram, whatsapp)"
+                label: Piattaforma
                 type: select
                 options:
                   - value: facebook
@@ -212,5 +203,5 @@ content:
                   - value: whatsapp
                     label: WhatsApp
               - name: url
-                label: Link profilo
+                label: Link profilo completo
                 type: string
