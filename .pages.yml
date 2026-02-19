@@ -1,87 +1,75 @@
+# ================================================================
+#  CREA 20072 — Configurazione PagesCMS
+#  Percorso: pages.yml  (nella cartella principale del sito)
+# ================================================================
+#
+#  Questo file dice a PagesCMS quali campi mostrare nell'editor.
+#  NON modificarlo: è già configurato per funzionare con il sito.
+#
+# ================================================================
+
 media:
-  input: ""
+  input: ""       # Le immagini vanno caricate nella cartella principale
   output: ""
 
 content:
   - name: site_data
-    label: Contenuti Sito
+    label: "✏️ Contenuti Sito"
     type: file
-    path: data/content.json
+    path: data/content.js        # ← punta al file JS corretto
+    format: javascript-export    # formato window.DATA_STORE = { ... }
     fields:
+
+      # -------------------------------------------------------
       - name: settings
-        label: Impostazioni Generali
+        label: "⚙️ Impostazioni"
         type: object
         fields:
           - name: logo
-            label: Logo del Sito
+            label: Logo del sito
             type: image
-          - name: brandColor
-            label: Colore Principale
-            type: string
-          - name: honeyLight
-            label: Sfondo Chiaro
-            type: string
           - name: formspreeUrl
-            label: Link Formspree
+            label: "Link Formspree (opzionale — per ricevere email dal form)"
             type: string
 
-      - name: footer
-        label: Pie di Pagina
-        type: object
-        fields:
-          - name: email
-            label: Email Contatti
-            type: string
-          - name: quote
-            label: Frase Ispirazionale
-            type: string
-          - name: socials
-            label: Link Social
-            type: list
-            fields:
-              - name: icon
-                label: Icona (es. facebook)
-                type: string
-              - name: url
-                label: Link
-                type: string
-
+      # -------------------------------------------------------
       - name: hero
-        label: Copertina
+        label: "🖼️ Copertina"
         type: object
         fields:
           - name: title
-            label: Titolo
+            label: Titolo principale
             type: string
           - name: subtitle
             label: Sottotitolo
             type: string
           - name: cta
-            label: Testo Bottone
+            label: Testo del bottone
             type: string
           - name: bg
-            label: Sfondo
+            label: Immagine di sfondo
             type: image
 
+      # -------------------------------------------------------
       - name: about
-        label: Chi Siamo
+        label: "👋 Chi Siamo"
         type: object
         fields:
           - name: title
-            label: Titolo
+            label: Titolo sezione
             type: string
           - name: text
-            label: Testo
-            type: string
+            label: Testo descrittivo
+            type: text
           - name: tagline
-            label: Sottotitolo
+            label: Frase finale (piccola, in basso)
             type: string
           - name: pillars
-            label: Pilastri
+            label: I tre valori
             type: list
             fields:
               - name: icon
-                label: Icona
+                label: "Icona (nome Lucide, es: users, heart, sparkles)"
                 type: string
               - name: t
                 label: Titolo
@@ -90,51 +78,25 @@ content:
                 label: Descrizione
                 type: string
 
-      - name: decalogo
-        label: Decalogo
-        type: object
-        fields:
-          - name: title
-            label: Titolo
-            type: string
-          - name: subtitle
-            label: Sottotitolo
-            type: string
-          - name: items
-            label: Regole
-            type: list
-            fields:
-              - name: n
-                label: Numero
-                type: string
-              - name: t
-                label: Titolo
-                type: string
-              - name: d
-                label: Descrizione
-                type: string
-              - name: i
-                label: Icona
-                type: string
-
+      # -------------------------------------------------------
       - name: featuredEvent
-        label: Prossimo Evento
+        label: "🌟 Prossimo Evento"
         type: object
         fields:
           - name: title
-            label: Titolo
+            label: Nome evento
             type: string
           - name: sub
-            label: Sottotitolo
+            label: Sottotitolo / Artista
             type: string
           - name: day
-            label: Giorno
+            label: "Giorno (2 cifre: 01, 15, 28...)"
             type: string
           - name: month
-            label: Mese
+            label: "Mese abbreviato (GEN, FEB, MAR...)"
             type: string
           - name: fullDate
-            label: Data Completa
+            label: "Data completa (es: Domenica 1 Marzo 2026 – Ore 16:00)"
             type: string
           - name: place
             label: Luogo
@@ -144,43 +106,111 @@ content:
             type: string
           - name: desc
             label: Descrizione
-            type: string
+            type: text
           - name: wa
-            label: Link WhatsApp
+            label: "Link WhatsApp prenotazioni (es: https://wa.me/393402231735)"
             type: string
           - name: img
             label: Locandina
             type: image
 
+      # -------------------------------------------------------
       - name: archive
-        label: Archivio Eventi
+        label: "📁 Archivio Eventi Passati"
         type: list
         fields:
           - name: id
-            label: ID
+            label: "ID (numero progressivo: 1, 2, 3...)"
             type: number
           - name: t
-            label: Titolo
+            label: Nome evento
             type: string
           - name: d
-            label: Data
+            label: "Data (es: Ottobre 2025)"
             type: string
           - name: tag
-            label: Categoria (tradizioni, famiglie, spettacoli)
+            label: Categoria
             type: select
             options:
-              - tradizioni
-              - famiglie
-              - spettacoli
+              - value: famiglie
+                label: Famiglie
+              - value: tradizioni
+                label: Tradizioni
+              - value: spettacoli
+                label: Spettacoli
           - name: n
-            label: Dettaglio Extra
+            label: "Info extra (es: Sold Out, 150+ persone...)"
             type: string
           - name: desc
-            label: Descrizione Breve
+            label: Descrizione breve (visibile nella card)
             type: string
           - name: fullDesc
-            label: Descrizione Completa
-            type: string
+            label: Descrizione completa (visibile aprendo la scheda)
+            type: text
           - name: img
-            label: Foto Copertina
+            label: Immagine di copertina
             type: image
+          - name: gallery
+            label: Galleria foto (opzionale)
+            type: list
+            fields:
+              - name: url
+                label: Foto
+                type: image
+
+      # -------------------------------------------------------
+      - name: decalogo
+        label: "📜 Decalogo"
+        type: object
+        fields:
+          - name: title
+            label: Titolo sezione
+            type: string
+          - name: subtitle
+            label: Sottotitolo
+            type: string
+          - name: items
+            label: Le 10 regole
+            type: list
+            fields:
+              - name: n
+                label: "Numero (01, 02...)"
+                type: string
+              - name: t
+                label: Titolo regola
+                type: string
+              - name: d
+                label: Descrizione
+                type: string
+              - name: i
+                label: "Icona (nome Lucide, es: home, smile, clock...)"
+                type: string
+
+      # -------------------------------------------------------
+      - name: footer
+        label: "📬 Footer e Contatti"
+        type: object
+        fields:
+          - name: email
+            label: Email di contatto
+            type: string
+          - name: quote
+            label: Frase ispirazionale
+            type: string
+          - name: socials
+            label: Link Social
+            type: list
+            fields:
+              - name: icon
+                label: "Piattaforma (facebook, instagram, whatsapp)"
+                type: select
+                options:
+                  - value: facebook
+                    label: Facebook
+                  - value: instagram
+                    label: Instagram
+                  - value: whatsapp
+                    label: WhatsApp
+              - name: url
+                label: Link profilo
+                type: string
