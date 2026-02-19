@@ -1,64 +1,81 @@
-# Configurazione per Pages CMS
-# Questo file dice al sistema come creare i moduli per te.
+# Configurazione per Pages CMS aggiornata e corretta
 
 media:
-  input: .
-  output: .
-  categories: [ "general" ]
+  input: "."
+  output: "."
 
 content:
-  - name: settings
-    label: "⚙️ Impostazioni Generali"
-    type: json
+  - name: site_data
+    label: "Gestione Contenuti Sito"
+    type: file
     path: data/content.json
     fields:
       - name: settings
-        label: "Logo e Colori"
+        label: "⚙️ Impostazioni Generali"
         type: object
         fields:
           - { name: logo, label: "Logo del Sito", type: image }
           - { name: brandColor, label: "Colore Principale (Hex)", type: string }
+          - { name: honeyLight, label: "Sfondo Chiaro (Hex)", type: string }
+          - { name: formspreeUrl, label: "Link Formspree", type: string }
+
       - name: footer
-        label: "Piè di Pagina"
+        label: "👇 Piè di Pagina"
         type: object
         fields:
           - { name: email, label: "Email Contatti", type: string }
           - { name: quote, label: "Frase Ispirazionale", type: string }
           - name: socials
             label: "Link Social"
-            type: list
+            type: object
+            list: true
             fields:
               - { name: icon, label: "Icona (facebook/instagram)", type: string }
               - { name: url, label: "Link Completo", type: string }
 
-  - name: homepage
-    label: "🏠 Home Page"
-    type: json
-    path: data/content.json
-    fields:
       - name: hero
-        label: "Sezione Hero (Copertina)"
+        label: "🏠 Home Page (Copertina)"
         type: object
         fields:
           - { name: title, label: "Titolo Grande", type: string }
           - { name: subtitle, label: "Sottotitolo", type: string }
           - { name: cta, label: "Testo Bottone", type: string }
           - { name: bg, label: "Immagine di Sfondo", type: image }
+
       - name: about
-        label: "Chi Siamo"
+        label: "ℹ️ Chi Siamo"
         type: object
         fields:
           - { name: title, label: "Titolo Sezione", type: string }
           - { name: text, label: "Testo Descrittivo", type: text }
-          - { name: tagline, label: "Frase Finale Piccola", type: string }
+          - { name: tagline, label: "Frase Finale", type: string }
+          - name: pillars
+            label: "I 3 Pilastri"
+            type: object
+            list: true
+            fields:
+              - { name: icon, label: "Icona Lucide", type: string }
+              - { name: t, label: "Titolo", type: string }
+              - { name: d, label: "Descrizione", type: string }
 
-  - name: events
-    label: "📅 Gestione Eventi"
-    type: json
-    path: data/content.json
-    fields:
+      - name: decalogo
+        label: "📜 Il Decalogo"
+        type: object
+        fields:
+          - { name: title, label: "Titolo", type: string }
+          - { name: subtitle, label: "Sottotitolo", type: string }
+          - name: items
+            label: "I 10 Punti"
+            type: object
+            list: true
+            fields:
+              - { name: n, label: "Numero", type: string }
+              - { name: t, label: "Titolo", type: string }
+              - { name: d, label: "Spiegazione", type: string }
+              - { name: i, label: "Icona", type: string }
+
       - name: featuredEvent
-        label: "⭐️ EVENTO IN EVIDENZA"
+        label: "⭐️ PROSSIMO EVENTO"
         type: object
         fields:
           - { name: title, label: "Titolo Evento", type: string }
@@ -71,12 +88,13 @@ content:
           - { name: desc, label: "Descrizione", type: text }
           - { name: wa, label: "Link WhatsApp", type: string }
           - { name: img, label: "Locandina Verticale", type: image }
-      
+
       - name: archive
         label: "📚 ARCHIVIO STORICO"
-        type: list
-        item: "{{t}}"
+        type: object
+        list: true
         fields:
+          - { name: id, label: "ID Univoco (es: 1, 2, 3)", type: number }
           - { name: t, label: "Titolo Evento", type: string }
           - { name: d, label: "Data (es: Gennaio 2026)", type: string }
           - { name: tag, label: "Categoria", type: select, options: ["tradizioni", "famiglie", "spettacoli"] }
@@ -85,7 +103,6 @@ content:
           - { name: fullDesc, label: "Descrizione Completa (per popup)", type: text }
           - { name: img, label: "Foto Copertina", type: image }
           - name: gallery
-            label: "Galleria Foto",
-            type: list
-            fields:
-               - { name: image, label: "Foto", type: image }
+            label: "Galleria Foto Extra"
+            type: image
+            list: true
