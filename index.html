@@ -393,7 +393,12 @@
                 setTimeout(() => document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible')), 150);
 
                 // HERO
-                document.getElementById('hero-title').innerHTML    = D.hero.title;
+                // "LO ORGANIZZIAMO." colorato in giallo miele, sempre sulla stessa riga
+                const heroText = D.hero.title;
+                const keyword  = 'Lo organizziamo.';
+                document.getElementById('hero-title').innerHTML = heroText.includes(keyword)
+                    ? heroText.replace(keyword, `<span class="text-crea-honey whitespace-nowrap">${keyword}</span>`)
+                    : heroText;
                 document.getElementById('hero-subtitle').innerText = D.hero.subtitle;
                 document.getElementById('hero-cta').innerText      = D.hero.cta;
                 document.getElementById('hero-bg').style.backgroundImage = `url('${D.hero.bg}')`;
