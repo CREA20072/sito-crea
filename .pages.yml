@@ -1,3 +1,7 @@
+media:
+  input: ""
+  output: ""
+
 content:
   - name: site_data
     label: Contenuti Sito
