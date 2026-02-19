@@ -2,6 +2,11 @@
 #  CREA 20072 — Configurazione PagesCMS
 #  Percorso: pages.yml  (nella cartella principale del sito)
 #  NON modificare questo file.
+#
+#  NOTA: Alcune sezioni (Chi Siamo - tre valori, Decalogo, Social)
+#  non appaiono qui perché PagesCMS non supporta liste annidate
+#  dentro oggetti. Modificale direttamente in data/content.json
+#  su GitHub — cambiano raramente.
 # ================================================================
 
 media:
@@ -15,6 +20,7 @@ content:
     path: data/content.json
     fields:
 
+      # ── Impostazioni ──────────────────────────────────────────
       - name: settings
         label: "Impostazioni"
         type: object
@@ -23,9 +29,10 @@ content:
             label: Logo del sito
             type: image
           - name: formspreeUrl
-            label: "Link Formspree (opzionale - per ricevere email dal form contatti)"
+            label: "Link Formspree (opzionale - per ricevere email dal form)"
             type: string
 
+      # ── Copertina ─────────────────────────────────────────────
       - name: hero
         label: "Copertina"
         type: object
@@ -43,6 +50,7 @@ content:
             label: Immagine di sfondo
             type: image
 
+      # ── Chi Siamo (solo testi, non i tre valori) ──────────────
       - name: about
         label: "Chi Siamo"
         type: object
@@ -56,20 +64,8 @@ content:
           - name: tagline
             label: Frase finale (piccola, in basso)
             type: string
-          - name: pillars
-            label: I tre valori
-            type: list
-            fields:
-              - name: icon
-                label: "Icona (nome Lucide, es: users, heart, sparkles)"
-                type: string
-              - name: t
-                label: Titolo
-                type: string
-              - name: d
-                label: Descrizione
-                type: string
 
+      # ── Prossimo Evento ───────────────────────────────────────
       - name: featuredEvent
         label: "Prossimo Evento"
         type: object
@@ -84,7 +80,7 @@ content:
             label: "Giorno (2 cifre: 01, 15, 28...)"
             type: string
           - name: month
-            label: "Mese abbreviato maiuscolo (GEN, FEB, MAR, APR, MAG, GIU, LUG, AGO, SET, OTT, NOV, DIC)"
+            label: "Mese (GEN, FEB, MAR, APR, MAG, GIU, LUG, AGO, SET, OTT, NOV, DIC)"
             type: string
           - name: fullDate
             label: "Data completa (es: Domenica 1 Marzo 2026 - Ore 16:00)"
@@ -102,9 +98,10 @@ content:
             label: "Link WhatsApp prenotazioni (es: https://wa.me/393402231735)"
             type: string
           - name: img
-            label: "Locandina - consigliato 600x900px (verticale). I flyer Instagram vanno benissimo."
+            label: "Locandina (600x900px consigliato - i flyer Instagram vanno benissimo)"
             type: image
 
+      # ── Archivio Eventi ───────────────────────────────────────
       - name: archive
         label: "Archivio Eventi Passati"
         type: list
@@ -113,13 +110,13 @@ content:
             label: "ID univoco (numero progressivo: 1, 2, 3...)"
             type: number
           - name: date
-            label: "Data per ordinamento automatico (formato: AAAA-MM-GG, es: 2026-03-01)"
+            label: "Data ordinamento automatico (AAAA-MM-GG, es: 2026-03-01)"
             type: string
           - name: t
             label: Nome evento
             type: string
           - name: d
-            label: "Data leggibile (es: Marzo 2026) - mostrata nel sito"
+            label: "Data leggibile (es: Marzo 2026)"
             type: string
           - name: tag
             label: Categoria
@@ -132,52 +129,19 @@ content:
               - value: spettacoli
                 label: Spettacoli
           - name: n
-            label: "Info breve (es: Sold Out, 150+ persone, 100 bambini...)"
+            label: "Info breve (es: Sold Out, 150+ persone...)"
             type: string
           - name: desc
-            label: "Descrizione breve - mostrata nella card della griglia"
+            label: Descrizione breve (nella card)
             type: string
           - name: fullDesc
-            label: "Descrizione completa - mostrata aprendo la scheda evento"
+            label: Descrizione completa (nella scheda)
             type: text
           - name: img
-            label: "Immagine card - consigliato 800x600px (orizzontale) o 800x800px (quadrata)"
+            label: "Immagine card (800x600px o 800x800px consigliato)"
             type: image
-          - name: gallery
-            label: "Foto galleria (opzionale) - cliccabili a schermo intero"
-            type: list
-            fields:
-              - name: url
-                label: Foto
-                type: image
 
-      - name: decalogo
-        label: "Decalogo"
-        type: object
-        fields:
-          - name: title
-            label: Titolo sezione
-            type: string
-          - name: subtitle
-            label: Sottotitolo
-            type: string
-          - name: items
-            label: Le 10 regole
-            type: list
-            fields:
-              - name: n
-                label: "Numero (01, 02, 03...)"
-                type: string
-              - name: t
-                label: Titolo regola
-                type: string
-              - name: d
-                label: Descrizione
-                type: string
-              - name: i
-                label: "Icona Lucide (es: home, smile, clock, users, award...)"
-                type: string
-
+      # ── Footer ────────────────────────────────────────────────
       - name: footer
         label: "Footer e Contatti"
         type: object
@@ -188,20 +152,3 @@ content:
           - name: quote
             label: Frase ispirazionale
             type: string
-          - name: socials
-            label: Link Social
-            type: list
-            fields:
-              - name: icon
-                label: Piattaforma
-                type: select
-                options:
-                  - value: facebook
-                    label: Facebook
-                  - value: instagram
-                    label: Instagram
-                  - value: whatsapp
-                    label: WhatsApp
-              - name: url
-                label: Link profilo completo
-                type: string
