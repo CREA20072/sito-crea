@@ -1,0 +1,91 @@
+# Configurazione per Pages CMS
+# Questo file dice al sistema come creare i moduli per te.
+
+media:
+  input: .
+  output: .
+  categories: [ "general" ]
+
+content:
+  - name: settings
+    label: "⚙️ Impostazioni Generali"
+    type: json
+    path: data/content.json
+    fields:
+      - name: settings
+        label: "Logo e Colori"
+        type: object
+        fields:
+          - { name: logo, label: "Logo del Sito", type: image }
+          - { name: brandColor, label: "Colore Principale (Hex)", type: string }
+      - name: footer
+        label: "Piè di Pagina"
+        type: object
+        fields:
+          - { name: email, label: "Email Contatti", type: string }
+          - { name: quote, label: "Frase Ispirazionale", type: string }
+          - name: socials
+            label: "Link Social"
+            type: list
+            fields:
+              - { name: icon, label: "Icona (facebook/instagram)", type: string }
+              - { name: url, label: "Link Completo", type: string }
+
+  - name: homepage
+    label: "🏠 Home Page"
+    type: json
+    path: data/content.json
+    fields:
+      - name: hero
+        label: "Sezione Hero (Copertina)"
+        type: object
+        fields:
+          - { name: title, label: "Titolo Grande", type: string }
+          - { name: subtitle, label: "Sottotitolo", type: string }
+          - { name: cta, label: "Testo Bottone", type: string }
+          - { name: bg, label: "Immagine di Sfondo", type: image }
+      - name: about
+        label: "Chi Siamo"
+        type: object
+        fields:
+          - { name: title, label: "Titolo Sezione", type: string }
+          - { name: text, label: "Testo Descrittivo", type: text }
+          - { name: tagline, label: "Frase Finale Piccola", type: string }
+
+  - name: events
+    label: "📅 Gestione Eventi"
+    type: json
+    path: data/content.json
+    fields:
+      - name: featuredEvent
+        label: "⭐️ EVENTO IN EVIDENZA"
+        type: object
+        fields:
+          - { name: title, label: "Titolo Evento", type: string }
+          - { name: sub, label: "Sottotitolo", type: string }
+          - { name: day, label: "Giorno (es: 01)", type: string }
+          - { name: month, label: "Mese (es: MAR)", type: string }
+          - { name: fullDate, label: "Data Completa", type: string }
+          - { name: place, label: "Luogo", type: string }
+          - { name: prices, label: "Prezzi", type: string }
+          - { name: desc, label: "Descrizione", type: text }
+          - { name: wa, label: "Link WhatsApp", type: string }
+          - { name: img, label: "Locandina Verticale", type: image }
+      
+      - name: archive
+        label: "📚 ARCHIVIO STORICO"
+        type: list
+        item: "{{t}}"
+        fields:
+          - { name: t, label: "Titolo Evento", type: string }
+          - { name: d, label: "Data (es: Gennaio 2026)", type: string }
+          - { name: tag, label: "Categoria", type: select, options: ["tradizioni", "famiglie", "spettacoli"] }
+          - { name: n, label: "Dettaglio (es: Sold Out)", type: string }
+          - { name: desc, label: "Descrizione Breve", type: string }
+          - { name: fullDesc, label: "Descrizione Completa (per popup)", type: text }
+          - { name: img, label: "Foto Copertina", type: image }
+          - name: gallery
+            label: "Galleria Foto",
+            type: list
+            fields:
+               - { name: image, label: "Foto", type: image }
