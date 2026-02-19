@@ -1,199 +1,190 @@
-# Configurazione per Pages CMS - Versione Sicura e Corretta
-
 media:
   input: "."
   output: "."
 
 content:
   - name: site_data
-    label: "Gestione Contenuti Sito"
+    label: Contenuti Sito
     type: file
     path: data/content.json
     fields:
       - name: settings
-        label: "⚙️ Impostazioni Generali"
+        label: Impostazioni Generali
         type: object
         fields:
           - name: logo
-            label: "Logo del Sito"
+            label: Logo del Sito
             type: image
           - name: brandColor
-            label: "Colore Principale (Hex)"
+            label: Colore Principale
             type: string
           - name: honeyLight
-            label: "Sfondo Chiaro (Hex)"
+            label: Sfondo Chiaro
             type: string
           - name: formspreeUrl
-            label: "Link Formspree"
+            label: Link Formspree
             type: string
 
       - name: footer
-        label: "👇 Piè di Pagina"
+        label: Pie di Pagina
         type: object
         fields:
           - name: email
-            label: "Email Contatti"
+            label: Email Contatti
             type: string
           - name: quote
-            label: "Frase Ispirazionale"
+            label: Frase Ispirazionale
             type: string
           - name: socials
-            label: "Link Social"
+            label: Link Social
             type: object
             list: true
             fields:
               - name: icon
-                label: "Icona (facebook/instagram)"
+                label: Icona (es. facebook)
                 type: string
               - name: url
-                label: "Link Completo"
+                label: Link
                 type: string
 
       - name: hero
-        label: "🏠 Home Page (Copertina)"
+        label: Copertina
         type: object
         fields:
           - name: title
-            label: "Titolo Grande"
+            label: Titolo
             type: string
           - name: subtitle
-            label: "Sottotitolo"
+            label: Sottotitolo
             type: string
           - name: cta
-            label: "Testo Bottone"
+            label: Testo Bottone
             type: string
           - name: bg
-            label: "Immagine di Sfondo"
+            label: Sfondo
             type: image
 
       - name: about
-        label: "ℹ️ Chi Siamo"
+        label: Chi Siamo
         type: object
         fields:
           - name: title
-            label: "Titolo Sezione"
+            label: Titolo
             type: string
           - name: text
-            label: "Testo Descrittivo"
-            type: text
+            label: Testo
+            type: string
           - name: tagline
-            label: "Frase Finale"
+            label: Sottotitolo
             type: string
           - name: pillars
-            label: "I 3 Pilastri"
+            label: Pilastri
             type: object
             list: true
             fields:
               - name: icon
-                label: "Icona Lucide"
+                label: Icona
                 type: string
               - name: t
-                label: "Titolo"
+                label: Titolo
                 type: string
               - name: d
-                label: "Descrizione"
+                label: Descrizione
                 type: string
 
       - name: decalogo
-        label: "📜 Il Decalogo"
+        label: Decalogo
         type: object
         fields:
           - name: title
-            label: "Titolo"
+            label: Titolo
             type: string
           - name: subtitle
-            label: "Sottotitolo"
+            label: Sottotitolo
             type: string
           - name: items
-            label: "I 10 Punti"
+            label: Regole
             type: object
             list: true
             fields:
               - name: n
-                label: "Numero"
+                label: Numero
                 type: string
               - name: t
-                label: "Titolo"
+                label: Titolo
                 type: string
               - name: d
-                label: "Spiegazione"
+                label: Descrizione
                 type: string
               - name: i
-                label: "Icona"
+                label: Icona
                 type: string
 
       - name: featuredEvent
-        label: "⭐️ PROSSIMO EVENTO"
+        label: Prossimo Evento
         type: object
         fields:
           - name: title
-            label: "Titolo Evento"
+            label: Titolo
             type: string
           - name: sub
-            label: "Sottotitolo"
+            label: Sottotitolo
             type: string
           - name: day
-            label: "Giorno (es: 01)"
+            label: Giorno
             type: string
           - name: month
-            label: "Mese (es: MAR)"
+            label: Mese
             type: string
           - name: fullDate
-            label: "Data Completa"
+            label: Data Completa
             type: string
           - name: place
-            label: "Luogo"
+            label: Luogo
             type: string
           - name: prices
-            label: "Prezzi"
+            label: Prezzi
             type: string
           - name: desc
-            label: "Descrizione"
-            type: text
+            label: Descrizione
+            type: string
           - name: wa
-            label: "Link WhatsApp"
+            label: Link WhatsApp
             type: string
           - name: img
-            label: "Locandina Verticale"
+            label: Locandina
             type: image
 
       - name: archive
-        label: "📚 ARCHIVIO STORICO"
+        label: Archivio Eventi
         type: object
         list: true
         fields:
           - name: id
-            label: "ID Univoco (es: 1, 2, 3)"
+            label: ID
             type: number
           - name: t
-            label: "Titolo Evento"
+            label: Titolo
             type: string
           - name: d
-            label: "Data (es: Gennaio 2026)"
+            label: Data
             type: string
           - name: tag
-            label: "Categoria"
-            type: select
-            options:
-              - label: Tradizioni
-                value: tradizioni
-              - label: Famiglie
-                value: famiglie
-              - label: Spettacoli
-                value: spettacoli
+            label: Categoria (scrivi tradizioni, famiglie o spettacoli)
+            type: string
           - name: n
-            label: "Dettaglio (es: Sold Out)"
+            label: Dettaglio Extra
             type: string
           - name: desc
-            label: "Descrizione Breve"
+            label: Descrizione Breve
             type: string
           - name: fullDesc
-            label: "Descrizione Completa (per popup)"
-            type: text
+            label: Descrizione Completa
+            type: string
           - name: img
-            label: "Foto Copertina"
+            label: Foto Copertina
             type: image
           - name: gallery
-            label: "Galleria Foto Extra"
+            label: Galleria Extra
             type: image
             list: true
