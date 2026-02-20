@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — CREA 20072</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --honey: #E3A500;
+    --honey-dark: #C28D00;
+    --black: #1a1a1a;
+    --gray: #f4f4f4;
+    --gray-mid: #e0e0e0;
+    --text: #333;
+    --text-light: #777;
+    --danger: #e74c3c;
+    --success: #27ae60;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Montserrat', sans-serif; background: #f0f0f0; color: var(--text); min-height: 100vh; }
+
+  /* LOGIN */
+  #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--black); }
+  .login-box { background: white; border-radius: 24px; padding: 3rem; width: 100%; max-width: 420px; text-align: center; }
+  .login-box .bee { font-size: 3.5rem; margin-bottom: 1rem; }
+  .login-box h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: .25rem; text-transform: uppercase; }
+  .login-box p { color: var(--text-light); font-size: .85rem; margin-bottom: 2rem; }
+  .login-box label { display: block; text-align: left; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-light); margin-bottom: .5rem; }
+  .login-box input { width: 100%; padding: .9rem 1rem; border: 2px solid var(--gray-mid); border-radius: 10px; font-family: 'Montserrat', sans-serif; font-size: .9rem; margin-bottom: 1.25rem; transition: border-color .2s; }
+  .login-box input:focus { outline: none; border-color: var(--honey); }
+  .login-box .hint { font-size: .72rem; color: var(--text-light); text-align: left; background: #fffbe6; border: 1px solid #ffe082; border-radius: 8px; padding: .75rem 1rem; margin-bottom: 1.5rem; line-height: 1.7; }
+  .login-box .hint a { color: var(--honey-dark); font-weight: 700; }
+
+  /* LAYOUT */
+  #app { display: none; }
+  .topbar { background: var(--black); color: white; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .topbar-left { display: flex; align-items: center; gap: .75rem; }
+  .topbar-left .bee { font-size: 1.6rem; }
+  .topbar-left h1 { font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
+  .topbar-right { display: flex; align-items: center; gap: 1rem; }
+
+  .save-btn { background: var(--honey); color: white; border: none; border-radius: 999px; padding: .65rem 1.75rem; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; cursor: pointer; transition: background .2s, transform .2s; }
+  .save-btn:hover { background: var(--honey-dark); transform: translateY(-2px); }
+  .save-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .logout-btn { background: transparent; color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: .5rem 1rem; font-family: 'Montserrat', sans-serif; font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; cursor: pointer; transition: all .2s; }
+  .logout-btn:hover { color: white; border-color: white; }
+
+  .main-layout { display: flex; max-width: 1200px; margin: 0 auto; padding: 2rem; gap: 2rem; }
+
+  /* SIDEBAR */
+  .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 80px; height: fit-content; }
+  .sidebar nav { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .nav-item { display: flex; align-items: center; gap: .75rem; padding: .9rem 1.25rem; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-light); cursor: pointer; border-left: 3px solid transparent; transition: all .2s; border-bottom: 1px solid var(--gray); }
+  .nav-item:last-child { border-bottom: none; }
+  .nav-item:hover { color: var(--honey); background: #fffbe6; }
+  .nav-item.active { color: var(--honey); background: #fffbe6; border-left-color: var(--honey); }
+  .nav-item .icon { font-size: 1.1rem; }
+
+  /* CONTENT */
+  .content { flex: 1; min-width: 0; }
+
+  /* PANELS */
+  .panel { background: white; border-radius: var(--radius); box-shadow: 0 2px 12px rgba(0,0,0,.06); overflow: hidden; display: none; margin-bottom: 1.5rem; }
+  .panel.active { display: block; }
+  .panel-header { padding: 1.5rem 2rem; border-bottom: 2px solid var(--gray); display: flex; align-items: center; gap: 1rem; }
+  .panel-header .icon { font-size: 1.5rem; }
+  .panel-header h2 { font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+  .panel-header p { font-size: .78rem; color: var(--text-light); margin-top: .15rem; }
+  .panel-body { padding: 2rem; }
+
+  /* FORM */
+  .field { margin-bottom: 1.5rem; }
+  .field label { display: block; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-light); margin-bottom: .5rem; }
+  .field input, .field textarea, .field select { width: 100%; padding: .85rem 1rem; border: 2px solid var(--gray-mid); border-radius: 10px; font-family: 'Montserrat', sans-serif; font-size: .9rem; color: var(--text); transition: border-color .2s; background: white; }
+  .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--honey); }
+  .field textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .field-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+  /* ARCHIVIO */
+  .archive-list { display: flex; flex-direction: column; gap: 1rem; }
+  .archive-item { border: 2px solid var(--gray-mid); border-radius: 12px; overflow: hidden; transition: border-color .2s; }
+  .archive-item.editing { border-color: var(--honey); }
+  .archive-item-header { padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: var(--gray); transition: background .2s; }
+  .archive-item-header:hover { background: #fffbe6; }
+  .archive-item-title { display: flex; align-items: center; gap: .75rem; font-weight: 700; font-size: .85rem; flex: 1; min-width: 0; }
+  .tag-badge { font-size: .65rem; padding: .2rem .6rem; border-radius: 999px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; flex-shrink: 0; }
+  .tag-famiglie { background: #dbeafe; color: #1e40af; }
+  .tag-tradizioni { background: #fed7aa; color: #9a3412; }
+  .tag-spettacoli { background: #e9d5ff; color: #6b21a8; }
+  .archive-item-actions { display: flex; gap: .5rem; flex-shrink: 0; }
+  .btn-sm { padding: .4rem .9rem; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-size: .7rem; font-weight: 700; text-transform: uppercase; cursor: pointer; border: none; transition: all .2s; white-space: nowrap; }
+  .btn-danger { background: #fee2e2; color: var(--danger); }
+  .btn-danger:hover { background: var(--danger); color: white; }
+  .btn-primary { background: #fef3c7; color: var(--honey-dark); }
+  .btn-primary:hover { background: var(--honey); color: white; }
+  .archive-item-body { padding: 1.5rem; display: none; }
+  .archive-item.editing .archive-item-body { display: block; }
+  .add-event-btn { width: 100%; padding: 1rem; border: 2px dashed var(--gray-mid); border-radius: 12px; background: transparent; font-family: 'Montserrat', sans-serif; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-light); cursor: pointer; transition: all .2s; }
+  .add-event-btn:hover { border-color: var(--honey); color: var(--honey); background: #fffbe6; }
+
+  /* STATUS */
+  .status-bar { background: white; border-radius: var(--radius); padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .status-bar .repo-info { font-size: .75rem; color: var(--text-light); }
+  .status-bar .repo-info strong { color: var(--text); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); display: inline-block; margin-right: .5rem; }
+  .divider { height: 1px; background: var(--gray); margin: 1.5rem 0; }
+  .section-label { font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 1rem; color: var(--text-light); }
+
+  /* TOAST */
+  #toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--black); color: white; padding: 1rem 1.5rem; border-radius: 12px; font-size: .85rem; font-weight: 600; box-shadow: 0 8px 30px rgba(0,0,0,.3); z-index: 9999; transform: translateY(100px); opacity: 0; transition: all .35s cubic-bezier(.34,1.56,.64,1); max-width: 340px; }
+  #toast.show { transform: translateY(0); opacity: 1; }
+  #toast.success { border-left: 4px solid var(--success); }
+  #toast.error { border-left: 4px solid var(--danger); }
+  #toast.loading { border-left: 4px solid var(--honey); }
+
+  @media (max-width: 768px) {
+    .main-layout { flex-direction: column; padding: 1rem; }
+    .sidebar { width: 100%; position: static; }
+    .sidebar nav { display: flex; overflow-x: auto; border-radius: var(--radius); }
+    .nav-item { white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; flex-shrink: 0; }
+    .nav-item.active { border-left: none; border-bottom-color: var(--honey); }
+    .field-row, .field-row3 { grid-template-columns: 1fr; }
+    .topbar-left h1 { display: none; }
+    .status-bar { flex-direction: column; gap: .5rem; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="bee">🐝</div>
+    <h1>CREA 20072</h1>
+    <p>Pannello di gestione contenuti</p>
+
+    <label for="inp-owner">Il tuo username GitHub</label>
+    <input id="inp-owner" type="text" placeholder="es. mariorossi" autocomplete="off">
+
+    <label for="inp-repo">Nome della tua repo GitHub</label>
+    <input id="inp-repo" type="text" placeholder="es. crea20072-sito" autocomplete="off">
+
+    <label for="inp-token">Personal Access Token</label>
+    <input id="inp-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+
+    <div class="hint">
+      📌 <strong>Come creare il token (una volta sola):</strong><br>
+      1. Vai su GitHub → clicca la tua foto in alto a destra → <em>Settings</em><br>
+      2. Scorri in fondo → <em>Developer settings</em> → <em>Personal access tokens</em> → <em>Tokens (classic)</em><br>
+      3. <em>Generate new token (classic)</em> → spunta la casella <strong>repo</strong> → <em>Generate token</em><br>
+      4. Copia il codice e incollalo qui sopra.<br><br>
+      <a href="https://github.com/settings/tokens/new?scopes=repo&description=CREA20072+Admin" target="_blank">→ Oppure clicca qui per crearlo direttamente</a>
+    </div>
+
+    <button class="save-btn" style="width:100%" onclick="doLogin()">🔑 Accedi</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="bee">🐝</span>
+      <h1>CREA 20072 — Admin</h1>
+    </div>
+    <div class="topbar-right">
+      <button class="save-btn" id="save-btn" onclick="saveAll()">💾 Salva tutto</button>
+      <button class="logout-btn" onclick="doLogout()">Esci</button>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <div class="sidebar">
+      <nav>
+        <div class="nav-item active" onclick="showSection('evento')" id="nav-evento"><span class="icon">⭐</span> Prossimo Evento</div>
+        <div class="nav-item" onclick="showSection('archivio')" id="nav-archivio"><span class="icon">📁</span> Archivio</div>
+        <div class="nav-item" onclick="showSection('home')" id="nav-home"><span class="icon">🏠</span> Homepage</div>
+        <div class="nav-item" onclick="showSection('footer')" id="nav-footer"><span class="icon">📬</span> Contatti</div>
+      </nav>
+    </div>
+
+    <div class="content">
+      <div class="status-bar">
+        <span class="repo-info"><span class="status-dot"></span>Connesso a <strong id="repo-label">—</strong></span>
+        <span style="font-size:.72rem;color:var(--text-light)">Le modifiche vengono salvate direttamente su GitHub</span>
+      </div>
+
+      <!-- PROSSIMO EVENTO -->
+      <div class="panel active" id="panel-evento">
+        <div class="panel-header">
+          <span class="icon">⭐</span>
+          <div><h2>Prossimo Evento in Evidenza</h2><p>Appare nella sezione principale del sito</p></div>
+        </div>
+        <div class="panel-body">
+          <div class="field-row">
+            <div class="field"><label>Titolo evento *</label><input id="ev-title" type="text" placeholder="es. Magic Show"></div>
+            <div class="field"><label>Sottotitolo / Artista</label><input id="ev-sub" type="text" placeholder="es. Mago Daniel"></div>
+          </div>
+          <div class="field-row3">
+            <div class="field"><label>Giorno (2 cifre)</label><input id="ev-day" type="text" placeholder="01" maxlength="2"></div>
+            <div class="field"><label>Mese (sigla 3 lettere)</label><input id="ev-month" type="text" placeholder="MAR" maxlength="3"></div>
+            <div class="field"><label>Data completa per testo</label><input id="ev-fulldate" type="text" placeholder="Domenica 1 Marzo 2026 – Ore 16:00"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Luogo</label><input id="ev-place" type="text" placeholder="Auditorium Sant'Alessandro"></div>
+            <div class="field"><label>Contributo / Prezzo</label><input id="ev-prices" type="text" placeholder="10€ – Spettacolo + Merenda"></div>
+          </div>
+          <div class="field"><label>Descrizione</label><textarea id="ev-desc" placeholder="Descrizione dell'evento per i visitatori..."></textarea></div>
+          <div class="field-row">
+            <div class="field"><label>Link WhatsApp prenotazioni</label><input id="ev-wa" type="text" placeholder="https://wa.me/393402231735"></div>
+            <div class="field"><label>Locandina (nome file caricato nella repo)</label><input id="ev-img" type="text" placeholder="mago.png"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ARCHIVIO -->
+      <div class="panel" id="panel-archivio">
+        <div class="panel-header">
+          <span class="icon">📁</span>
+          <div><h2>Archivio Eventi Passati</h2><p>Ordinati automaticamente dal più recente</p></div>
+        </div>
+        <div class="panel-body">
+          <div id="archive-list" class="archive-list"></div>
+          <button class="add-event-btn" onclick="addArchiveItem()" style="margin-top:1rem">+ Aggiungi nuovo evento passato</button>
+        </div>
+      </div>
+
+      <!-- HOMEPAGE -->
+      <div class="panel" id="panel-home">
+        <div class="panel-header">
+          <span class="icon">🏠</span>
+          <div><h2>Testi Homepage</h2><p>Copertina e sezione "Chi siamo"</p></div>
+        </div>
+        <div class="panel-body">
+          <p class="section-label">🎯 Copertina (Hero)</p>
+          <div class="field"><label>Titolo principale</label><input id="hero-title" type="text"></div>
+          <div class="field"><label>Sottotitolo</label><textarea id="hero-subtitle" rows="2"></textarea></div>
+          <div class="field-row">
+            <div class="field"><label>Testo bottone</label><input id="hero-cta" type="text" placeholder="Guarda cosa stiamo preparando 🔥"></div>
+            <div class="field"><label>Immagine sfondo (URL o nome file)</label><input id="hero-bg" type="text"></div>
+          </div>
+          <div class="divider"></div>
+          <p class="section-label">👥 Chi Siamo</p>
+          <div class="field"><label>Titolo sezione</label><input id="about-title" type="text" placeholder="Perché lo facciamo"></div>
+          <div class="field"><label>Testo descrittivo</label><textarea id="about-text" rows="4"></textarea></div>
+          <div class="field"><label>Frase finale (piccola, in basso)</label><input id="about-tagline" type="text"></div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="panel" id="panel-footer">
+        <div class="panel-header">
+          <span class="icon">📬</span>
+          <div><h2>Contatti e Footer</h2><p>Email, social, frase ispirazionale</p></div>
+        </div>
+        <div class="panel-body">
+          <div class="field"><label>Email di contatto</label><input id="footer-email" type="email" placeholder="accrea20072@gmail.com"></div>
+          <div class="field"><label>Frase ispirazionale (in fondo al sito)</label><textarea id="footer-quote" rows="3"></textarea></div>
+          <div class="field-row">
+            <div class="field"><label>URL Facebook</label><input id="social-fb" type="text" placeholder="https://www.facebook.com/..."></div>
+            <div class="field"><label>URL Instagram</label><input id="social-ig" type="text" placeholder="https://www.instagram.com/crea20072/"></div>
+          </div>
+          <div class="divider"></div>
+          <p class="section-label">⚙️ Impostazioni</p>
+          <div class="field"><label>Formspree URL (opzionale — per ricevere email dal form contatti)</label><input id="settings-formspree" type="text" placeholder="https://formspree.io/f/..."></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+let OWNER = '', REPO = '', TOKEN = '', SHA = '', DATA = null;
+
+// ─── LOGIN ───────────────────────────────────────────
+async function doLogin() {
+  OWNER = document.getElementById('inp-owner').value.trim();
+  REPO  = document.getElementById('inp-repo').value.trim();
+  TOKEN = document.getElementById('inp-token').value.trim();
+  if (!OWNER || !REPO || !TOKEN) { showToast('⚠️ Compila tutti i campi', 'error'); return; }
+  showToast('Connessione in corso...', 'loading');
+  try {
+    const ok = await loadData();
+    if (ok) {
+      localStorage.setItem('crea_owner', OWNER);
+      localStorage.setItem('crea_repo', REPO);
+      localStorage.setItem('crea_token', TOKEN);
+      startApp();
+    }
+  } catch(e) {
+    showToast('❌ Errore: controlla username, repo e token.', 'error');
+  }
+}
+
+function doLogout() {
+  ['crea_owner','crea_repo','crea_token'].forEach(k => localStorage.removeItem(k));
+  location.reload();
+}
+
+function startApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('repo-label').textContent = `${OWNER}/${REPO}`;
+  populateForm();
+  showToast('✅ Connesso con successo!', 'success');
+}
+
+// ─── GITHUB API ──────────────────────────────────────
+async function loadData() {
+  const res = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/content.json`,
+    { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+  );
+  if (!res.ok) { showToast('❌ File non trovato. Controlla username e nome repo.', 'error'); return false; }
+  const file = await res.json();
+  SHA  = file.sha;
+  DATA = JSON.parse(atob(file.content.replace(/\n/g,'')));
+  return true;
+}
+
+async function saveAll() {
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  showToast('Salvataggio in corso...', 'loading');
+  try {
+    collectForm();
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(DATA, null, 2))));
+    const res = await fetch(
+      `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/content.json`,
+      {
+        method: 'PUT',
+        headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: '✏️ Admin: aggiornamento contenuti', content, sha: SHA })
+      }
+    );
+    if (!res.ok) throw new Error((await res.json()).message);
+    const updated = await res.json();
+    SHA = updated.content.sha;
+    showToast('✅ Salvato! Il sito si aggiorna tra pochi secondi.', 'success');
+  } catch(e) {
+    showToast('❌ Errore nel salvataggio: ' + e.message, 'error');
+  }
+  btn.disabled = false;
+}
+
+// ─── FORM POPULATE ───────────────────────────────────
+function populateForm() {
+  const D = DATA, ev = D.featuredEvent || {};
+  set('ev-title', ev.title); set('ev-sub', ev.sub); set('ev-day', ev.day);
+  set('ev-month', ev.month); set('ev-fulldate', ev.fullDate); set('ev-place', ev.place);
+  set('ev-prices', ev.prices); set('ev-desc', ev.desc); set('ev-wa', ev.wa); set('ev-img', ev.img);
+  set('hero-title', D.hero?.title); set('hero-subtitle', D.hero?.subtitle);
+  set('hero-cta', D.hero?.cta); set('hero-bg', D.hero?.bg);
+  set('about-title', D.about?.title); set('about-text', D.about?.text); set('about-tagline', D.about?.tagline);
+  set('footer-email', D.footer?.email); set('footer-quote', D.footer?.quote);
+  const fb = (D.footer?.socials||[]).find(s=>s.icon==='facebook');
+  const ig = (D.footer?.socials||[]).find(s=>s.icon==='instagram');
+  set('social-fb', fb?.url); set('social-ig', ig?.url);
+  set('settings-formspree', D.settings?.formspreeUrl);
+  renderArchiveList();
+}
+function set(id, val) { const el = document.getElementById(id); if(el) el.value = val||''; }
+
+// ─── FORM COLLECT ────────────────────────────────────
+function collectForm() {
+  const g = id => document.getElementById(id)?.value.trim() || '';
+  DATA.featuredEvent = { title:g('ev-title'), sub:g('ev-sub'), day:g('ev-day'), month:g('ev-month').toUpperCase(), fullDate:g('ev-fulldate'), place:g('ev-place'), prices:g('ev-prices'), desc:g('ev-desc'), wa:g('ev-wa'), img:g('ev-img') };
+  DATA.hero = { title:g('hero-title'), subtitle:g('hero-subtitle'), cta:g('hero-cta'), bg:g('hero-bg') };
+  DATA.about = { ...DATA.about, title:g('about-title'), text:g('about-text'), tagline:g('about-tagline') };
+  DATA.footer = { ...DATA.footer, email:g('footer-email'), quote:g('footer-quote'), socials:[{icon:'facebook',url:g('social-fb')},{icon:'instagram',url:g('social-ig')}].filter(s=>s.url) };
+  DATA.settings = { ...DATA.settings, formspreeUrl:g('settings-formspree') };
+  collectArchive();
+}
+
+// ─── ARCHIVIO ────────────────────────────────────────
+function renderArchiveList() {
+  const list = document.getElementById('archive-list');
+  list.innerHTML = '';
+  const items = [...(DATA.archive||[])].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'archive-item';
+    el.id = `ai-${item.id}`;
+    el.innerHTML = `
+      <div class="archive-item-header" onclick="toggleAI(${item.id})">
+        <div class="archive-item-title">
+          <span id="ai-label-${item.id}">${esc(item.t)||'Nuovo evento'}</span>
+          <span class="tag-badge tag-${item.tag||'famiglie'}">${item.tag||'famiglie'}</span>
+          <span style="font-size:.75rem;color:var(--text-light);font-weight:400">${esc(item.d)}</span>
+        </div>
+        <div class="archive-item-actions">
+          <button class="btn-sm btn-danger" onclick="event.stopPropagation();removeAI(${item.id})">🗑 Elimina</button>
+          <button class="btn-sm btn-primary" onclick="event.stopPropagation();toggleAI(${item.id})">✏️ Modifica</button>
+        </div>
+      </div>
+      <div class="archive-item-body">
+        <div class="field-row">
+          <div class="field"><label>Nome evento *</label><input type="text" id="ai-t-${item.id}" value="${esc(item.t)}" oninput="document.getElementById('ai-label-${item.id}').textContent=this.value||'Nuovo evento'"></div>
+          <div class="field"><label>Data leggibile (es: Marzo 2026)</label><input type="text" id="ai-d-${item.id}" value="${esc(item.d)}"></div>
+        </div>
+        <div class="field-row3">
+          <div class="field"><label>Data per ordinamento</label><input type="date" id="ai-date-${item.id}" value="${esc(item.date)}"></div>
+          <div class="field"><label>Categoria</label>
+            <select id="ai-tag-${item.id}">
+              <option value="famiglie" ${item.tag==='famiglie'?'selected':''}>Famiglie</option>
+              <option value="tradizioni" ${item.tag==='tradizioni'?'selected':''}>Tradizioni</option>
+              <option value="spettacoli" ${item.tag==='spettacoli'?'selected':''}>Spettacoli</option>
+            </select>
+          </div>
+          <div class="field"><label>Info breve (es: Sold Out)</label><input type="text" id="ai-n-${item.id}" value="${esc(item.n)}"></div>
+        </div>
+        <div class="field"><label>Descrizione breve (nella card)</label><input type="text" id="ai-desc-${item.id}" value="${esc(item.desc)}"></div>
+        <div class="field"><label>Descrizione completa (nella scheda)</label><textarea id="ai-fulldesc-${item.id}" rows="3">${esc(item.fullDesc||item.desc)}</textarea></div>
+        <div class="field"><label>Immagine card (nome file o URL)</label><input type="text" id="ai-img-${item.id}" value="${esc(item.img)}"></div>
+        <div class="field"><label>Galleria foto (nomi file separati da virgola)</label><input type="text" id="ai-gallery-${item.id}" value="${esc((item.gallery||[]).join(', '))}"></div>
+      </div>`;
+    list.appendChild(el);
+  });
+}
+
+function toggleAI(id) { document.getElementById(`ai-${id}`).classList.toggle('editing'); }
+
+function addArchiveItem() {
+  const maxId = Math.max(0,...(DATA.archive||[]).map(i=>i.id));
+  const newId = maxId+1;
+  DATA.archive = DATA.archive||[];
+  DATA.archive.push({ id:newId, date:new Date().toISOString().split('T')[0], tag:'famiglie', t:'Nuovo Evento', d:'', n:'', desc:'', fullDesc:'', img:'', gallery:[] });
+  renderArchiveList();
+  setTimeout(()=>{ const el=document.getElementById(`ai-${newId}`); if(el){el.classList.add('editing');el.scrollIntoView({behavior:'smooth',block:'center'});} },50);
+}
+
+function removeAI(id) {
+  if(!confirm('Eliminare questo evento dall\'archivio?')) return;
+  DATA.archive = DATA.archive.filter(i=>i.id!==id);
+  renderArchiveList();
+}
+
+function collectArchive() {
+  const g = (id,fb='') => document.getElementById(id)?.value?.trim()||fb;
+  DATA.archive = (DATA.archive||[]).map(item=>{
+    const id=item.id;
+    return {
+      id, date:g(`ai-date-${id}`,item.date), tag:g(`ai-tag-${id}`,item.tag),
+      t:g(`ai-t-${id}`,item.t), d:g(`ai-d-${id}`,item.d), n:g(`ai-n-${id}`,item.n),
+      desc:g(`ai-desc-${id}`,item.desc), fullDesc:g(`ai-fulldesc-${id}`,item.fullDesc||item.desc),
+      img:g(`ai-img-${id}`,item.img),
+      gallery:g(`ai-gallery-${id}`,'').split(',').map(s=>s.trim()).filter(Boolean)
+    };
+  });
+}
+
+// ─── NAV ─────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+  document.getElementById(`nav-${name}`).classList.add('active');
+}
+
+// ─── TOAST ───────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type='success') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`show ${type}`;
+  clearTimeout(toastTimer);
+  if(type!=='loading') toastTimer=setTimeout(()=>{t.className='';},4500);
+}
+
+// ─── UTILS ───────────────────────────────────────────
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ─── AUTO-LOGIN ──────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const o=localStorage.getItem('crea_owner'), r=localStorage.getItem('crea_repo'), t=localStorage.getItem('crea_token');
+  if(o&&r&&t){
+    OWNER=o; REPO=r; TOKEN=t;
+    document.getElementById('inp-owner').value=o;
+    document.getElementById('inp-repo').value=r;
+    document.getElementById('inp-token').value=t;
+    showToast('Caricamento...','loading');
+    loadData().then(ok=>{ if(ok) startApp(); else { OWNER=REPO=TOKEN=''; showToast('❌ Token scaduto, accedi di nuovo.','error'); } }).catch(()=>{ OWNER=REPO=TOKEN=''; });
+  }
+});
+</script>
+</body>
+</html>
