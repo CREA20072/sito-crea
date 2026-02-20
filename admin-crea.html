@@ -371,7 +371,8 @@ async function loadData() {
   if (!res.ok) { showToast('❌ File non trovato. Controlla username e nome repo.', 'error'); return false; }
   const file = await res.json();
   SHA  = file.sha;
-  DATA = JSON.parse(atob(file.content.replace(/\n/g,'')));
+  const bytes = Uint8Array.from(atob(file.content.replace(/\n/g,'')), c => c.charCodeAt(0));
+  DATA = JSON.parse(new TextDecoder('utf-8').decode(bytes));
   return true;
 }
 

@@ -6,22 +6,22 @@
   "hero": {
     "title": "Non aspettiamo che succeda qualcosa. Lo organizziamo.",
     "subtitle": "Eventi, cultura e momenti per famiglie e cittadini che vogliono vivere davvero Pieve Emanuele.",
-    "cta": "Guarda cosa stiamo preparando ð¥",
+    "cta": "Guarda cosa stiamo preparando 🔥",
     "bg": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2000&auto=format&fit=crop"
   },
   "about": {
-    "title": "PerchÃ© lo facciamo",
-    "text": "CREA 20072 nasce dalla voglia concreta di fare qualcosa per Pieve Emanuele. Siamo genitori, amici e cittadini che hanno scelto di organizzare ciÃ² che spesso si dice manchi: occasioni per incontrarsi e stare insieme.",
+    "title": "Perché lo facciamo",
+    "text": "CREA 20072 nasce dalla voglia concreta di fare qualcosa per Pieve Emanuele. Siamo genitori, amici e cittadini che hanno scelto di organizzare ciò che spesso si dice manchi: occasioni per incontrarsi e stare insieme.",
     "tagline": "Un progetto indipendente, costruito con le nostre forze.",
     "pillars": [
       {
         "icon": "users",
-        "t": "ComunitÃ ",
+        "t": "Comunità",
         "d": "Creiamo occasioni per incontrarsi."
       },
       {
         "icon": "sparkles",
-        "t": "CreativitÃ ",
+        "t": "Creatività",
         "d": "Trasformiamo idee in eventi."
       },
       {
@@ -44,19 +44,19 @@
       {
         "n": "02",
         "t": "Salutiamo con un sorriso",
-        "d": "La gentilezza Ã¨ contagiosa: facciamola circolare.",
+        "d": "La gentilezza è contagiosa: facciamola circolare.",
         "i": "smile"
       },
       {
         "n": "03",
         "t": "I bambini al centro",
-        "d": "Mettiamo i piÃ¹ piccoli al centro, perchÃ© da loro nasce il futuro.",
+        "d": "Mettiamo i più piccoli al centro, perché da loro nasce il futuro.",
         "i": "baby"
       },
       {
         "n": "04",
         "t": "Collaboriamo",
-        "d": "Ogni evento funziona meglio quando ognuno dÃ  il proprio contributo.",
+        "d": "Ogni evento funziona meglio quando ognuno dà il proprio contributo.",
         "i": "handshake"
       },
       {
@@ -68,7 +68,7 @@
       {
         "n": "06",
         "t": "Rispettiamo gli orari",
-        "d": "Piccole regole rendono i momenti insieme piÃ¹ sereni.",
+        "d": "Piccole regole rendono i momenti insieme più sereni.",
         "i": "clock"
       },
       {
@@ -86,7 +86,7 @@
       {
         "n": "09",
         "t": "Facciamo spazio a tutti",
-        "d": "Una comunitÃ  vera include, accoglie e valorizza ogni persona.",
+        "d": "Una comunità vera include, accoglie e valorizza ogni persona.",
         "i": "users"
       },
       {
@@ -102,10 +102,10 @@
     "sub": "Mago Daniel",
     "day": "01",
     "month": "MAR",
-    "fullDate": "Domenica 1 Marzo 2026 â Ore 16:00",
+    "fullDate": "Domenica 1 Marzo 2026 – Ore 16:00",
     "place": "Auditorium Sant'Alessandro",
-    "prices": "10â¬ â Spettacolo + Merenda",
-    "desc": "Preparati a restare a bocca aperta! Uno spettacolo magico per famiglie, dove l'impossibile diventa realtÃ  e lo stupore Ã¨ garantito per grandi e piccoli.",
+    "prices": "10€ – Spettacolo + Merenda",
+    "desc": "Preparati a restare a bocca aperta! Uno spettacolo magico per famiglie, dove l'impossibile diventa realtà e lo stupore è garantito per grandi e piccoli.",
     "wa": "https://wa.me/393402231735",
     "img": "mago.png"
   },
@@ -114,11 +114,11 @@
       "id": 1,
       "date": "2026-01-17",
       "tag": "tradizioni",
-      "t": "FalÃ² di Sant'Antonio",
+      "t": "Falò di Sant'Antonio",
       "d": "Gennaio 2026",
       "n": "150+ Partecipanti",
       "desc": "La tradizione che scalda l'inverno.",
-      "fullDesc": "Una serata magica attorno al fuoco per riscoprire le antiche tradizioni contadine. Tra vin brulÃ©, chiacchiere e il calore della comunitÃ , abbiamo celebrato Sant'Antonio come si faceva una volta.",
+      "fullDesc": "Una serata magica attorno al fuoco per riscoprire le antiche tradizioni contadine. Tra vin brulé, chiacchiere e il calore della comunità, abbiamo celebrato Sant'Antonio come si faceva una volta.",
       "img": "falo.png",
       "gallery": [
         "falo.png"
@@ -131,8 +131,8 @@
       "t": "Festa di Natale",
       "d": "Dicembre 2025",
       "n": "100 Bambini",
-      "desc": "Musica e gioia per i piÃ¹ piccoli.",
-      "fullDesc": "Un pomeriggio di festa dedicato ai piÃ¹ piccoli, con laboratori creativi, canti natalizi e l'arrivo a sorpresa di Babbo Natale che ha portato doni per tutti.",
+      "desc": "Musica e gioia per i più piccoli.",
+      "fullDesc": "Un pomeriggio di festa dedicato ai più piccoli, con laboratori creativi, canti natalizi e l'arrivo a sorpresa di Babbo Natale che ha portato doni per tutti.",
       "img": "natale.png",
       "gallery": [
         "natale.png",
@@ -161,7 +161,7 @@
       "t": "Halloween Party",
       "d": "Ottobre 2025",
       "n": "120+ Maschere",
-      "desc": "La notte piÃ¹ spaventosa.",
+      "desc": "La notte più spaventosa.",
       "fullDesc": "Dolcetto o scherzetto? Una sfilata in maschera per le vie di Pieve Emanuele che ha colorato di allegria (e qualche brivido) il nostro quartiere.",
       "img": "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?w=800&q=70&auto=format",
       "gallery": [
@@ -171,7 +171,7 @@
   ],
   "footer": {
     "email": "accrea20072@gmail.com",
-    "quote": "Ogni evento Ã¨ un passo in piÃ¹ per rendere Pieve Emanuele un luogo vivo, accogliente e partecipato.",
+    "quote": "Ogni evento è un passo in più per rendere Pieve Emanuele un luogo vivo, accogliente e partecipato.",
     "socials": [
       {
         "icon": "facebook",
