@@ -134,13 +134,19 @@
                 <div id="nav-logo-container"><img src="logo.png" alt="Logo CREA 20072" class="logo-img" onerror="this.outerHTML='<span style=\'font-size:2rem\'>🐝</span>'"></div>
                 <span class="text-xl md:text-2xl font-bold tracking-tighter uppercase headline-strong">CREA 20072</span>
             </div>
-            <div class="hidden lg:flex space-x-10 font-bold text-[11px] uppercase tracking-[0.2em] text-gray-500">
-                <a href="#chi-siamo" class="hover:text-crea-honey transition-colors">Chi Siamo</a>
-                <a href="#decalogo"  class="hover:text-crea-honey transition-colors">Decalogo</a>
-                <a href="#eventi"    class="hover:text-crea-honey transition-colors">Eventi</a>
-                <a href="#contatti"  class="hover:text-crea-honey transition-colors">Contatti</a>
+            <div class="hidden lg:flex items-center gap-8">
+                <div class="flex space-x-10 font-bold text-[11px] uppercase tracking-[0.2em] text-gray-500">
+                    <a href="#chi-siamo" class="hover:text-crea-honey transition-colors">Chi Siamo</a>
+                    <a href="#decalogo"  class="hover:text-crea-honey transition-colors">Decalogo</a>
+                    <a href="#eventi"    class="hover:text-crea-honey transition-colors">Eventi</a>
+                    <a href="#contatti"  class="hover:text-crea-honey transition-colors">Contatti</a>
+                </div>
+                <div id="nav-social-links" class="flex items-center gap-3 pl-6 border-l border-gray-200"></div>
             </div>
-            <button onclick="toggleMenu(true)" class="lg:hidden p-2 text-crea-honey" aria-label="Apri menu"><i data-lucide="menu"></i></button>
+            <div class="lg:hidden flex items-center gap-3">
+                <div id="nav-social-links-mobile-ham" class="flex items-center gap-2"></div>
+                <button onclick="toggleMenu(true)" class="p-2 text-crea-honey" aria-label="Apri menu"><i data-lucide="menu"></i></button>
+            </div>
         </div>
     </nav>
 
@@ -151,6 +157,7 @@
         <a href="#decalogo"  onclick="toggleMenu(false)" class="text-2xl font-bold uppercase tracking-widest text-gray-800 hover:text-crea-honey transition-colors">Decalogo</a>
         <a href="#eventi"    onclick="toggleMenu(false)" class="text-2xl font-bold uppercase tracking-widest text-gray-800 hover:text-crea-honey transition-colors">Eventi</a>
         <a href="#contatti"  onclick="toggleMenu(false)" class="text-2xl font-bold uppercase tracking-widest text-gray-800 hover:text-crea-honey transition-colors">Contatti</a>
+        <div id="nav-social-links-mobile" class="flex justify-center gap-6 pt-4 border-t border-gray-100"></div>
     </div>
 
     <!-- MODALE EVENTO -->
@@ -221,6 +228,15 @@
                     <p id="strategic-quote" class="text-lg md:text-2xl font-light max-w-3xl mx-auto italic text-gray-400"></p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL PROOF -->
+    <section id="social-proof" class="bg-[#111] py-24 px-6 text-white text-center">
+        <div class="container mx-auto max-w-3xl">
+            <p class="text-[6rem] md:text-[9rem] font-extrabold text-crea-honey leading-none headline-strong">250+</p>
+            <p class="text-xl md:text-2xl font-light mt-3 mb-10 text-white/75 leading-relaxed">cittadini attivi nella nostra community.<br>Unisciti all'alveare! 🐝</p>
+            <div id="social-proof-links" class="flex flex-wrap justify-center gap-4"></div>
         </div>
     </section>
 
@@ -450,8 +466,26 @@
                 // FOOTER
                 document.getElementById('strategic-quote').innerHTML = D.footer.quote;
                 document.getElementById('contact-methods').innerHTML = `<a href="mailto:${D.footer.email}" class="flex items-center gap-3 hover:text-crea-honey transition-colors text-gray-400"><i data-lucide="mail" class="w-5 h-5"></i> ${D.footer.email}</a>`;
-                const sb = document.getElementById('social-links');
-                D.footer.socials.forEach(s => { sb.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" aria-label="${s.icon}" class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center hover:bg-crea-honey transition-colors text-white">${SOCIAL_ICONS[s.icon]||''}</a>`; });
+                const sb            = document.getElementById('social-links');
+                const navSocial     = document.getElementById('nav-social-links');
+                const navSocialHam  = document.getElementById('nav-social-links-mobile-ham');
+                const navSocialMob  = document.getElementById('nav-social-links-mobile');
+                const proofLinks    = document.getElementById('social-proof-links');
+                const socialLabels  = { facebook:'Facebook', instagram:'Instagram', whatsapp:'WhatsApp' };
+                D.footer.socials.forEach(s => {
+                    const icon  = SOCIAL_ICONS[s.icon] || '';
+                    const label = socialLabels[s.icon] || s.icon;
+                    // Footer (grandi cerchi)
+                    sb.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" aria-label="${label}" class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center hover:bg-crea-honey transition-colors text-white">${icon}</a>`;
+                    // Navbar desktop (piccole icone grigie → honey al hover)
+                    navSocial.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" aria-label="${label}" title="${label}" class="text-gray-400 hover:text-crea-honey transition-colors flex items-center">${icon}</a>`;
+                    // Hamburger area mobile (accanto al bottone menu)
+                    navSocialHam.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" aria-label="${label}" class="text-gray-400 hover:text-crea-honey transition-colors flex items-center">${icon}</a>`;
+                    // Menu mobile aperto (in fondo ai link)
+                    navSocialMob.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" aria-label="${label}" class="text-gray-500 hover:text-crea-honey transition-colors flex items-center">${icon}</a>`;
+                    // Banner social proof (bottoni con label)
+                    proofLinks.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" class="cta-button gap-3">${icon} Seguici su ${label}</a>`;
+                });
 
                 // LOGO
                 if (D.settings?.logo) {
