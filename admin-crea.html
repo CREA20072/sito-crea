@@ -296,6 +296,26 @@
         </div>
         <div class="panel-body">
           <div class="section-block">
+            <div class="section-label">🎯 A quale evento appartengono le foto?</div>
+            <div class="field-row">
+              <div class="field">
+                <label>Evento di destinazione</label>
+                <select id="upload-event-selector">
+                  <option value="">— Seleziona evento —</option>
+                  <option value="featured">⭐ Prossimo Evento (copertina)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Tipo di immagine</label>
+                <select id="upload-image-type">
+                  <option value="gallery">📸 Galleria foto</option>
+                  <option value="cover">🖼️ Immagine copertina</option>
+                </select>
+              </div>
+            </div>
+            <div id="upload-destination-preview" style="font-size:.72rem;color:var(--honey-dark);font-weight:700;background:#fffbe6;border:1px solid #ffe082;border-radius:8px;padding:.5rem .9rem;display:none;"></div>
+          </div>
+          <div class="section-block">
             <div class="section-label">📤 Carica file</div>
             <div class="upload-zone" id="upload-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
               <input type="file" id="file-input" multiple accept="image/*" onchange="handleFileSelect(event)">
@@ -308,12 +328,6 @@
               <div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-progress-fill" style="width:0%"></div></div>
             </div>
             <div id="uploaded-files-list" class="uploaded-files" style="margin-top:1rem"></div>
-          </div>
-          <div style="background:var(--gray);border-radius:10px;padding:1rem;font-size:.72rem;color:var(--text-light);line-height:1.8">
-            💡 <strong>Come usare:</strong><br>
-            1. Carica l'immagine qui sopra<br>
-            2. Clicca il <strong>chip verde</strong> per copiare il nome file<br>
-            3. Vai in <strong>Archivio → evento</strong> e incolla il nome nel campo copertina o galleria
           </div>
         </div>
       </div>
@@ -560,6 +574,8 @@ function populateForm() {
   set('settings-formspree', D.settings?.formspreeUrl);
   // Archivio
   renderArchiveList();
+  // Upload selector
+  populateUploadSelector();
 }
 
 function set(id, val) { const el = document.getElementById(id); if (el) el.value = val || ''; }
@@ -715,8 +731,8 @@ function renderArchiveList() {
             <label>Nomi file separati da virgola</label>
             <input type="text" id="ai-gallery-${item.id}" value="${esc((item.gallery||[]).join(', '))}" placeholder="foto1.png, foto2.png, foto3.png">
           </div>
-          <p style="font-size:.7rem;color:var(--text-light);margin-top:.3rem;line-height:1.6">
-            💡 Carica prima le foto dalla sezione <strong>🖼️ Carica Foto</strong>, poi scrivi qui i nomi file.
+          <p style="font-size:.7rem;color:var(--honey-dark);font-weight:600;margin-top:.35rem;">
+            ✨ Vai in <strong>Carica Foto</strong>, seleziona questo evento e carica — la galleria si aggiorna automaticamente.
           </p>
         </div>
 
@@ -803,6 +819,75 @@ function esc(s) {
 
 // ─── UPLOAD ────────────────────────────────────────────────────────────────
 
+function populateUploadSelector() {
+  const sel = document.getElementById('upload-event-selector');
+  if (!sel) return;
+  // Rimuovi le opzioni archivio precedenti (tieni le prime 2: vuota + featured)
+  while (sel.options.length > 2) sel.remove(2);
+  const sorted = [...(DATA.archive||[])].sort((a,b) => new Date(b.date) - new Date(a.date));
+  sorted.forEach(ev => {
+    const opt = document.createElement('option');
+    opt.value = String(ev.id);
+    opt.textContent = `${ev.d ? ev.d + ' — ' : ''}${ev.t}`;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', updateDestinationPreview);
+  document.getElementById('upload-image-type')?.addEventListener('change', updateDestinationPreview);
+}
+
+function updateDestinationPreview() {
+  const sel   = document.getElementById('upload-event-selector');
+  const type  = document.getElementById('upload-image-type');
+  const prev  = document.getElementById('upload-destination-preview');
+  if (!sel || !prev) return;
+  const eventVal = sel.value;
+  const typeVal  = type?.value || 'gallery';
+  if (!eventVal) { prev.style.display = 'none'; return; }
+  let label = '';
+  if (eventVal === 'featured') {
+    label = `⭐ Prossimo Evento → Immagine copertina`;
+  } else {
+    const ev = DATA.archive?.find(e => String(e.id) === eventVal);
+    const typeLabel = typeVal === 'cover' ? 'Immagine copertina' : 'Galleria foto';
+    label = `📁 ${ev?.t || '?'} → ${typeLabel}`;
+  }
+  prev.textContent = `Le prossime foto andranno a: ${label}`;
+  prev.style.display = 'block';
+}
+
+function attachUploadedFileToEvent(filename) {
+  const sel      = document.getElementById('upload-event-selector');
+  const typeEl   = document.getElementById('upload-image-type');
+  const eventVal = sel?.value;
+  const imageType = typeEl?.value || 'gallery';
+  if (!eventVal) return;
+
+  if (eventVal === 'featured') {
+    DATA.featuredEvent = DATA.featuredEvent || {};
+    DATA.featuredEvent.img = filename;
+    set('ev-img', filename);
+    return;
+  }
+
+  const eventId = parseInt(eventVal);
+  const ev = DATA.archive?.find(e => e.id === eventId);
+  if (!ev) return;
+
+  if (imageType === 'cover') {
+    ev.img = filename;
+    const inp = document.getElementById(`ai-img-${eventId}`);
+    if (inp) inp.value = filename;
+  } else {
+    if (!ev.gallery) ev.gallery = [];
+    if (!ev.gallery.includes(filename)) ev.gallery.push(filename);
+    const inp = document.getElementById(`ai-gallery-${eventId}`);
+    if (inp) {
+      const cur = inp.value.trim();
+      inp.value = cur ? `${cur}, ${filename}` : filename;
+    }
+  }
+}
+
 function handleDragOver(e)  { e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
 function handleDragLeave(e) { document.getElementById('upload-zone').classList.remove('drag-over'); }
 function handleDrop(e) {
@@ -841,8 +926,12 @@ async function uploadFiles(files) {
         headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' },
         body:JSON.stringify(body)
       });
-      if (res.ok) { addUploadedChip(file.name); showToast(`✅ ${file.name} caricato!`, 'success'); }
-      else { const err = await res.json(); showToast(`❌ ${file.name}: ${err.message}`, 'error'); }
+      if (res.ok) {
+        attachUploadedFileToEvent(file.name);
+        const eventVal = document.getElementById('upload-event-selector')?.value;
+        addUploadedChip(file.name, !!eventVal);
+        showToast(`✅ ${file.name} caricato${eventVal ? ' e collegato all\'evento!' : '!'}`, 'success');
+      } else { const err = await res.json(); showToast(`❌ ${file.name}: ${err.message}`, 'error'); }
     } catch(e) { showToast(`❌ Errore: ${e.message}`, 'error'); }
   }
   fill.style.width = '100%';
@@ -860,16 +949,18 @@ function fileToBase64(file) {
   });
 }
 
-function addUploadedChip(filename) {
+function addUploadedChip(filename, autoLinked) {
   const list = document.getElementById('uploaded-files-list');
   const chip = document.createElement('div');
   chip.className = 'uploaded-chip';
-  chip.title = 'Clicca per copiare il nome file';
-  chip.innerHTML = `<span>📋</span> ${esc(filename)}`;
+  const icon = autoLinked ? '🔗' : '📋';
+  const suffix = autoLinked ? ' (collegato)' : '';
+  chip.title = autoLinked ? 'Collegato automaticamente all\'evento — clicca per copiare il nome' : 'Clicca per copiare il nome file';
+  chip.innerHTML = `<span>${icon}</span> ${esc(filename)}<span style="font-weight:400;font-size:.65rem;opacity:.7">${suffix}</span>`;
   chip.onclick = () => {
     navigator.clipboard.writeText(filename).then(() => {
       chip.innerHTML = `<span>✅</span> ${esc(filename)}`;
-      setTimeout(() => { chip.innerHTML = `<span>📋</span> ${esc(filename)}`; }, 1500);
+      setTimeout(() => { chip.innerHTML = `<span>${icon}</span> ${esc(filename)}<span style="font-weight:400;font-size:.65rem;opacity:.7">${suffix}</span>`; }, 1500);
     });
   };
   list.appendChild(chip);
