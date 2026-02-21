@@ -524,7 +524,6 @@
                 // STICKY BOTTOM BAR
                 const stickyTitle = document.getElementById('sticky-bar-title');
                 const stickyCta   = document.getElementById('sticky-bar-cta');
-                const ev = D.featuredEvent;
                 if (stickyTitle && ev?.title) stickyTitle.textContent = ev.title;
                 if (stickyCta) {
                     // Priorità: WhatsApp dell'evento → WhatsApp footer → mailto
