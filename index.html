@@ -72,7 +72,8 @@
         .hide-scrollbar { scrollbar-width:none; -ms-overflow-style:none; }
         .hide-scrollbar::-webkit-scrollbar { display:none; }
         @media(max-width:767px){
-            .decalogo-snap-card { min-width:85vw; scroll-snap-align:center; flex-shrink:0; }
+            .decalogo-snap-card { min-width:82vw; scroll-snap-align:start; flex-shrink:0; }
+            #decalogo-grid { scroll-padding-left:1.25rem; padding-left:1.25rem; padding-right:1.25rem; }
         }
         .logo-img { height:45px; width:auto; object-fit:contain; }
         .date-badge {
@@ -208,9 +209,15 @@
     <!-- DECALOGO -->
     <section id="decalogo" class="section-padding bg-crea-soft border-y border-gray-100 text-center">
         <div class="container mx-auto px-6">
-            <div class="mb-20">
+            <div class="mb-10 md:mb-20">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight headline-strong text-black">Il Decalogo di CREA 20072</h2>
                 <p class="text-gray-500 font-bold text-xs tracking-widest uppercase">I valori che ci guidano ogni giorno</p>
+            </div>
+            <!-- Controlli freccia — solo mobile -->
+            <div class="md:hidden flex justify-between items-center mb-4 px-1">
+                <button onclick="document.getElementById('decalogo-grid').scrollBy({left:-window.innerWidth*0.85,behavior:'smooth'})" class="w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-gray-600 active:bg-gray-50" aria-label="Precedente"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                <span class="text-[11px] font-bold uppercase tracking-widest text-gray-400">Scorri per esplorare</span>
+                <button onclick="document.getElementById('decalogo-grid').scrollBy({left:window.innerWidth*0.85,behavior:'smooth'})" class="w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-gray-600 active:bg-gray-50" aria-label="Successivo"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
             </div>
             <div id="decalogo-grid" class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 hide-scrollbar md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 max-w-7xl mx-auto text-left"></div>
         </div>
@@ -517,7 +524,7 @@
                     proofLinks.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" class="cta-button gap-3">${icon} Seguici su ${label}</a>`;
                     // Banner conversione social mobile (solo fb/ig, no whatsapp)
                     if (s.icon !== 'whatsapp') {
-                        mobileBanner.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" class="flex items-center gap-3 bg-white text-black font-bold rounded-full px-6 py-3 w-64 justify-center">${icon} Seguici su ${label}</a>`;
+                        mobileBanner.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" class="flex items-center gap-3 bg-white text-black font-bold rounded-full px-6 py-3 w-full max-w-xs justify-center whitespace-nowrap">${icon} Seguici su ${label}</a>`;
                     }
                 });
 
