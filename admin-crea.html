@@ -158,6 +158,25 @@
   #toast.error   { border-left:4px solid var(--danger); }
   #toast.loading { border-left:4px solid var(--honey); }
 
+  /* ── TRANSFER MODAL ── */
+  #transfer-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; padding:1rem; }
+  #transfer-overlay.open { display:flex; }
+  .transfer-box { background:white; border-radius:20px; padding:2rem; width:100%; max-width:500px; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+  .transfer-box h3 { font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.2rem; }
+  .transfer-box .sub { font-size:.8rem; color:var(--text-light); margin-bottom:1.5rem; line-height:1.6; }
+  .transfer-preview { background:#fffbe6; border:1px solid #ffe082; border-radius:10px; padding:1rem 1.25rem; margin-bottom:1.5rem; }
+  .transfer-preview strong { display:block; font-size:1rem; font-weight:800; margin-bottom:.2rem; color:#1a1a1a; }
+  .transfer-preview span { font-size:.78rem; color:#7a5c00; }
+  .transfer-actions { display:flex; gap:.75rem; margin-top:1.5rem; }
+  .btn-transfer { flex:1; background:var(--honey); color:white; border:none; border-radius:999px; padding:.75rem; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.8rem; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; transition:background .2s; }
+  .btn-transfer:hover { background:var(--honey-dark); }
+  .btn-cancel-t { flex:1; background:var(--gray); color:var(--text); border:2px solid var(--gray-mid); border-radius:999px; padding:.75rem; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.8rem; text-transform:uppercase; cursor:pointer; transition:background .2s; }
+  .btn-cancel-t:hover { background:var(--gray-mid); }
+  .archive-trigger { background:#fffbe6; border:1px solid #ffe082; border-radius:12px; padding:1.25rem 1.5rem; margin-top:.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .archive-trigger p { font-size:.8rem; color:#7a5c00; line-height:1.6; flex:1; }
+  .btn-archive-event { background:var(--honey); color:white; border:none; border-radius:999px; padding:.65rem 1.5rem; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; transition:background .2s,transform .2s; white-space:nowrap; flex-shrink:0; }
+  .btn-archive-event:hover { background:var(--honey-dark); transform:translateY(-2px); }
+
   /* ── RESPONSIVE ── */
   @media (max-width:768px) {
     .main-layout { flex-direction:column; padding:1rem; }
@@ -274,6 +293,11 @@
               Dimensioni ideali: <strong>600 × 900 px</strong> — verticale 2:3 (tipo flyer Instagram o A4 portrait) — evita il ritaglio automatico
             </div>
             <div class="field"><label>Nome file immagine (già caricato su GitHub)</label><input id="ev-img" type="text" placeholder="mago.png"></div>
+          </div>
+          <!-- ARCHIVIA EVENTO -->
+          <div class="archive-trigger">
+            <p>📦 <strong>Evento concluso?</strong> Trasferiscilo nell'archivio con un click. I dati vengono copiati e potrai subito inserire il prossimo evento.</p>
+            <button class="btn-archive-event" onclick="openTransferModal()">📦 Archivia questo evento</button>
           </div>
         </div>
       </div>
@@ -755,6 +779,83 @@ function renderArchiveList() {
 
 function toggleAI(id) { document.getElementById(`ai-${id}`).classList.toggle('editing'); }
 
+/* ── TRASFERIMENTO EVENTO → ARCHIVIO ── */
+function openTransferModal() {
+  // Legge i valori attuali dal form (anche non ancora salvati)
+  const g = id => document.getElementById(id)?.value?.trim() || '';
+  const title    = g('ev-title')   || DATA.featuredEvent?.title   || '—';
+  const fullDate = g('ev-fulldate') || DATA.featuredEvent?.fullDate || '';
+
+  document.getElementById('transfer-preview-title').textContent = title;
+  document.getElementById('transfer-preview-date').textContent  = fullDate;
+
+  // Pre-compila data ISO con oggi
+  document.getElementById('transfer-iso-date').value = new Date().toISOString().split('T')[0];
+
+  // Prova a estrarre "Mese Anno" dalla data completa (es. "Domenica 1 Marzo 2026 – Ore 16:00")
+  const match = fullDate.match(/([A-Za-zÀ-ÿ]+)\s+(20\d{2})/);
+  if (match) document.getElementById('transfer-month-label').value = match[1] + ' ' + match[2];
+  else        document.getElementById('transfer-month-label').value = '';
+
+  document.getElementById('transfer-note').value = '';
+  document.getElementById('transfer-overlay').classList.add('open');
+}
+
+function closeTransferModal() {
+  document.getElementById('transfer-overlay').classList.remove('open');
+}
+
+function confirmTransfer() {
+  const monthLabel = document.getElementById('transfer-month-label').value.trim();
+  const isoDate    = document.getElementById('transfer-iso-date').value;
+  if (!monthLabel) { alert('Inserisci il mese visualizzato (es. Marzo 2026).'); return; }
+  if (!isoDate)    { alert('Inserisci la data per l\'ordinamento.'); return; }
+
+  const g = id => document.getElementById(id)?.value?.trim() || '';
+  const title    = g('ev-title')    || DATA.featuredEvent?.title    || '';
+  const sub      = g('ev-sub')      || DATA.featuredEvent?.sub      || '';
+  const img      = g('ev-img')      || DATA.featuredEvent?.img      || '';
+  const place    = g('ev-place')    || DATA.featuredEvent?.place    || '';
+  const fullDate = g('ev-fulldate') || DATA.featuredEvent?.fullDate || '';
+  const richDesc = (typeof getRich === 'function' ? getRich('rich-ev-desc') : '') || DATA.featuredEvent?.desc || '';
+  const shortDesc = richDesc.replace(/<[^>]+>/g, '').substring(0, 120);
+  const tag      = document.getElementById('transfer-tag').value;
+  const note     = document.getElementById('transfer-note').value.trim();
+
+  const maxId = Math.max(0, ...(DATA.archive || []).map(i => i.id));
+  const newId = maxId + 1;
+
+  DATA.archive = DATA.archive || [];
+  DATA.archive.push({
+    id:       newId,
+    date:     isoDate,
+    tag,
+    t:        title,
+    d:        monthLabel,
+    n:        note,
+    desc:     sub || shortDesc,
+    fullDesc: richDesc,
+    img,
+    gallery:  img ? [img] : []
+  });
+
+  // Svuota featuredEvent nel DATA e nel form
+  const emptyEv = { title:'', sub:'', day:'', month:'', fullDate:'', place:'', prices:'', wa:'', img:'', desc:'' };
+  DATA.featuredEvent = { ...DATA.featuredEvent, ...emptyEv };
+  ['ev-title','ev-sub','ev-day','ev-month','ev-fulldate','ev-place','ev-prices','ev-wa','ev-img']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  if (typeof setRich === 'function') setRich('rich-ev-desc', '');
+
+  closeTransferModal();
+  showToast('✅ Evento archiviato! Il sito mostrerà "stiamo lavorando" fino al prossimo salvataggio con un nuovo evento.', 'success');
+  showSection('archivio');
+  setTimeout(() => {
+    renderArchiveList();
+    const el = document.getElementById(`ai-${newId}`);
+    if (el) { el.classList.add('editing'); el.scrollIntoView({ behavior:'smooth', block:'center' }); }
+  }, 120);
+}
+
 function addArchiveItem() {
   const maxId = Math.max(0,...(DATA.archive||[]).map(i=>i.id));
   const newId = maxId + 1;
@@ -985,5 +1086,43 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
+
+<!-- ═══ MODAL ARCHIVIAZIONE ═══ -->
+<div id="transfer-overlay" onclick="if(event.target===this)closeTransferModal()">
+  <div class="transfer-box">
+    <h3>📦 Archivia Evento</h3>
+    <p class="sub">Completa i campi necessari per l'archivio, poi conferma. L'evento rimane visibile sul sito finché non salvi e inserisci il prossimo.</p>
+    <div class="transfer-preview">
+      <strong id="transfer-preview-title">—</strong>
+      <span id="transfer-preview-date"></span>
+    </div>
+    <div class="field">
+      <label>Categoria / Tag *</label>
+      <select id="transfer-tag">
+        <option value="famiglie">👨‍👩‍👧 Famiglie</option>
+        <option value="tradizioni">🎉 Tradizioni</option>
+        <option value="spettacoli">🎭 Spettacoli</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Mese visualizzato * <span style="font-weight:400;text-transform:none">(es. Marzo 2026)</span></label>
+        <input id="transfer-month-label" type="text" placeholder="Marzo 2026">
+      </div>
+      <div class="field">
+        <label>Data per ordinamento *</label>
+        <input id="transfer-iso-date" type="date">
+      </div>
+    </div>
+    <div class="field">
+      <label>Nota breve <span style="font-weight:400;text-transform:none">(es. Sold Out · 200 persone)</span></label>
+      <input id="transfer-note" type="text" placeholder="opzionale">
+    </div>
+    <div class="transfer-actions">
+      <button class="btn-cancel-t" onclick="closeTransferModal()">Annulla</button>
+      <button class="btn-transfer" onclick="confirmTransfer()">✅ Conferma archiviazione</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

@@ -239,8 +239,8 @@
     <!-- EVENTI -->
     <section id="eventi" class="section-padding bg-white">
         <div class="container mx-auto px-5 md:px-6">
-            <div class="mb-32 text-center">
-                <div class="mb-16">
+            <div id="featured-event-wrapper" class="mb-32 text-center">
+                <div id="featured-event-header" class="mb-16">
                     <span class="text-crea-honey bg-yellow-50 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest inline-block mb-4">Prossimo Appuntamento</span>
                     <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-tight headline-strong text-black">Cosa stiamo preparando</h2>
                 </div>
@@ -498,27 +498,46 @@
 
                 // EVENTO IN EVIDENZA
                 const ev = D.featuredEvent;
-                document.getElementById('featured-event-slot').innerHTML = `
-                    <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden flex flex-col lg:flex-row">
-                        <div class="relative lg:w-5/12 h-96 lg:h-auto bg-gray-100">
-                            <div class="date-badge"><span class="text-3xl font-extrabold leading-none">${ev.day}</span><span class="text-xs font-bold tracking-widest mt-1 block">${ev.month}</span></div>
-                            <img src="${ev.img||'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800'}" class="img-contain w-full h-full" alt="Locandina ${ev.title}">
-                        </div>
-                        <div class="p-8 lg:p-16 lg:w-7/12 flex flex-col justify-center text-left">
-                            <h3 class="text-4xl md:text-6xl headline-strong mb-4 uppercase text-black leading-tight">${ev.title}</h3>
-                            <h4 class="text-xl font-bold text-gray-400 mb-8 uppercase tracking-tight">${ev.sub}</h4>
-                            <p class="text-lg text-body-crea mb-12 font-light">${ev.desc}</p>
-                            <div class="space-y-6 mb-12 border-t border-b border-gray-100 py-10">
-                                <div class="flex items-center gap-4"><i data-lucide="calendar" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Quando</span><span class="font-bold text-sm uppercase">${ev.fullDate}</span></div></div>
-                                <div class="flex items-center gap-4"><i data-lucide="map-pin" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Luogo</span><span class="font-bold text-sm uppercase">${ev.place}</span></div></div>
-                                <div class="flex items-center gap-4"><i data-lucide="ticket" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Contributo</span><span class="font-bold text-sm uppercase">${ev.prices}</span></div></div>
+                if (ev?.title) {
+                    document.getElementById('featured-event-slot').innerHTML = `
+                        <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden flex flex-col lg:flex-row">
+                            <div class="relative lg:w-5/12 h-96 lg:h-auto bg-gray-100">
+                                <div class="date-badge"><span class="text-3xl font-extrabold leading-none">${ev.day}</span><span class="text-xs font-bold tracking-widest mt-1 block">${ev.month}</span></div>
+                                <img src="${ev.img||'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800'}" class="img-contain w-full h-full" alt="Locandina ${ev.title}">
                             </div>
-                            <div class="flex flex-col lg:flex-row items-center gap-6">
-                                <a href="${ev.wa}" target="_blank" rel="noopener" class="cta-button w-full lg:w-auto">Prenota il tuo posto</a>
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Posti Limitati</span>
+                            <div class="p-8 lg:p-16 lg:w-7/12 flex flex-col justify-center text-left">
+                                <h3 class="text-4xl md:text-6xl headline-strong mb-4 uppercase text-black leading-tight">${ev.title}</h3>
+                                <h4 class="text-xl font-bold text-gray-400 mb-8 uppercase tracking-tight">${ev.sub}</h4>
+                                <p class="text-lg text-body-crea mb-12 font-light">${ev.desc}</p>
+                                <div class="space-y-6 mb-12 border-t border-b border-gray-100 py-10">
+                                    <div class="flex items-center gap-4"><i data-lucide="calendar" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Quando</span><span class="font-bold text-sm uppercase">${ev.fullDate}</span></div></div>
+                                    <div class="flex items-center gap-4"><i data-lucide="map-pin" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Luogo</span><span class="font-bold text-sm uppercase">${ev.place}</span></div></div>
+                                    <div class="flex items-center gap-4"><i data-lucide="ticket" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Contributo</span><span class="font-bold text-sm uppercase">${ev.prices}</span></div></div>
+                                </div>
+                                <div class="flex flex-col lg:flex-row items-center gap-6">
+                                    <a href="${ev.wa}" target="_blank" rel="noopener" class="cta-button w-full lg:w-auto">Prenota il tuo posto</a>
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Posti Limitati</span>
+                                </div>
                             </div>
-                        </div>
-                    </div>`;
+                        </div>`;
+                } else {
+                    // Nessun evento in evidenza — mostra placeholder
+                    document.getElementById('featured-event-header').style.display = 'none';
+                    document.getElementById('featured-event-wrapper').classList.replace('mb-32', 'mb-16');
+                    document.getElementById('featured-event-slot').innerHTML = `
+                        <div class="max-w-2xl mx-auto text-center py-16 px-8 border-2 border-dashed border-gray-200 rounded-3xl">
+                            <div class="text-6xl mb-6">🐝</div>
+                            <h3 class="text-2xl md:text-3xl font-bold uppercase headline-strong text-black mb-4 leading-snug">
+                                Stiamo organizzando qualcosa di speciale per voi
+                            </h3>
+                            <p class="text-gray-400 text-sm md:text-base font-light mb-10 leading-relaxed">
+                                Torna presto — seguici sui social per scoprire il prossimo evento in anteprima.
+                            </p>
+                            <div id="placeholder-social-links" class="flex flex-wrap justify-center gap-4"></div>
+                        </div>`;
+                    // Popola i link social nel placeholder (riusato dopo il forEach socials)
+                    window._showPlaceholderSocials = true;
+                }
 
                 // ARCHIVIO
                 const fb = document.getElementById('filter-bar');
@@ -551,6 +570,11 @@
                     navSocialMob.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" aria-label="${label}" class="text-gray-500 hover:text-crea-honey transition-colors flex items-center">${icon}</a>`;
                     // Banner social proof (bottoni grandi con label)
                     proofLinks.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" class="cta-button gap-3">${icon} Seguici su ${label}</a>`;
+                    // Placeholder "stiamo lavorando" — solo fb/ig
+                    if (window._showPlaceholderSocials && s.icon !== 'whatsapp') {
+                        const ph = document.getElementById('placeholder-social-links');
+                        if (ph) ph.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" class="cta-button gap-3">${icon} Seguici su ${label}</a>`;
+                    }
                     // Banner conversione social mobile (solo fb/ig, no whatsapp)
                     if (s.icon !== 'whatsapp') {
                         mobileBanner.innerHTML += `<a href="${s.url}" target="_blank" rel="noopener" class="flex items-center gap-3 bg-white text-black font-bold rounded-full px-6 py-3 w-full max-w-xs justify-center whitespace-nowrap">${icon} Seguici su ${label}</a>`;
