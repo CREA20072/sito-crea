@@ -1109,12 +1109,19 @@ async function removePhoto(id, filename) {
   syncHiddenInputs(id);
   renderMediaManager(id);
 
-  showToast(`🗑 Eliminazione "${filename}" da GitHub…`, 'loading');
-  try {
-    await deleteFileFromGitHub(filename);
-    showToast(`✅ "${filename}" eliminato${wasCover ? ' (era anche la copertina)' : ''}`, 'success');
-  } catch(e) {
-    showToast(`⚠️ Rimosso dalla galleria, ma file GitHub non eliminato: ${e.message}`, 'error');
+  if (filename.startsWith('http')) {
+    // File Cloudinary: resta su Cloudinary, viene solo scollegato dall'evento
+    const shortName = filename.split('/').pop().split('?')[0];
+    showToast(`✅ "${shortName}" scollegato dall'evento${wasCover ? ' (era la copertina)' : ''}`, 'success');
+  } else {
+    // File GitHub: eliminazione fisica
+    showToast(`🗑 Eliminazione "${filename}" da GitHub…`, 'loading');
+    try {
+      await deleteFileFromGitHub(filename);
+      showToast(`✅ "${filename}" eliminato${wasCover ? ' (era anche la copertina)' : ''}`, 'success');
+    } catch(e) {
+      showToast(`⚠️ Rimosso dalla galleria, ma file GitHub non eliminato: ${e.message}`, 'error');
+    }
   }
 }
 
