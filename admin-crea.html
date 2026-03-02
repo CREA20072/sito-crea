@@ -177,6 +177,39 @@
   .btn-archive-event { background:var(--honey); color:white; border:none; border-radius:999px; padding:.65rem 1.5rem; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; transition:background .2s,transform .2s; white-space:nowrap; flex-shrink:0; }
   .btn-archive-event:hover { background:var(--honey-dark); transform:translateY(-2px); }
 
+  /* ── MEDIA MANAGER ── */
+  .media-sub-label { font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--text-light); margin-top:1rem; margin-bottom:.5rem; padding-top:.8rem; border-top:1px solid var(--gray-mid); display:block; }
+  .media-sub-label:first-child { border-top:none; margin-top:0; padding-top:0; }
+  .media-cover-wrap { display:flex; align-items:center; gap:1rem; background:var(--gray); border-radius:10px; padding:.75rem 1rem; }
+  .media-cover-wrap img { width:90px; height:68px; object-fit:cover; border-radius:8px; flex-shrink:0; border:2px solid var(--gray-mid); background:#ddd; }
+  .media-cover-info { flex:1; min-width:0; }
+  .media-filename { display:block; font-size:.73rem; font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-bottom:.35rem; }
+  .media-cover-badge { display:inline-flex; align-items:center; gap:.3rem; background:#fef3c7; color:#92670a; border-radius:999px; padding:.18rem .55rem; font-size:.62rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.45rem; }
+  .media-empty { font-size:.77rem; color:var(--text-light); font-style:italic; padding:.35rem 0; }
+  .media-thumb-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:.5rem; }
+  .media-thumb { position:relative; border-radius:8px; overflow:hidden; aspect-ratio:4/3; background:var(--gray-mid); border:2px solid transparent; transition:border-color .2s; }
+  .media-thumb:hover { border-color:var(--honey); }
+  .media-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .media-thumb-overlay { position:absolute; inset:0; background:rgba(0,0,0,.65); opacity:0; transition:opacity .2s; display:flex; flex-direction:column; justify-content:space-between; padding:.35rem; }
+  .media-thumb:hover .media-thumb-overlay { opacity:1; }
+  .media-thumb-name { font-size:.58rem; color:rgba(255,255,255,.85); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.3; }
+  .media-thumb-actions { display:flex; gap:.2rem; justify-content:flex-end; flex-wrap:wrap; }
+  .media-thumb-btn { background:rgba(255,255,255,.18); color:white; border:none; border-radius:4px; padding:.15rem .32rem; font-size:.62rem; cursor:pointer; transition:background .15s; font-family:'Montserrat',sans-serif; font-weight:700; line-height:1.4; }
+  .media-thumb-btn:hover { background:rgba(255,255,255,.38); }
+  .media-thumb-btn.star:hover  { background:#E3A500; }
+  .media-thumb-btn.danger:hover { background:var(--danger); }
+  .media-video-list { display:flex; flex-direction:column; gap:.45rem; }
+  .media-video-item { display:flex; align-items:center; gap:.75rem; background:var(--gray); border-radius:9px; padding:.6rem .9rem; }
+  .media-video-item .vid-icon { font-size:1.2rem; flex-shrink:0; }
+  .media-video-item .vid-url { flex:1; font-size:.72rem; font-weight:600; color:var(--honey-dark); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .media-video-item .vid-url a { color:inherit; text-decoration:none; }
+  .media-video-item .vid-url a:hover { text-decoration:underline; }
+  .media-video-add { display:flex; gap:.5rem; margin-top:.6rem; }
+  .media-video-add input { flex:1; padding:.6rem .85rem; border:2px solid var(--gray-mid); border-radius:8px; font-family:'Montserrat',sans-serif; font-size:.82rem; transition:border-color .2s; min-width:0; }
+  .media-video-add input:focus { outline:none; border-color:var(--honey); }
+  .media-video-add button { background:var(--honey); color:white; border:none; border-radius:8px; padding:.6rem 1rem; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.75rem; cursor:pointer; white-space:nowrap; transition:background .2s; }
+  .media-video-add button:hover { background:var(--honey-dark); }
+
   /* ── RESPONSIVE ── */
   @media (max-width:768px) {
     .main-layout { flex-direction:column; padding:1rem; }
@@ -342,10 +375,10 @@
           <div class="section-block">
             <div class="section-label">📤 Carica file</div>
             <div class="upload-zone" id="upload-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-              <input type="file" id="file-input" multiple accept="image/*" onchange="handleFileSelect(event)">
+              <input type="file" id="file-input" multiple accept="image/*,video/*" onchange="handleFileSelect(event)">
               <div class="upload-icon">📤</div>
-              <div class="upload-text">Trascina le foto qui oppure clicca per sceglierle</div>
-              <div class="upload-sub">PNG, JPG, JPEG, WebP — max 5 MB per file</div>
+              <div class="upload-text">Trascina foto o video qui, oppure clicca per sceglierli</div>
+              <div class="upload-sub" id="upload-zone-sub">PNG, JPG, JPEG, WebP — max 5 MB per file (GitHub)</div>
             </div>
             <div class="upload-progress" id="upload-progress">
               <div style="font-size:.75rem;font-weight:700;color:var(--text-light);margin-bottom:.4rem" id="upload-status-text">Caricamento...</div>
@@ -431,6 +464,23 @@
             <div class="section-label">⚙️ Impostazioni</div>
             <div class="field"><label>Formspree URL (per ricevere email dal form contatti)</label><input id="settings-formspree" type="text" placeholder="https://formspree.io/f/..."></div>
           </div>
+          <div class="section-block">
+            <div class="section-label">☁️ Cloudinary — storage foto e video</div>
+            <div class="field-row">
+              <div class="field">
+                <label>Cloud Name</label>
+                <input id="cloudinary-cloud" type="text" placeholder="es. daxrdik7k" autocomplete="off">
+              </div>
+              <div class="field">
+                <label>Upload Preset <span style="font-weight:400;text-transform:none">(unsigned)</span></label>
+                <input id="cloudinary-preset" type="text" placeholder="es. eventi crea" autocomplete="off">
+              </div>
+            </div>
+            <div id="cloudinary-status" style="font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:8px;margin-top:.25rem;display:none"></div>
+            <p style="font-size:.72rem;color:var(--text-light);margin-top:.5rem;line-height:1.6">
+              Se configurato, le foto e i video caricati vanno su Cloudinary invece che su GitHub — accessibili via link, non sfogliabili nel repository.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -442,6 +492,7 @@
 
 <script>
 let OWNER = '', REPO = '', TOKEN = '', SHA = '', DATA = null;
+let CLOUDINARY_CLOUD = '', CLOUDINARY_PRESET = '';
 
 // ─── RICH TEXT ─────────────────────────────────────────────────────────────
 
@@ -519,7 +570,7 @@ async function doLogin() {
 }
 
 function doLogout() {
-  ['crea_owner','crea_repo','crea_token'].forEach(k => localStorage.removeItem(k));
+  ['crea_owner','crea_repo','crea_token','crea_cloudinary_cloud','crea_cloudinary_preset'].forEach(k => localStorage.removeItem(k));
   location.reload();
 }
 
@@ -596,6 +647,10 @@ function populateForm() {
   const ig = (D.footer?.socials||[]).find(s => s.icon==='instagram');
   set('social-fb', fb?.url); set('social-ig', ig?.url);
   set('settings-formspree', D.settings?.formspreeUrl);
+  // Cloudinary (da localStorage, non da content.json)
+  set('cloudinary-cloud',  CLOUDINARY_CLOUD);
+  set('cloudinary-preset', CLOUDINARY_PRESET);
+  updateCloudinaryStatus();
   // Archivio
   renderArchiveList();
   // Upload selector
@@ -620,6 +675,12 @@ function collectForm() {
   DATA.footer = { ...DATA.footer, email: g('footer-email'), quote: getRich('footer-quote'),
     socials: [{icon:'facebook',url:g('social-fb')},{icon:'instagram',url:g('social-ig')}].filter(s => s.url) };
   DATA.settings = { ...DATA.settings, formspreeUrl: g('settings-formspree') };
+  // Salva Cloudinary in localStorage (non nel JSON del sito)
+  CLOUDINARY_CLOUD  = g('cloudinary-cloud');
+  CLOUDINARY_PRESET = g('cloudinary-preset');
+  if (CLOUDINARY_CLOUD)  localStorage.setItem('crea_cloudinary_cloud',  CLOUDINARY_CLOUD);
+  if (CLOUDINARY_PRESET) localStorage.setItem('crea_cloudinary_preset', CLOUDINARY_PRESET);
+  updateCloudinaryStatus();
   collectArchive();
 }
 
@@ -737,27 +798,15 @@ function renderArchiveList() {
           </div>
         </div>
 
-        <!-- COPERTINA -->
+        <!-- MEDIA MANAGER -->
         <div class="section-block">
-          <div class="section-label">🖼️ Immagine copertina (card)</div>
+          <div class="section-label">🎬 Gestione Media</div>
           <div class="dim-hint"><span class="ratio-icon">📐</span>
-            Ideale: <strong>800 × 600 px</strong> orizzontale 4:3 — oppure <strong>800 × 800 px</strong> quadrata — evita il ritaglio automatico
+            Copertina ideale: <strong>800 × 600 px</strong> orizzontale — Vai in <strong>Carica Foto</strong> per aggiungere immagini
           </div>
-          <div class="field"><label>Nome file copertina (caricato su GitHub)</label>
-            <input type="text" id="ai-img-${item.id}" value="${esc(item.img)}" placeholder="es. falo.png">
-          </div>
-        </div>
-
-        <!-- GALLERIA -->
-        <div class="section-block">
-          <div class="section-label">📸 Galleria foto (nella scheda evento)</div>
-          <div class="field">
-            <label>Nomi file separati da virgola</label>
-            <input type="text" id="ai-gallery-${item.id}" value="${esc((item.gallery||[]).join(', '))}" placeholder="foto1.png, foto2.png, foto3.png">
-          </div>
-          <p style="font-size:.7rem;color:var(--honey-dark);font-weight:600;margin-top:.35rem;">
-            ✨ Vai in <strong>Carica Foto</strong>, seleziona questo evento e carica — la galleria si aggiorna automaticamente.
-          </p>
+          <input type="hidden" id="ai-img-${item.id}" value="${esc(item.img)}">
+          <input type="hidden" id="ai-gallery-${item.id}" value="${esc((item.gallery||[]).join(', '))}">
+          <div id="media-mgr-${item.id}"><p class="media-empty" style="padding:1rem 0">Espandi l'evento per caricare il gestore media…</p></div>
         </div>
 
         <!-- TESTI -->
@@ -774,6 +823,7 @@ function renderArchiveList() {
 
       </div>`;
     list.appendChild(el);
+    renderMediaManager(item.id);
   });
 }
 
@@ -887,10 +937,230 @@ function collectArchive() {
       n:        g(`ai-n-${id}`,    item.n),
       desc:     g(`ai-desc-${id}`, item.desc),
       fullDesc: getRich(`ai-fulldesc-${id}`) || g(`ai-desc-${id}`, item.desc),
-      img:      g(`ai-img-${id}`,  item.img),
-      gallery:  g(`ai-gallery-${id}`,'').split(',').map(s=>s.trim()).filter(Boolean)
+      // img e gallery sono gestiti direttamente nel media manager (DATA è già aggiornato)
+      img:      item.img     !== undefined ? item.img     : g(`ai-img-${id}`, ''),
+      gallery:  item.gallery !== undefined ? item.gallery : g(`ai-gallery-${id}`,'').split(',').map(s=>s.trim()).filter(Boolean),
+      // video: array di URL YouTube/Vimeo
+      ...(item.videos?.length ? { videos: item.videos } : {})
     };
   });
+}
+
+// ─── MEDIA MANAGER ─────────────────────────────────────────────────────────
+
+function getRawUrl(filename) {
+  if (!filename) return '';
+  if (filename.startsWith('http')) return filename; // URL Cloudinary o altro CDN
+  return `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${encodeURIComponent(filename)}`;
+}
+
+function updateCloudinaryStatus() {
+  const el = document.getElementById('cloudinary-status');
+  if (!el) return;
+  const cloud  = document.getElementById('cloudinary-cloud')?.value?.trim()  || CLOUDINARY_CLOUD;
+  const preset = document.getElementById('cloudinary-preset')?.value?.trim() || CLOUDINARY_PRESET;
+  if (cloud && preset) {
+    el.textContent = `☁️ Cloudinary attivo — ${cloud} / preset: ${preset}`;
+    el.style.cssText = 'display:block;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:8px;margin-top:.25rem';
+    // Aggiorna la zona di upload
+    const sub = document.getElementById('upload-zone-sub');
+    if (sub) sub.textContent = 'PNG, JPG, WebP, MP4, MOV — caricati su Cloudinary (privati)';
+  } else {
+    el.textContent = '⚠️ Cloudinary non configurato — le foto vengono caricate su GitHub (pubblico)';
+    el.style.cssText = 'display:block;background:#fffbe6;border:1px solid #ffe082;color:#92670a;font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:8px;margin-top:.25rem';
+    const sub = document.getElementById('upload-zone-sub');
+    if (sub) sub.textContent = 'PNG, JPG, JPEG, WebP — max 5 MB per file (GitHub)';
+  }
+}
+
+async function uploadToCloudinary(file) {
+  const resourceType = file.type.startsWith('video/') ? 'video' : 'image';
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_PRESET);
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/${resourceType}/upload`,
+    { method: 'POST', body: formData }
+  );
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || 'Cloudinary upload failed');
+  }
+  const data = await res.json();
+  return data.secure_url; // URL completo HTTPS
+}
+
+function getArchiveItem(id) {
+  return (DATA.archive || []).find(i => i.id === id);
+}
+
+function syncHiddenInputs(id) {
+  const item = getArchiveItem(id);
+  if (!item) return;
+  const imgEl = document.getElementById(`ai-img-${id}`);
+  const galEl = document.getElementById(`ai-gallery-${id}`);
+  if (imgEl) imgEl.value = item.img || '';
+  if (galEl) galEl.value = (item.gallery || []).join(', ');
+}
+
+function renderMediaManager(id) {
+  const item = getArchiveItem(id);
+  const container = document.getElementById(`media-mgr-${id}`);
+  if (!item || !container) return;
+
+  const gallery = item.gallery || [];
+  const cover   = item.img    || '';
+  const videos  = item.videos || [];
+
+  /* ── COPERTINA ── */
+  let html = `<span class="media-sub-label">🖼️ Copertina (card archivio)</span>`;
+  if (cover) {
+    html += `
+      <div class="media-cover-wrap">
+        <img src="${getRawUrl(cover)}" alt="" onerror="this.style.opacity='.25'">
+        <div class="media-cover-info">
+          <span class="media-cover-badge">⭐ Copertina attiva</span>
+          <span class="media-filename">${esc(cover)}</span>
+          <button class="btn-sm btn-danger" style="margin-top:.4rem" onclick="removeCoverPhoto(${id})">✕ Scollega copertina</button>
+        </div>
+      </div>`;
+  } else {
+    html += `<p class="media-empty">Nessuna copertina — clicca ⭐ su una foto della galleria per impostarla.</p>`;
+  }
+
+  /* ── GALLERIA ── */
+  html += `<span class="media-sub-label">📸 Galleria foto (${gallery.length})</span>`;
+  if (gallery.length) {
+    html += `<div class="media-thumb-grid">`;
+    gallery.forEach((f, i) => {
+      const isFirst = i === 0, isLast = i === gallery.length - 1;
+      html += `
+        <div class="media-thumb">
+          <img src="${getRawUrl(f)}" alt="" onerror="this.style.opacity='.15'">
+          <div class="media-thumb-overlay">
+            <span class="media-thumb-name">${esc(f)}</span>
+            <div class="media-thumb-actions">
+              ${!isFirst ? `<button class="media-thumb-btn" onclick="movePhoto(${id},${i},-1)" title="Sposta a sinistra">◀</button>` : ''}
+              ${!isLast  ? `<button class="media-thumb-btn" onclick="movePhoto(${id},${i},1)"  title="Sposta a destra">▶</button>` : ''}
+              <button class="media-thumb-btn star"   onclick="setAsCover(${id},'${esc(f)}')"  title="Imposta come copertina">⭐</button>
+              <button class="media-thumb-btn danger" onclick="removePhoto(${id},'${esc(f)}')" title="Elimina da GitHub">🗑</button>
+            </div>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<p class="media-empty">Nessuna foto — vai in «Carica Foto» e collega le immagini a questo evento.</p>`;
+  }
+
+  /* ── VIDEO ── */
+  html += `<span class="media-sub-label">🎥 Video (YouTube / Vimeo)</span>`;
+  if (videos.length) {
+    html += `<div class="media-video-list">`;
+    videos.forEach((url, i) => {
+      const icon = url.includes('youtu') ? '▶️' : url.includes('vimeo') ? '🎬' : '🎥';
+      html += `
+        <div class="media-video-item">
+          <span class="vid-icon">${icon}</span>
+          <span class="vid-url"><a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a></span>
+          <button class="btn-sm btn-danger" onclick="removeVideoItem(${id},${i})">🗑</button>
+        </div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<p class="media-empty">Nessun video. Incolla un link YouTube o Vimeo qui sotto.</p>`;
+  }
+  html += `
+    <div class="media-video-add">
+      <input type="text" id="video-input-${id}" placeholder="https://youtu.be/… o https://vimeo.com/…">
+      <button onclick="addVideoItem(${id})">+ Aggiungi</button>
+    </div>`;
+
+  container.innerHTML = html;
+}
+
+function setAsCover(id, filename) {
+  const item = getArchiveItem(id);
+  if (!item) return;
+  item.img = filename;
+  syncHiddenInputs(id);
+  renderMediaManager(id);
+  showToast(`⭐ "${filename}" impostata come copertina`, 'success');
+}
+
+function removeCoverPhoto(id) {
+  const item = getArchiveItem(id);
+  if (!item) return;
+  if (!confirm(`Scollegare la copertina dall'evento?\n\nIl file NON viene eliminato da GitHub, viene solo rimosso come copertina.`)) return;
+  item.img = '';
+  syncHiddenInputs(id);
+  renderMediaManager(id);
+  showToast('Copertina scollegata', 'success');
+}
+
+async function removePhoto(id, filename) {
+  const item = getArchiveItem(id);
+  if (!item) return;
+  if (!confirm(`Eliminare "${filename}" dalla galleria?\n\nATTENZIONE: il file verrà eliminato definitivamente da GitHub (azione irreversibile).`)) return;
+
+  const wasCover = item.img === filename;
+  item.gallery = (item.gallery || []).filter(f => f !== filename);
+  if (wasCover) item.img = '';
+  syncHiddenInputs(id);
+  renderMediaManager(id);
+
+  showToast(`🗑 Eliminazione "${filename}" da GitHub…`, 'loading');
+  try {
+    await deleteFileFromGitHub(filename);
+    showToast(`✅ "${filename}" eliminato${wasCover ? ' (era anche la copertina)' : ''}`, 'success');
+  } catch(e) {
+    showToast(`⚠️ Rimosso dalla galleria, ma file GitHub non eliminato: ${e.message}`, 'error');
+  }
+}
+
+function movePhoto(id, index, dir) {
+  const item = getArchiveItem(id);
+  if (!item || !item.gallery) return;
+  const g = item.gallery;
+  const ni = index + dir;
+  if (ni < 0 || ni >= g.length) return;
+  [g[index], g[ni]] = [g[ni], g[index]];
+  syncHiddenInputs(id);
+  renderMediaManager(id);
+}
+
+function addVideoItem(id) {
+  const input = document.getElementById(`video-input-${id}`);
+  const url = input?.value?.trim();
+  if (!url || !url.startsWith('http')) { showToast('⚠️ Inserisci un URL YouTube o Vimeo valido', 'error'); return; }
+  const item = getArchiveItem(id);
+  if (!item) return;
+  item.videos = item.videos || [];
+  if (item.videos.includes(url)) { showToast('⚠️ Video già presente in lista', 'error'); return; }
+  item.videos.push(url);
+  renderMediaManager(id);
+  showToast('✅ Video aggiunto', 'success');
+}
+
+function removeVideoItem(id, index) {
+  const item = getArchiveItem(id);
+  if (!item || !item.videos) return;
+  if (!confirm('Rimuovere questo video dalla lista?')) return;
+  item.videos.splice(index, 1);
+  renderMediaManager(id);
+}
+
+async function deleteFileFromGitHub(filename) {
+  const headers = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' };
+  const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(filename)}`, { headers });
+  if (!res.ok) throw new Error('File non trovato su GitHub');
+  const file = await res.json();
+  const del = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(filename)}`, {
+    method: 'DELETE',
+    headers: { ...headers, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: `🗑️ Admin: elimina ${filename}`, sha: file.sha })
+  });
+  if (!del.ok) throw new Error((await del.json()).message);
 }
 
 // ─── NAV ───────────────────────────────────────────────────────────────────
@@ -987,6 +1257,8 @@ function attachUploadedFileToEvent(filename) {
       inp.value = cur ? `${cur}, ${filename}` : filename;
     }
   }
+  // Aggiorna il media manager se l'evento è aperto
+  if (document.getElementById(`media-mgr-${eventId}`)) renderMediaManager(eventId);
 }
 
 function handleDragOver(e)  { e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
@@ -999,42 +1271,70 @@ function handleDrop(e) {
 function handleFileSelect(e) { uploadFiles(Array.from(e.target.files)); }
 
 async function uploadFiles(files) {
-  const imageFiles = files.filter(f => f.type.startsWith('image/'));
-  if (!imageFiles.length) { showToast('⚠️ Seleziona solo file immagine', 'error'); return; }
-  const tooBig = imageFiles.filter(f => f.size > 5*1024*1024);
-  if (tooBig.length) { showToast(`⚠️ File troppo grandi (max 5MB): ${tooBig.map(f=>f.name).join(', ')}`, 'error'); return; }
+  const useCloudinary = !!(CLOUDINARY_CLOUD && CLOUDINARY_PRESET);
+
+  // Filtra per tipo: Cloudinary accetta anche video, GitHub solo immagini
+  const validFiles = useCloudinary
+    ? files.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'))
+    : files.filter(f => f.type.startsWith('image/'));
+
+  if (!validFiles.length) {
+    showToast(useCloudinary ? '⚠️ Seleziona file immagine o video' : '⚠️ Seleziona solo file immagine', 'error');
+    return;
+  }
+
+  // Limiti dimensione: Cloudinary free 100MB per file, GitHub 25MB
+  const maxSize = useCloudinary ? 100*1024*1024 : 5*1024*1024;
+  const maxLabel = useCloudinary ? '100MB' : '5MB';
+  const tooBig = validFiles.filter(f => f.size > maxSize);
+  if (tooBig.length) { showToast(`⚠️ File troppo grandi (max ${maxLabel}): ${tooBig.map(f=>f.name).join(', ')}`, 'error'); return; }
+
   const prog = document.getElementById('upload-progress');
   const fill = document.getElementById('upload-progress-fill');
   const statusText = document.getElementById('upload-status-text');
   prog.style.display = 'block';
-  for (let i = 0; i < imageFiles.length; i++) {
-    const file = imageFiles[i];
-    statusText.textContent = `Caricamento ${i+1}/${imageFiles.length}: ${file.name}`;
-    fill.style.width = `${Math.round((i/imageFiles.length)*100)}%`;
+
+  for (let i = 0; i < validFiles.length; i++) {
+    const file = validFiles[i];
+    statusText.textContent = `Caricamento ${i+1}/${validFiles.length}: ${file.name}`;
+    fill.style.width = `${Math.round((i/validFiles.length)*100)}%`;
     try {
-      const base64 = await fileToBase64(file);
-      const b64content = base64.split(',')[1];
-      let sha = undefined;
-      try {
-        const check = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file.name}`,
-          { headers: { Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json' } });
-        if (check.ok) { const ex = await check.json(); sha = ex.sha; }
-      } catch(e) {}
-      const body = { message:`🖼️ Upload: ${file.name}`, content:b64content };
-      if (sha) body.sha = sha;
-      const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file.name}`, {
-        method:'PUT',
-        headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' },
-        body:JSON.stringify(body)
-      });
-      if (res.ok) {
-        attachUploadedFileToEvent(file.name);
-        const eventVal = document.getElementById('upload-event-selector')?.value;
-        addUploadedChip(file.name, !!eventVal);
-        showToast(`✅ ${file.name} caricato${eventVal ? ' e collegato all\'evento!' : '!'}`, 'success');
-      } else { const err = await res.json(); showToast(`❌ ${file.name}: ${err.message}`, 'error'); }
-    } catch(e) { showToast(`❌ Errore: ${e.message}`, 'error'); }
+      let fileRef; // sarà URL Cloudinary oppure nome file GitHub
+
+      if (useCloudinary) {
+        // ── CLOUDINARY ──────────────────────────────────────────────
+        fileRef = await uploadToCloudinary(file);
+      } else {
+        // ── GITHUB ──────────────────────────────────────────────────
+        const base64 = await fileToBase64(file);
+        const b64content = base64.split(',')[1];
+        let sha = undefined;
+        try {
+          const check = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file.name}`,
+            { headers: { Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json' } });
+          if (check.ok) { const ex = await check.json(); sha = ex.sha; }
+        } catch(e) {}
+        const body = { message:`🖼️ Upload: ${file.name}`, content:b64content };
+        if (sha) body.sha = sha;
+        const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file.name}`, {
+          method:'PUT',
+          headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' },
+          body:JSON.stringify(body)
+        });
+        if (!res.ok) { const err = await res.json(); showToast(`❌ ${file.name}: ${err.message}`, 'error'); continue; }
+        fileRef = file.name;
+      }
+
+      // Collega il file all'evento selezionato
+      attachUploadedFileToEvent(fileRef);
+      const eventVal = document.getElementById('upload-event-selector')?.value;
+      addUploadedChip(fileRef, file.name, !!eventVal);
+      const dest = useCloudinary ? 'Cloudinary' : 'GitHub';
+      showToast(`✅ ${file.name} caricato su ${dest}${eventVal ? ' e collegato!' : '!'}`, 'success');
+
+    } catch(e) { showToast(`❌ ${file.name}: ${e.message}`, 'error'); }
   }
+
   fill.style.width = '100%';
   statusText.textContent = '✅ Completato!';
   setTimeout(() => { prog.style.display='none'; fill.style.width='0%'; }, 2000);
@@ -1050,18 +1350,19 @@ function fileToBase64(file) {
   });
 }
 
-function addUploadedChip(filename, autoLinked) {
+function addUploadedChip(fileRef, displayName, autoLinked) {
   const list = document.getElementById('uploaded-files-list');
   const chip = document.createElement('div');
   chip.className = 'uploaded-chip';
   const icon = autoLinked ? '🔗' : '📋';
   const suffix = autoLinked ? ' (collegato)' : '';
-  chip.title = autoLinked ? 'Collegato automaticamente all\'evento — clicca per copiare il nome' : 'Clicca per copiare il nome file';
-  chip.innerHTML = `<span>${icon}</span> ${esc(filename)}<span style="font-weight:400;font-size:.65rem;opacity:.7">${suffix}</span>`;
+  const label = displayName || fileRef;
+  chip.title = `${fileRef}\n${autoLinked ? 'Collegato all\'evento' : 'Clicca per copiare'}`;
+  chip.innerHTML = `<span>${icon}</span> ${esc(label)}<span style="font-weight:400;font-size:.65rem;opacity:.7">${suffix}</span>`;
   chip.onclick = () => {
-    navigator.clipboard.writeText(filename).then(() => {
-      chip.innerHTML = `<span>✅</span> ${esc(filename)}`;
-      setTimeout(() => { chip.innerHTML = `<span>${icon}</span> ${esc(filename)}<span style="font-weight:400;font-size:.65rem;opacity:.7">${suffix}</span>`; }, 1500);
+    navigator.clipboard.writeText(fileRef).then(() => {
+      chip.innerHTML = `<span>✅</span> Copiato!`;
+      setTimeout(() => { chip.innerHTML = `<span>${icon}</span> ${esc(label)}<span style="font-weight:400;font-size:.65rem;opacity:.7">${suffix}</span>`; }, 1500);
     });
   };
   list.appendChild(chip);
@@ -1074,6 +1375,8 @@ window.addEventListener('DOMContentLoaded', () => {
   const o = localStorage.getItem('crea_owner');
   const r = localStorage.getItem('crea_repo');
   const t = localStorage.getItem('crea_token');
+  CLOUDINARY_CLOUD  = localStorage.getItem('crea_cloudinary_cloud')  || '';
+  CLOUDINARY_PRESET = localStorage.getItem('crea_cloudinary_preset') || '';
   if (o && r && t) {
     OWNER=o; REPO=r; TOKEN=t;
     document.getElementById('inp-owner').value = o;
