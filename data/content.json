@@ -98,16 +98,16 @@
     ]
   },
   "featuredEvent": {
-    "title": "Magic Show",
-    "sub": "Mago Daniel",
-    "day": "01",
-    "month": "MAR",
-    "fullDate": "Domenica 1 Marzo 2026 – Ore 16:00",
-    "place": "Auditorium Sant'Alessandro",
-    "prices": "10€ – Spettacolo + Merenda",
+    "title": "",
+    "sub": "",
+    "day": "",
+    "month": "",
+    "fullDate": "",
+    "place": "",
+    "prices": "",
     "desc": "Preparati a restare a bocca aperta! Uno spettacolo magico per famiglie, dove l'impossibile diventa realtà e lo stupore è garantito per grandi e piccoli.",
-    "wa": "https://wa.me/393402231735",
-    "img": "mago.png"
+    "wa": "",
+    "img": ""
   },
   "archive": [
     {
@@ -166,6 +166,20 @@
       "img": "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?w=800&q=70&auto=format",
       "gallery": [
         "logo.png"
+      ]
+    },
+    {
+      "id": 5,
+      "date": "2026-03-04",
+      "tag": "spettacoli",
+      "t": "Magic Show",
+      "d": "Marzo 2026",
+      "n": "",
+      "desc": "Mago Daniel",
+      "fullDesc": "Preparati a restare a bocca aperta! Uno spettacolo magico per famiglie, dove l'impossibile diventa realtà e lo stupore è garantito per grandi e piccoli.",
+      "img": "mago.png",
+      "gallery": [
+        "mago.png"
       ]
     }
   ],
