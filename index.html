@@ -554,6 +554,8 @@
                 document.getElementById('hero-subtitle').innerText = D.hero.subtitle;
                 document.getElementById('hero-cta').innerText      = D.hero.cta;
                 document.getElementById('hero-bg').style.backgroundImage = `url('${D.hero.bg}')`;
+                // Nascondi il bottone CTA se non c'è un evento in evidenza
+                if (!D.featuredEvent?.title) document.getElementById('hero-cta').style.display = 'none';
 
                 // CHI SIAMO
                 document.getElementById('about-title').innerText   = D.about.title;
