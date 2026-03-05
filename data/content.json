@@ -119,9 +119,15 @@
       "n": "150+ Partecipanti",
       "desc": "La tradizione che scalda l'inverno.",
       "fullDesc": "Una serata magica attorno al fuoco per riscoprire le antiche tradizioni contadine. Tra vin brulé, chiacchiere e il calore della comunità, abbiamo celebrato Sant'Antonio come si faceva una volta.",
-      "img": "falo.png",
+      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1772754973/gizrtsipzt8oc8egbc8e.png",
       "gallery": [
-        "falo.png"
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751428/bxvqqpqdcbcwtw75rbzu.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751435/nygzzfvpsju3vfsaaa4s.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751436/iyprthff3blam9s6rehg.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751491/ebodnehzw8psu8h8hdae.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751496/ijft3ddai5k1xdggeq3f.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751441/v0lierxyrab2pd97zfyc.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751456/zjpjwaoqqqvuz4evautp.jpg"
       ]
     },
     {
@@ -133,10 +139,10 @@
       "n": "100 Bambini",
       "desc": "Musica e gioia per i più piccoli.",
       "fullDesc": "Un pomeriggio di festa dedicato ai più piccoli, con laboratori creativi, canti natalizi e l'arrivo a sorpresa di Babbo Natale che ha portato doni per tutti.",
-      "img": "natale.png",
+      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753929/s4t9d2qjjq0iiin33nwk.jpg",
       "gallery": [
-        "natale.png",
-        "logo.png"
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772754395/vxurwkrdzj9ztbjii0t1.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772754431/ho8divveevhvwqecehpc.jpg"
       ]
     },
     {
@@ -148,10 +154,14 @@
       "n": "Sold Out",
       "desc": "Cinema condiviso in Auditorium.",
       "fullDesc": "Il cinema come momento di aggregazione. Abbiamo riempito l'auditorium per una proiezione speciale, seguita da un momento conviviale tra grandi e piccoli.",
-      "img": "cinema.png",
+      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753844/jbbrs7eheaeitwtvq1da.jpg",
       "gallery": [
-        "cinema.png",
-        "logo.png"
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751615/nby3rriinrhlaeldebtj.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772752353/rfy0p93hq44gvm2n9duo.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772752094/eryhsbosngef8qleh8zv.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751998/cdsa0k7rfmwb8gnuoed8.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751625/runxo4bsa1jokcxii166.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751591/f7dlgplnmpgybl6y5mq2.jpg"
       ]
     },
     {
@@ -165,7 +175,12 @@
       "fullDesc": "Dolcetto o scherzetto? Una sfilata in maschera per le vie di Pieve Emanuele che ha colorato di allegria (e qualche brivido) il nostro quartiere.",
       "img": "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?w=800&q=70&auto=format",
       "gallery": [
-        "logo.png"
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772752382/uz4vx27asujzkn7re6zs.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772752448/gocio78rgr9a9l6lpsoy.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772752372/nbcac9umbzrgappmkhx4.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772752409/mjyvar6uaqtk9eraix9t.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772752465/dc3zzuobfopnpytcf9wa.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753379/dbkrg39ltihf1qdjrtgp.jpg"
       ]
     },
     {
@@ -175,11 +190,16 @@
       "t": "Magic Show",
       "d": "Marzo 2026",
       "n": "",
-      "desc": "Mago Daniel",
+      "desc": "Un pomeriggio di magia!",
       "fullDesc": "Preparati a restare a bocca aperta! Uno spettacolo magico per famiglie, dove l'impossibile diventa realtà e lo stupore è garantito per grandi e piccoli.",
       "img": "mago.png",
       "gallery": [
-        "mago.png"
+        "mago.png",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753495/vylbzkdnh7n0j2tjrsvm.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753560/hg5hcopgdq6jqjtjdxkr.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753508/kynq1oyoat1oe9gidxjr.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753572/wowyxkwfhoyfmvxl4ltz.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753577/t49eoie7ss1gqtqmrnvs.jpg"
       ]
     }
   ],
