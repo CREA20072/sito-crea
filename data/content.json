@@ -155,9 +155,8 @@
       "n": "Sold Out",
       "desc": "Cinema condiviso in Auditorium.",
       "fullDesc": "Il cinema come momento di aggregazione. Abbiamo riempito l'auditorium per una proiezione speciale, seguita da un momento conviviale tra grandi e piccoli.",
-      "img": "cinema.png",
+      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753844/jbbrs7eheaeitwtvq1da.jpg",
       "gallery": [
-        "cinema.png",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751615/nby3rriinrhlaeldebtj.jpg",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772752353/rfy0p93hq44gvm2n9duo.jpg",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772752094/eryhsbosngef8qleh8zv.jpg",
@@ -198,8 +197,8 @@
       "gallery": [
         "mago.png",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753495/vylbzkdnh7n0j2tjrsvm.jpg",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753508/kynq1oyoat1oe9gidxjr.jpg",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753560/hg5hcopgdq6jqjtjdxkr.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753508/kynq1oyoat1oe9gidxjr.jpg",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753572/wowyxkwfhoyfmvxl4ltz.jpg",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753577/t49eoie7ss1gqtqmrnvs.jpg"
       ]
