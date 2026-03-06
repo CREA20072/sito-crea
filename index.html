@@ -497,7 +497,7 @@
                          onkeydown="if(event.key==='Enter')openModal(${item.id})">
                         <div class="flex flex-row md:flex-col">
                             <div class="relative w-28 flex-shrink-0 overflow-hidden bg-gray-100 md:w-full md:h-56 self-stretch">
-                                <img src="${item.img}" loading="lazy" class="img-cover w-full h-full transition-transform duration-500 group-hover:scale-105" alt="Locandina ${item.t}">
+                                <img src="${item.img}" loading="lazy" class="img-cover w-full h-full transition-transform duration-500 group-hover:scale-105" style="object-position:${item.imgPos||'center center'}" alt="Locandina ${item.t}">
                                 <div class="absolute top-2 right-2 md:top-4 md:right-4 bg-white/95 backdrop-blur px-2 md:px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase text-black tracking-wider shadow-sm">${item.tag}</div>
                             </div>
                             <div class="p-4 md:p-7 flex flex-col justify-between flex-1">

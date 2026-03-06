@@ -958,9 +958,10 @@ function collectArchive() {
       n:        g(`ai-n-${id}`,    item.n),
       desc:     g(`ai-desc-${id}`, item.desc),
       fullDesc: getRich(`ai-fulldesc-${id}`) || g(`ai-desc-${id}`, item.desc),
-      // img e gallery sono gestiti direttamente nel media manager (DATA è già aggiornato)
+      // img, gallery e imgPos sono gestiti direttamente nel media manager (DATA è già aggiornato)
       img:      item.img     !== undefined ? item.img     : g(`ai-img-${id}`, ''),
       gallery:  item.gallery !== undefined ? item.gallery : g(`ai-gallery-${id}`,'').split(',').map(s=>s.trim()).filter(Boolean),
+      ...(item.imgPos ? { imgPos: item.imgPos } : {}),
       // video: array di URL YouTube/Vimeo
       ...(item.videos?.length ? { videos: item.videos } : {})
     };
@@ -1075,17 +1076,38 @@ function renderMediaManager(id) {
   const gallery = item.gallery || [];
   const cover   = item.img    || '';
   const videos  = item.videos || [];
+  const imgPos  = item.imgPos || 'center center';
+
+  const POS_OPTIONS = [
+    ['center center','Centro (default)'],
+    ['center top','Alto — centra in alto'],
+    ['center bottom','Basso — centra in basso'],
+    ['left center','Sinistra'],
+    ['right center','Destra'],
+    ['left top','Angolo alto-sinistra'],
+    ['right top','Angolo alto-destra'],
+    ['left bottom','Angolo basso-sinistra'],
+    ['right bottom','Angolo basso-destra'],
+  ];
 
   /* ── COPERTINA ── */
   let html = `<span class="media-sub-label">🖼️ Copertina (card archivio)</span>`;
   if (cover) {
+    const previewPos = imgPos;
     html += `
       <div class="media-cover-wrap">
-        <img src="${getRawUrl(cover)}" alt="" onerror="this.style.opacity='.25'">
+        <img src="${getRawUrl(cover)}" alt="" style="object-position:${previewPos}" onerror="this.style.opacity='.25'">
         <div class="media-cover-info">
           <span class="media-cover-badge">⭐ Copertina attiva</span>
           <span class="media-filename">${esc(cover)}</span>
-          <button class="btn-sm btn-danger" style="margin-top:.4rem" onclick="removeCoverPhoto(${id})">✕ Scollega copertina</button>
+          <div style="display:flex;align-items:center;gap:.5rem;margin-top:.45rem;flex-wrap:wrap">
+            <label style="font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-light);white-space:nowrap">📌 Posizione</label>
+            <select id="imgpos-${id}" onchange="updateImgPos(${id},this.value)"
+              style="flex:1;min-width:140px;padding:.3rem .5rem;border:1.5px solid var(--gray-mid);border-radius:7px;font-family:'Montserrat',sans-serif;font-size:.72rem;color:var(--text);background:white">
+              ${POS_OPTIONS.map(([val,label]) => `<option value="${val}"${imgPos===val?' selected':''}>${label}</option>`).join('')}
+            </select>
+          </div>
+          <button class="btn-sm btn-danger" style="margin-top:.45rem" onclick="removeCoverPhoto(${id})">✕ Scollega copertina</button>
         </div>
       </div>`;
   } else {
@@ -1160,6 +1182,15 @@ function removeCoverPhoto(id) {
   syncHiddenInputs(id);
   renderMediaManager(id);
   showToast('Copertina scollegata', 'success');
+}
+
+function updateImgPos(id, pos) {
+  const item = getArchiveItem(id);
+  if (!item) return;
+  item.imgPos = pos;
+  // Aggiorna l'anteprima live nella miniatura copertina
+  const wrap = document.querySelector(`#media-mgr-${id} .media-cover-wrap img`);
+  if (wrap) wrap.style.objectPosition = pos;
 }
 
 async function removePhoto(id, filename) {
