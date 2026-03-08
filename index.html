@@ -9,7 +9,7 @@
     <meta property="og:description" content="Organizziamo eventi, cultura e momenti di comunità.">
     <meta property="og:image" content="logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --honey:#E3A500; --honey-dark:#C28D00; --soft-bg:#F7F7F7; }
@@ -671,11 +671,7 @@
                 const heroEl = document.getElementById('hero-section');
                 if (heroEl) heroObs.observe(heroEl);
 
-                // LOGO
-                if (D.settings?.logo) {
-                    const img=new Image(); img.src=D.settings.logo; img.className='logo-img'; img.alt='Logo CREA 20072';
-                    img.onload=()=>{ document.getElementById('nav-logo-container').replaceChildren(img); document.getElementById('footer-logo-container').replaceChildren(img.cloneNode()); };
-                }
+                // LOGO — caricato direttamente dall'HTML (src="logo.png")
                 lucide.createIcons();
             })
             .catch(() => {

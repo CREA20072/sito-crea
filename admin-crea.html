@@ -238,6 +238,8 @@
     <input id="inp-repo" type="text" placeholder="es. sito-crea" autocomplete="off">
     <label for="inp-token">Personal Access Token</label>
     <input id="inp-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+    <label for="inp-master" style="margin-top:.5rem">Password master (cifra il token)</label>
+    <input id="inp-master" type="password" placeholder="Scegli una password sicura" autocomplete="new-password">
     <div class="hint">
       📌 <strong>Come creare il token (una volta sola):</strong><br>
       1. GitHub → foto profilo → <em>Settings</em><br>
@@ -247,6 +249,22 @@
       <a href="https://github.com/settings/tokens/new?scopes=repo&description=CREA20072+Admin" target="_blank">→ Clicca qui per crearlo direttamente</a>
     </div>
     <button class="save-btn" style="width:100%" onclick="doLogin()">🔑 Accedi</button>
+  </div>
+</div>
+
+<!-- ═══ SBLOCCO (token già salvato) ═══ -->
+<div id="unlock-screen" style="display:none;min-height:100vh;display:none;align-items:center;justify-content:center;background:var(--black)">
+  <div class="login-box">
+    <div class="bee">🔐</div>
+    <h1>CREA 20072</h1>
+    <p>Inserisci la password master per sbloccare</p>
+    <label for="inp-unlock-master">Password master</label>
+    <input id="inp-unlock-master" type="password" placeholder="La tua password master" autocomplete="current-password"
+           onkeydown="if(event.key==='Enter')doUnlock()">
+    <button class="save-btn" style="width:100%;margin-top:.5rem" onclick="doUnlock()">🔓 Sblocca</button>
+    <button onclick="doLogout()" style="margin-top:1rem;background:none;border:none;color:var(--text-light);font-size:.8rem;cursor:pointer;text-decoration:underline">
+      Usa un token diverso
+    </button>
   </div>
 </div>
 
@@ -570,27 +588,82 @@ function setRich(id, html) {
   else el.value = html || '';
 }
 
+// ─── CRYPTO (AES-GCM + PBKDF2) ────────────────────────────────────────────
+
+async function deriveKey(password, salt) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
+  );
+}
+
+async function encryptToken(token, password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv   = crypto.getRandomValues(new Uint8Array(12));
+  const key  = await deriveKey(password, salt);
+  const enc  = new TextEncoder();
+  const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(token));
+  const combined  = new Uint8Array(16 + 12 + encrypted.byteLength);
+  combined.set(salt, 0);
+  combined.set(iv, 16);
+  combined.set(new Uint8Array(encrypted), 28);
+  return btoa(String.fromCharCode(...combined));
+}
+
+async function decryptToken(encryptedBase64, password) {
+  const combined = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
+  const salt = combined.slice(0, 16);
+  const iv   = combined.slice(16, 28);
+  const data = combined.slice(28);
+  const key  = await deriveKey(password, salt);
+  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+  return new TextDecoder().decode(decrypted);
+}
+
 // ─── LOGIN ─────────────────────────────────────────────────────────────────
 
 async function doLogin() {
   OWNER = document.getElementById('inp-owner').value.trim();
   REPO  = document.getElementById('inp-repo').value.trim();
   TOKEN = document.getElementById('inp-token').value.trim();
+  const master = document.getElementById('inp-master').value;
   if (!OWNER || !REPO || !TOKEN) { showToast('⚠️ Compila tutti i campi', 'error'); return; }
+  if (!master) { showToast('⚠️ Inserisci una password master', 'error'); return; }
   showToast('Connessione in corso...', 'loading');
   try {
     const ok = await loadData();
     if (ok) {
-      localStorage.setItem('crea_owner', OWNER);
-      localStorage.setItem('crea_repo',  REPO);
-      localStorage.setItem('crea_token', TOKEN);
+      const encrypted = await encryptToken(TOKEN, master);
+      localStorage.setItem('crea_owner',         OWNER);
+      localStorage.setItem('crea_repo',           REPO);
+      localStorage.setItem('crea_token_enc',      encrypted);
       startApp();
     }
   } catch(e) { showToast('❌ Errore: controlla username, repo e token.', 'error'); }
 }
 
+async function doUnlock() {
+  const master = document.getElementById('inp-unlock-master').value;
+  if (!master) { showToast('⚠️ Inserisci la password master', 'error'); return; }
+  const enc = localStorage.getItem('crea_token_enc');
+  showToast('Verifica in corso...', 'loading');
+  try {
+    TOKEN = await decryptToken(enc, master);
+    const ok = await loadData();
+    if (ok) { startApp(); }
+    else { TOKEN = ''; showToast('❌ Token non valido o scaduto.', 'error'); }
+  } catch(e) {
+    TOKEN = '';
+    showToast('❌ Password master errata.', 'error');
+  }
+}
+
 function doLogout() {
-  ['crea_owner','crea_repo','crea_token','crea_cloudinary_cloud','crea_cloudinary_preset'].forEach(k => localStorage.removeItem(k));
+  ['crea_owner','crea_repo','crea_token_enc','crea_cloudinary_cloud','crea_cloudinary_preset'].forEach(k => localStorage.removeItem(k));
   location.reload();
 }
 
@@ -1477,20 +1550,17 @@ function addUploadedChip(fileRef, displayName, autoLinked) {
 
 window.addEventListener('DOMContentLoaded', () => {
   initStaticRichEditors();
-  const o = localStorage.getItem('crea_owner');
-  const r = localStorage.getItem('crea_repo');
-  const t = localStorage.getItem('crea_token');
+  const o   = localStorage.getItem('crea_owner');
+  const r   = localStorage.getItem('crea_repo');
+  const enc = localStorage.getItem('crea_token_enc');
   CLOUDINARY_CLOUD  = localStorage.getItem('crea_cloudinary_cloud')  || '';
   CLOUDINARY_PRESET = localStorage.getItem('crea_cloudinary_preset') || '';
-  if (o && r && t) {
-    OWNER=o; REPO=r; TOKEN=t;
-    document.getElementById('inp-owner').value = o;
-    document.getElementById('inp-repo').value  = r;
-    document.getElementById('inp-token').value = t;
-    showToast('Caricamento...','loading');
-    loadData()
-      .then(ok => { if (ok) startApp(); else { OWNER=REPO=TOKEN=''; showToast('❌ Token scaduto, accedi di nuovo.','error'); } })
-      .catch(() => { OWNER=REPO=TOKEN=''; });
+  if (o && r && enc) {
+    // Token cifrato trovato → mostra schermata di sblocco
+    OWNER = o; REPO = r;
+    document.getElementById('login-screen').style.display  = 'none';
+    document.getElementById('unlock-screen').style.display = 'flex';
+    document.getElementById('inp-unlock-master').focus();
   }
 });
 </script>
