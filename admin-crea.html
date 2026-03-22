@@ -668,7 +668,8 @@ function doLogout() {
 }
 
 function startApp() {
-  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display  = 'none';
+  document.getElementById('unlock-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   document.getElementById('repo-label').textContent = `${OWNER}/${REPO}`;
   populateForm();
