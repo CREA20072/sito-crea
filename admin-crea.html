@@ -441,6 +441,49 @@
                 </div>
               </div>
             </div>
+          <!-- OVERLAY + ALTEZZA + ANTEPRIMA LIVE -->
+          <div class="section-block" style="margin-top:1.25rem">
+            <div class="section-label">🌓 Overlay scuro</div>
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.5rem">
+              <input type="range" id="hero-overlay-val" min="0" max="100" value="65"
+                     style="flex:1;accent-color:var(--honey)"
+                     oninput="document.getElementById('hero-overlay-label').textContent=this.value+'%';updateHeroPreview()">
+              <span id="hero-overlay-label" style="font-size:.85rem;font-weight:700;min-width:3rem;text-align:right">65%</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-light);margin-top:-.25rem">
+              <span>Nessun overlay</span><span>Molto scuro</span>
+            </div>
+          </div>
+          <div class="section-block" style="margin-top:1.25rem">
+            <div class="section-label">↕️ Altezza sezione</div>
+            <div style="display:flex;gap:.6rem;margin-top:.25rem">
+              <button type="button" id="btn-height-bassa" onclick="setHeroHeight('bassa')"
+                style="flex:1;padding:.6rem;border-radius:8px;border:2px solid var(--gray-mid);background:white;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:.2s">
+                Bassa<div style="font-size:.65rem;font-weight:400;color:var(--text-light);margin-top:.15rem">~55%</div>
+              </button>
+              <button type="button" id="btn-height-media" onclick="setHeroHeight('media')"
+                style="flex:1;padding:.6rem;border-radius:8px;border:2px solid var(--gray-mid);background:white;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:.2s">
+                Media<div style="font-size:.65rem;font-weight:400;color:var(--text-light);margin-top:.15rem">~72%</div>
+              </button>
+              <button type="button" id="btn-height-alta" onclick="setHeroHeight('alta')"
+                style="flex:1;padding:.6rem;border-radius:8px;border:2px solid var(--honey);background:#FFF8E6;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:.2s">
+                Alta<div style="font-size:.65rem;font-weight:400;color:var(--text-light);margin-top:.15rem">~90%</div>
+              </button>
+            </div>
+          </div>
+          <!-- ANTEPRIMA LIVE -->
+          <div class="section-block" style="margin-top:1.25rem">
+            <div class="section-label">👁️ Anteprima live</div>
+            <div id="hero-live-preview" style="position:relative;border-radius:12px;overflow:hidden;background:#111;transition:height .3s;height:120px">
+              <div id="hlp-bg" style="position:absolute;inset:0;background-size:cover;background-position:center"></div>
+              <div id="hlp-overlay" style="position:absolute;inset:0;background:#000;opacity:.65;transition:opacity .2s"></div>
+              <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;text-align:center;color:white;pointer-events:none">
+                <div style="font-size:.5rem;font-weight:800;letter-spacing:.15em;opacity:.6;margin-bottom:.35rem;text-transform:uppercase">Anteprima</div>
+                <div id="hlp-title" style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;line-height:1.2;max-width:220px"></div>
+              </div>
+            </div>
+            <div style="font-size:.65rem;color:var(--text-light);margin-top:.4rem;text-align:center">L'anteprima si aggiorna in tempo reale mentre modifichi i valori</div>
+          </div>
           </div>
         </div>
       </div>
@@ -588,6 +631,38 @@ function setRich(id, html) {
   else el.value = html || '';
 }
 
+// ─── HERO PREVIEW ──────────────────────────────────────────────────────────
+
+let _heroHeight = 'alta';
+
+function setHeroHeight(h) {
+  _heroHeight = h;
+  ['bassa','media','alta'].forEach(v => {
+    const btn = document.getElementById('btn-height-' + v);
+    if (!btn) return;
+    btn.style.borderColor  = v === h ? 'var(--honey)' : 'var(--gray-mid)';
+    btn.style.background   = v === h ? '#FFF8E6'      : 'white';
+  });
+  updateHeroPreview();
+}
+
+function updateHeroPreview() {
+  const overlay = document.getElementById('hero-overlay-val')?.value ?? 65;
+  const bg      = document.getElementById('hero-bg')?.value || '';
+  const title   = document.getElementById('hero-title')?.value || 'CREA 20072';
+  const previewH = { bassa: '80px', media: '110px', alta: '145px' };
+
+  const prev = document.getElementById('hero-live-preview');
+  const hlpBg = document.getElementById('hlp-bg');
+  const hlpOv = document.getElementById('hlp-overlay');
+  const hlpTi = document.getElementById('hlp-title');
+
+  if (prev)  prev.style.height   = previewH[_heroHeight] || '145px';
+  if (hlpBg) hlpBg.style.backgroundImage = bg ? `url('${bg}')` : 'none';
+  if (hlpOv) hlpOv.style.opacity = (overlay / 100).toFixed(2);
+  if (hlpTi) hlpTi.textContent   = title;
+}
+
 // ─── CRYPTO (AES-GCM + PBKDF2) ────────────────────────────────────────────
 
 async function deriveKey(password, salt) {
@@ -727,6 +802,14 @@ function populateForm() {
   setRich('ev-desc', ev.desc);
   // Hero
   set('hero-title', D.hero?.title); set('hero-cta', D.hero?.cta); set('hero-bg', D.hero?.bg);
+  // Overlay
+  const ov = D.hero?.overlay ?? 65;
+  const ovSlider = document.getElementById('hero-overlay-val');
+  if (ovSlider) { ovSlider.value = ov; document.getElementById('hero-overlay-label').textContent = ov + '%'; }
+  // Altezza
+  setHeroHeight(D.hero?.height || 'alta');
+  // Anteprima
+  setTimeout(updateHeroPreview, 100);
   setRich('hero-subtitle', D.hero?.subtitle);
   if (D.hero?.bg) updateHeroBgPreview(D.hero.bg);
   // Chi siamo
@@ -764,7 +847,7 @@ function collectForm() {
     place: g('ev-place'), prices: g('ev-prices'),
     desc: getRich('ev-desc'), wa: g('ev-wa'), img: g('ev-img')
   };
-  DATA.hero = { title: g('hero-title'), subtitle: getRich('hero-subtitle'), cta: g('hero-cta'), bg: g('hero-bg') };
+  DATA.hero = { title: g('hero-title'), subtitle: getRich('hero-subtitle'), cta: g('hero-cta'), bg: g('hero-bg'), overlay: parseInt(document.getElementById('hero-overlay-val')?.value ?? 65), height: _heroHeight };
   DATA.about = { ...DATA.about, title: g('about-title'), text: getRich('about-text'), tagline: g('about-tagline'), pillars: collectPillars() };
   DATA.decalogo = { ...DATA.decalogo, items: collectDecalogo() };
   DATA.footer = { ...DATA.footer, email: g('footer-email'), quote: getRich('footer-quote'),
@@ -1051,6 +1134,7 @@ function getRawUrl(filename) {
 }
 
 function updateHeroBgPreview(url) {
+  updateHeroPreview();
   const wrap = document.getElementById('hero-bg-preview');
   const img  = document.getElementById('hero-bg-preview-img');
   if (!wrap || !img) return;

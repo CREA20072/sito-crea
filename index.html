@@ -261,7 +261,7 @@
     <!-- HERO -->
     <section id="hero-section" class="relative h-[85vh] md:h-[90vh] flex items-center justify-center text-center text-white bg-black">
         <div id="hero-bg" class="absolute inset-0 bg-cover bg-center"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+        <div id="hero-overlay" class="absolute inset-0 bg-black" style="opacity:0.65"></div>
         <div class="relative z-10 px-6 w-full max-w-6xl mx-auto">
             <h1 id="hero-title" class="fade-up text-3xl sm:text-5xl md:text-7xl headline-strong mb-6 uppercase leading-tight"></h1>
             <p  id="hero-subtitle" class="fade-up text-base md:text-xl font-light mb-12 max-w-2xl mx-auto leading-relaxed text-white/90"></p>
@@ -557,6 +557,12 @@
                 document.getElementById('hero-subtitle').innerText = D.hero.subtitle;
                 document.getElementById('hero-cta').innerText      = D.hero.cta;
                 document.getElementById('hero-bg').style.backgroundImage = `url('${D.hero.bg}')`;
+                // Overlay
+                const overlayEl = document.getElementById('hero-overlay');
+                if (overlayEl) overlayEl.style.opacity = ((D.hero.overlay ?? 65) / 100).toFixed(2);
+                // Altezza
+                const heroHeights = { bassa: '55vh', media: '72vh', alta: '90vh' };
+                document.getElementById('hero-section').style.height = heroHeights[D.hero.height] || '90vh';
                 // Nascondi il bottone CTA se non c'è un evento in evidenza
                 if (!D.featuredEvent?.title) document.getElementById('hero-cta').style.display = 'none';
 

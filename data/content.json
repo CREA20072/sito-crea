@@ -7,7 +7,9 @@
     "title": "Non aspettiamo che succeda qualcosa. Lo organizziamo.",
     "subtitle": "Eventi, cultura e momenti per famiglie e cittadini che vogliono vivere davvero Pieve Emanuele.",
     "cta": "Guarda cosa stiamo preparando 🔥",
-    "bg": "https://res.cloudinary.com/daxrdik7k/image/upload/v1774192094/x3gufjshny38ojhpmdp7.png"
+    "bg": "https://res.cloudinary.com/daxrdik7k/image/upload/v1774195203/s1pxtzc5u48htbchgsae.png",
+    "overlay": 65,
+    "height": "alta"
   },
   "about": {
     "title": "Perché lo facciamo",
@@ -152,9 +154,9 @@
       "tag": "spettacoli",
       "t": "Serata Cinema",
       "d": "Novembre 2025",
-      "n": "Sold Out",
+      "n": "Sold Out!",
       "desc": "Il Cinema in Auditorium!",
-      "fullDesc": "<span style=\"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); font-size: medium;\">90 minuti di divertimento per i piccoli con K-Pop Demon Hunters, e meritato relax per i grandi!</span><br>",
+      "fullDesc": "<span style=\"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); font-size: medium;\">90 minuti di divertimento per i piccoli con K-Pop Demon Hunters, e meritato relax per i genitori!</span><br>",
       "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753844/jbbrs7eheaeitwtvq1da.jpg",
       "gallery": [
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751615/nby3rriinrhlaeldebtj.jpg",
@@ -190,7 +192,7 @@
       "tag": "spettacoli",
       "t": "Magic Show",
       "d": "Marzo 2026",
-      "n": "",
+      "n": "Sold Out!",
       "desc": "Un pomeriggio di magia!",
       "fullDesc": "Uno spettacolo magico per famiglie con il Mago Daniel, dove l'impossibile è diventato realtà e lo stupore garantito per grandi e piccoli.",
       "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1772755721/jygwa101wsclp7xir1sd.png",
