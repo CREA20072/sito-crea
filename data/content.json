@@ -100,15 +100,15 @@
     ]
   },
   "featuredEvent": {
-    "title": "",
+    "title": "CINEMA SOTTO LE STELLE",
     "sub": "",
-    "day": "",
-    "month": "",
-    "fullDate": "",
-    "place": "",
-    "prices": "",
-    "desc": "Preparati a restare a bocca aperta! Uno spettacolo magico per famiglie, dove l'impossibile diventa realtà e lo stupore è garantito per grandi e piccoli.",
-    "wa": "",
+    "day": "16",
+    "month": "MAG",
+    "fullDate": "Sabato 16 Maggio - ore 20.00",
+    "place": "Bar ComeTe - Pieve Emanuele",
+    "prices": "8€ Toast + Bibita + Pop Corn!",
+    "desc": "<span style=\"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); font-family: -webkit-standard; font-size: medium;\">L’emozione di \"Il Robot Selvaggio\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini&nbsp;</span><br>",
+    "wa": "https://wa.me/393402231735",
     "img": ""
   },
   "archive": [
