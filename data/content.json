@@ -100,16 +100,16 @@
     ]
   },
   "featuredEvent": {
-    "title": "CINEMA SOTTO LE STELLE",
+    "title": "",
     "sub": "",
-    "day": "16",
-    "month": "MAG",
-    "fullDate": "Sabato 16 Maggio - ore 20.00",
-    "place": "Bar ComeTe - Pieve Emanuele",
-    "prices": "8€ Toast + Bibita + Pop Corn!",
+    "day": "",
+    "month": "",
+    "fullDate": "",
+    "place": "",
+    "prices": "",
     "desc": "L’emozione de \"Il Robot Selvaggio\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini&nbsp;<br>",
-    "wa": "https://wa.me/393402231735",
-    "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg"
+    "wa": "",
+    "img": ""
   },
   "archive": [
     {
@@ -204,6 +204,20 @@
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753577/t49eoie7ss1gqtqmrnvs.jpg"
       ],
       "imgPos": "center bottom"
+    },
+    {
+      "id": 6,
+      "date": "2026-05-24",
+      "tag": "famiglie",
+      "t": "CINEMA SOTTO LE STELLE",
+      "d": "Maggio 2026",
+      "n": "100+ Partecipanti",
+      "desc": "L’emozione de \"Il Robot Selvaggio\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’espe",
+      "fullDesc": "L’emozione de \"Il Robot Selvaggio\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini&nbsp;<br>",
+      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg"
+      ]
     }
   ],
   "footer": {
