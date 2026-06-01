@@ -107,7 +107,7 @@
     "fullDate": "",
     "place": "",
     "prices": "",
-    "desc": "L’emozione de \"Il Robot Selvaggio\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini&nbsp;<br>",
+    "desc": "Il nostro contributo alla Festa del Grazie, sabato 30 Maggio dalle ore 15:00 per goderci insieme le \"Olimpiadi dei giochi di una volta”.  Preparatevi a sfide senza tempo, sorrisi e tanto divertimento all'aria aperta per grandi e piccini!<br>",
     "wa": "",
     "img": ""
   },
@@ -235,6 +235,18 @@
       "n": "100+ partecipanti",
       "desc": "L’emozione de \"Il Robot Selvaggio\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’espe",
       "fullDesc": "L’emozione de \"Il Robot Selvaggio\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini&nbsp;<br>",
+      "img": "",
+      "gallery": []
+    },
+    {
+      "id": 8,
+      "date": "2026-06-01",
+      "tag": "tradizioni",
+      "t": "Mani che costruiscono la comunità!",
+      "d": "Maggio 2026",
+      "n": "",
+      "desc": "Festa del Grazie",
+      "fullDesc": "Il nostro piccolo contributo alla Festa del Grazie, con le \"<i>Olimpiadi dei giochi di una volta</i>”.  Sfide senza tempo, sorrisi e tanto divertimento all'aria aperta per grandi e piccini!&nbsp;<br>",
       "img": "",
       "gallery": []
     }
