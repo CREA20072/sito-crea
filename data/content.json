@@ -107,7 +107,7 @@
     "fullDate": "",
     "place": "",
     "prices": "",
-    "desc": "Preparati a restare a bocca aperta! Uno spettacolo magico per famiglie, dove l'impossibile diventa realtà e lo stupore è garantito per grandi e piccoli.",
+    "desc": "Il nostro contributo alla Festa del Grazie, sabato 30 Maggio dalle ore 15:00 per goderci insieme le \"Olimpiadi dei giochi di una volta”.  Preparatevi a sfide senza tempo, sorrisi e tanto divertimento all'aria aperta per grandi e piccini!<br>",
     "wa": "",
     "img": ""
   },
@@ -204,6 +204,45 @@
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753577/t49eoie7ss1gqtqmrnvs.jpg"
       ],
       "imgPos": "center bottom"
+    },
+    {
+      "id": 6,
+      "date": "2026-05-24",
+      "tag": "famiglie",
+      "t": "CINEMA SOTTO LE STELLE",
+      "d": "Maggio 2026",
+      "n": "100+ Partecipanti",
+      "desc": "L’emozione de \"Il Robot Selvaggio\" sotto il cielo stellato",
+      "fullDesc": "L’emozione de \"<i>Il Robot Selvaggio</i>\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini&nbsp;<br>",
+      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg",
+        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780311195/xjv1h36ida7lx7qzammz.mp4",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311301/vgouzwwghy0qntodnoed.heic",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311307/v2g91nhi7800jvllimhs.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311305/h6lblgm7ab50mkpyljtt.heic",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311309/lciqa77gw7xafx7w3i85.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311308/y4e8bj2bymenquzh9xpd.heic",
+        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780311179/qocsylutbahyyoeyhasl.mp4"
+      ]
+    },
+    {
+      "id": 8,
+      "date": "2026-06-01",
+      "tag": "tradizioni",
+      "t": "Mani che costruiscono la comunità!",
+      "d": "Maggio 2026",
+      "n": "",
+      "desc": "Festa del Grazie",
+      "fullDesc": "Il nostro piccolo contributo alla Festa del Grazie, con le \"<i>Olimpiadi dei giochi di una volta</i>”.  Sfide senza tempo, sorrisi e tanto divertimento all'aria aperta per grandi e piccini!&nbsp;<br>",
+      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312269/ldnv5bbt4xn1urnfmuzy.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780312399/iepieoecz73isgmklahl.mp4",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312416/f8texhsvqpr1mdvl20de.heic",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312452/llq6vwku3grmkrm4qrad.jpg",
+        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780312437/agtqq3vdnvx3njbnliqb.mov",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312468/ho8os9hesck74jo32ufd.jpg"
+      ]
     }
   ],
   "footer": {
