@@ -198,17 +198,7 @@
   .media-thumb-btn:hover { background:rgba(255,255,255,.38); }
   .media-thumb-btn.star:hover  { background:#E3A500; }
   .media-thumb-btn.danger:hover { background:var(--danger); }
-  .media-video-list { display:flex; flex-direction:column; gap:.45rem; }
-  .media-video-item { display:flex; align-items:center; gap:.75rem; background:var(--gray); border-radius:9px; padding:.6rem .9rem; }
-  .media-video-item .vid-icon { font-size:1.2rem; flex-shrink:0; }
-  .media-video-item .vid-url { flex:1; font-size:.72rem; font-weight:600; color:var(--honey-dark); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .media-video-item .vid-url a { color:inherit; text-decoration:none; }
-  .media-video-item .vid-url a:hover { text-decoration:underline; }
-  .media-video-add { display:flex; gap:.5rem; margin-top:.6rem; }
-  .media-video-add input { flex:1; padding:.6rem .85rem; border:2px solid var(--gray-mid); border-radius:8px; font-family:'Montserrat',sans-serif; font-size:.82rem; transition:border-color .2s; min-width:0; }
-  .media-video-add input:focus { outline:none; border-color:var(--honey); }
-  .media-video-add button { background:var(--honey); color:white; border:none; border-radius:8px; padding:.6rem 1rem; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.75rem; cursor:pointer; white-space:nowrap; transition:background .2s; }
-  .media-video-add button:hover { background:var(--honey-dark); }
+  .media-thumb-video-badge { position:absolute; top:.3rem; left:.3rem; background:rgba(0,0,0,.6); color:white; font-size:.6rem; padding:.1rem .35rem; border-radius:4px; pointer-events:none; }
 
   /* ── RESPONSIVE ── */
   @media (max-width:768px) {
@@ -575,6 +565,13 @@
 let OWNER = '', REPO = '', TOKEN = '', SHA = '', DATA = null;
 let CLOUDINARY_CLOUD = '', CLOUDINARY_PRESET = '';
 
+// ─── MODIFICHE NON SALVATE ────────────────────────────────────────────────
+let DIRTY = false;
+function markDirty() { DIRTY = true; }
+window.addEventListener('beforeunload', e => {
+  if (DIRTY) { e.preventDefault(); e.returnValue = ''; }
+});
+
 // ─── RICH TEXT ─────────────────────────────────────────────────────────────
 
 const RICH_TOOLBAR = `
@@ -619,10 +616,47 @@ function execColor(e, color) {
   e.preventDefault();
   document.execCommand('foreColor', false, color);
 }
+/* Pulisce l'HTML prodotto dal rich editor prima del salvataggio:
+ * tiene solo b/strong/i/em/u/br/a/span-con-colore, elimina stili spuri
+ * (caret-color, font-size, ecc.) che il browser inserisce da solo. */
+function sanitizeRich(html) {
+  if (!html) return '';
+  const root = document.createElement('div');
+  root.innerHTML = html;
+  // script/style: via con tutto il contenuto
+  root.querySelectorAll('script,style').forEach(el => el.remove());
+  // execCommand('foreColor') produce <font color> → normalizza in <span style="color">
+  root.querySelectorAll('font').forEach(f => {
+    const span = document.createElement('span');
+    const c = f.getAttribute('color');
+    if (c) span.style.color = c;
+    span.innerHTML = f.innerHTML;
+    f.replaceWith(span);
+  });
+  const allowed = { B:1, STRONG:1, I:1, EM:1, U:1, BR:1, A:1, SPAN:1 };
+  [...root.querySelectorAll('*')].reverse().forEach(el => {
+    const tag = el.tagName;
+    if (tag === 'DIV' || tag === 'P') {              // blocchi → a capo
+      el.insertAdjacentHTML('afterend', '<br>');
+      el.replaceWith(...el.childNodes);
+    } else if (!allowed[tag]) {                       // tag non permesso → tieni solo il testo
+      el.replaceWith(...el.childNodes);
+    } else {
+      const color = tag === 'SPAN' ? el.style.color : '';
+      const href  = tag === 'A' ? el.getAttribute('href') : '';
+      [...el.attributes].forEach(a => el.removeAttribute(a.name));
+      if (color) el.style.color = color;
+      if (href)  { el.setAttribute('href', href); el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener'); }
+      if (tag === 'SPAN' && !el.getAttribute('style')) el.replaceWith(...el.childNodes); // span vuoto → via
+    }
+  });
+  return root.innerHTML.replace(/(\s*<br\s*\/?>\s*)+$/i, '').trim();
+}
+
 function getRich(id) {
   const el = document.getElementById(id);
   if (!el) return '';
-  return el.classList.contains('rich-content') ? el.innerHTML : (el.value || '');
+  return el.classList.contains('rich-content') ? sanitizeRich(el.innerHTML) : (el.value || '');
 }
 function setRich(id, html) {
   const el = document.getElementById(id);
@@ -786,6 +820,7 @@ async function saveAll() {
     );
     if (!res.ok) throw new Error((await res.json()).message);
     SHA = (await res.json()).content.sha;
+    DIRTY = false;
     showToast('✅ Salvato! Il sito si aggiorna tra pochi secondi.', 'success');
   } catch(e) { showToast('❌ Errore nel salvataggio: ' + e.message, 'error'); }
   btn.disabled = false;
@@ -1045,7 +1080,7 @@ function confirmTransfer() {
   const img      = g('ev-img')      || DATA.featuredEvent?.img      || '';
   const place    = g('ev-place')    || DATA.featuredEvent?.place    || '';
   const fullDate = g('ev-fulldate') || DATA.featuredEvent?.fullDate || '';
-  const richDesc = (typeof getRich === 'function' ? getRich('rich-ev-desc') : '') || DATA.featuredEvent?.desc || '';
+  const richDesc = getRich('ev-desc') || DATA.featuredEvent?.desc || '';
   const shortDesc = richDesc.replace(/<[^>]+>/g, '').substring(0, 120);
   const tag      = document.getElementById('transfer-tag').value;
   const note     = document.getElementById('transfer-note').value.trim();
@@ -1072,7 +1107,8 @@ function confirmTransfer() {
   DATA.featuredEvent = { ...DATA.featuredEvent, ...emptyEv };
   ['ev-title','ev-sub','ev-day','ev-month','ev-fulldate','ev-place','ev-prices','ev-wa','ev-img']
     .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  if (typeof setRich === 'function') setRich('rich-ev-desc', '');
+  setRich('ev-desc', '');
+  markDirty();
 
   closeTransferModal();
   showToast('✅ Evento archiviato! Il sito mostrerà "stiamo lavorando" fino al prossimo salvataggio con un nuovo evento.', 'success');
@@ -1089,6 +1125,7 @@ function addArchiveItem() {
   const newId = maxId + 1;
   DATA.archive = DATA.archive || [];
   DATA.archive.push({ id:newId, date:new Date().toISOString().split('T')[0], tag:'famiglie', t:'Nuovo Evento', d:'', n:'', desc:'', fullDesc:'', img:'', gallery:[] });
+  markDirty();
   renderArchiveList();
   setTimeout(() => {
     const el = document.getElementById(`ai-${newId}`);
@@ -1099,6 +1136,7 @@ function addArchiveItem() {
 function removeAI(id) {
   if (!confirm('Eliminare questo evento dall\'archivio?')) return;
   DATA.archive = DATA.archive.filter(i => i.id !== id);
+  markDirty();
   renderArchiveList();
 }
 
@@ -1118,9 +1156,7 @@ function collectArchive() {
       // img, gallery e imgPos sono gestiti direttamente nel media manager (DATA è già aggiornato)
       img:      item.img     !== undefined ? item.img     : g(`ai-img-${id}`, ''),
       gallery:  item.gallery !== undefined ? item.gallery : g(`ai-gallery-${id}`,'').split(',').map(s=>s.trim()).filter(Boolean),
-      ...(item.imgPos ? { imgPos: item.imgPos } : {}),
-      // video: array di URL YouTube/Vimeo
-      ...(item.videos?.length ? { videos: item.videos } : {})
+      ...(item.imgPos ? { imgPos: item.imgPos } : {})
     };
   });
 }
@@ -1133,6 +1169,23 @@ function getRawUrl(filename) {
   return `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${encodeURIComponent(filename)}`;
 }
 
+function isVideoUrl(u) {
+  return typeof u === 'string' && (/\/video\/upload\//.test(u) || /\.(mp4|mov|webm)(\?|#|$)/i.test(u));
+}
+
+/* Miniatura leggera per il pannello: video → poster jpg, immagini Cloudinary → w_220 */
+function mediaThumb(u) {
+  if (!u) return '';
+  if (u.includes('res.cloudinary.com') && u.includes('/upload/')) {
+    if (isVideoUrl(u)) {
+      return u.replace('/upload/', '/upload/so_0,f_auto,q_auto,w_220/')
+              .replace(/\.(mp4|mov|webm)(\?.*)?$/i, '.jpg');
+    }
+    return u.replace('/upload/', '/upload/f_auto,q_auto,w_220/');
+  }
+  return getRawUrl(u);
+}
+
 function updateHeroBgPreview(url) {
   updateHeroPreview();
   const wrap = document.getElementById('hero-bg-preview');
@@ -1142,36 +1195,39 @@ function updateHeroBgPreview(url) {
   else      { wrap.style.display = 'none'; }
 }
 
+/* Upload unificato: Cloudinary se configurato, altrimenti GitHub.
+ * Restituisce l'URL Cloudinary oppure il nome file GitHub. */
+async function uploadOne(file, commitMsgPrefix = '🖼️ Upload') {
+  if (CLOUDINARY_CLOUD && CLOUDINARY_PRESET) return uploadToCloudinary(file);
+  if (file.size > 5 * 1024 * 1024) throw new Error('File troppo grande (max 5MB su GitHub)');
+  const base64 = await fileToBase64(file);
+  const b64content = base64.split(',')[1];
+  const ghUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(file.name)}`;
+  const headers = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' };
+  let sha;
+  try {
+    const check = await fetch(ghUrl, { headers });
+    if (check.ok) sha = (await check.json()).sha;
+  } catch(e) {}
+  const body = { message: `${commitMsgPrefix}: ${file.name}`, content: b64content };
+  if (sha) body.sha = sha;
+  const res = await fetch(ghUrl, {
+    method: 'PUT',
+    headers: { ...headers, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error((await res.json()).message);
+  return file.name;
+}
+
 async function uploadHeroBg(files) {
   const file = files?.[0];
   if (!file || !file.type.startsWith('image/')) { showToast('⚠️ Seleziona un file immagine', 'error'); return; }
   showToast('Caricamento sfondo homepage…', 'loading');
   try {
-    let url;
-    if (CLOUDINARY_CLOUD && CLOUDINARY_PRESET) {
-      url = await uploadToCloudinary(file);
-    } else {
-      const maxSize = 5 * 1024 * 1024;
-      if (file.size > maxSize) { showToast('⚠️ File troppo grande (max 5MB su GitHub)', 'error'); return; }
-      const base64 = await fileToBase64(file);
-      const b64content = base64.split(',')[1];
-      let sha;
-      try {
-        const check = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file.name}`,
-          { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } });
-        if (check.ok) { const ex = await check.json(); sha = ex.sha; }
-      } catch(e) {}
-      const body = { message: `🖼️ Hero bg: ${file.name}`, content: b64content };
-      if (sha) body.sha = sha;
-      const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file.name}`, {
-        method: 'PUT',
-        headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) throw new Error((await res.json()).message);
-      url = file.name;
-    }
+    const url = await uploadOne(file, '🖼️ Hero bg');
     set('hero-bg', url);
+    markDirty();
     updateHeroBgPreview(url.startsWith('http') ? url : getRawUrl(url));
     showToast('✅ Sfondo homepage aggiornato — clicca Salva tutto per pubblicare', 'success');
   } catch(e) { showToast('❌ Errore: ' + e.message, 'error'); }
@@ -1233,7 +1289,6 @@ function renderMediaManager(id) {
 
   const gallery = item.gallery || [];
   const cover   = item.img    || '';
-  const videos  = item.videos || [];
   const imgPos  = item.imgPos || 'center center';
 
   const POS_OPTIONS = [
@@ -1254,7 +1309,7 @@ function renderMediaManager(id) {
     const previewPos = imgPos;
     html += `
       <div class="media-cover-wrap">
-        <img src="${getRawUrl(cover)}" alt="" style="object-position:${previewPos}" onerror="this.style.opacity='.25'">
+        <img src="${mediaThumb(cover)}" alt="" style="object-position:${previewPos}" onerror="this.style.opacity='.25'">
         <div class="media-cover-info">
           <span class="media-cover-badge">⭐ Copertina attiva</span>
           <span class="media-filename">${esc(cover)}</span>
@@ -1272,22 +1327,24 @@ function renderMediaManager(id) {
     html += `<p class="media-empty">Nessuna copertina — clicca ⭐ su una foto della galleria per impostarla.</p>`;
   }
 
-  /* ── GALLERIA ── */
-  html += `<span class="media-sub-label">📸 Galleria foto (${gallery.length})</span>`;
+  /* ── GALLERIA (foto e video) ── */
+  html += `<span class="media-sub-label">📸 Galleria foto e video (${gallery.length})</span>`;
   if (gallery.length) {
     html += `<div class="media-thumb-grid">`;
     gallery.forEach((f, i) => {
       const isFirst = i === 0, isLast = i === gallery.length - 1;
+      const isVid = isVideoUrl(f);
       html += `
         <div class="media-thumb">
-          <img src="${getRawUrl(f)}" alt="" onerror="this.style.opacity='.15'">
+          <img src="${mediaThumb(f)}" alt="" onerror="this.style.opacity='.15'">
+          ${isVid ? '<span class="media-thumb-video-badge">🎬 video</span>' : ''}
           <div class="media-thumb-overlay">
             <span class="media-thumb-name">${esc(f)}</span>
             <div class="media-thumb-actions">
               ${!isFirst ? `<button class="media-thumb-btn" onclick="movePhoto(${id},${i},-1)" title="Sposta a sinistra">◀</button>` : ''}
               ${!isLast  ? `<button class="media-thumb-btn" onclick="movePhoto(${id},${i},1)"  title="Sposta a destra">▶</button>` : ''}
-              <button class="media-thumb-btn star"   onclick="setAsCover(${id},'${esc(f)}')"  title="Imposta come copertina">⭐</button>
-              <button class="media-thumb-btn danger" onclick="removePhoto(${id},'${esc(f)}')" title="Elimina da GitHub">🗑</button>
+              ${!isVid   ? `<button class="media-thumb-btn star" onclick="setAsCover(${id},${i})" title="Imposta come copertina">⭐</button>` : ''}
+              <button class="media-thumb-btn danger" onclick="removePhoto(${id},${i})" title="Elimina">🗑</button>
             </div>
           </div>
         </div>`;
@@ -1297,36 +1354,15 @@ function renderMediaManager(id) {
     html += `<p class="media-empty">Nessuna foto — vai in «Carica Foto» e collega le immagini a questo evento.</p>`;
   }
 
-  /* ── VIDEO ── */
-  html += `<span class="media-sub-label">🎥 Video (YouTube / Vimeo)</span>`;
-  if (videos.length) {
-    html += `<div class="media-video-list">`;
-    videos.forEach((url, i) => {
-      const icon = url.includes('youtu') ? '▶️' : url.includes('vimeo') ? '🎬' : '🎥';
-      html += `
-        <div class="media-video-item">
-          <span class="vid-icon">${icon}</span>
-          <span class="vid-url"><a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a></span>
-          <button class="btn-sm btn-danger" onclick="removeVideoItem(${id},${i})">🗑</button>
-        </div>`;
-    });
-    html += `</div>`;
-  } else {
-    html += `<p class="media-empty">Nessun video. Incolla un link YouTube o Vimeo qui sotto.</p>`;
-  }
-  html += `
-    <div class="media-video-add">
-      <input type="text" id="video-input-${id}" placeholder="https://youtu.be/… o https://vimeo.com/…">
-      <button onclick="addVideoItem(${id})">+ Aggiungi</button>
-    </div>`;
-
   container.innerHTML = html;
 }
 
-function setAsCover(id, filename) {
+function setAsCover(id, index) {
   const item = getArchiveItem(id);
-  if (!item) return;
+  const filename = item?.gallery?.[index];
+  if (!filename) return;
   item.img = filename;
+  markDirty();
   syncHiddenInputs(id);
   renderMediaManager(id);
   showToast(`⭐ "${filename}" impostata come copertina`, 'success');
@@ -1337,6 +1373,7 @@ function removeCoverPhoto(id) {
   if (!item) return;
   if (!confirm(`Scollegare la copertina dall'evento?\n\nIl file NON viene eliminato da GitHub, viene solo rimosso come copertina.`)) return;
   item.img = '';
+  markDirty();
   syncHiddenInputs(id);
   renderMediaManager(id);
   showToast('Copertina scollegata', 'success');
@@ -1346,19 +1383,26 @@ function updateImgPos(id, pos) {
   const item = getArchiveItem(id);
   if (!item) return;
   item.imgPos = pos;
+  markDirty();
   // Aggiorna l'anteprima live nella miniatura copertina
   const wrap = document.querySelector(`#media-mgr-${id} .media-cover-wrap img`);
   if (wrap) wrap.style.objectPosition = pos;
 }
 
-async function removePhoto(id, filename) {
+async function removePhoto(id, index) {
   const item = getArchiveItem(id);
-  if (!item) return;
-  if (!confirm(`Eliminare "${filename}" dalla galleria?\n\nATTENZIONE: il file verrà eliminato definitivamente da GitHub (azione irreversibile).`)) return;
+  const filename = item?.gallery?.[index];
+  if (!filename) return;
+  const isGitHubFile = !filename.startsWith('http');
+  const warn = isGitHubFile
+    ? `Eliminare "${filename}" dalla galleria?\n\nATTENZIONE: il file verrà eliminato definitivamente da GitHub (azione irreversibile).`
+    : `Rimuovere questo file dalla galleria?\n\nIl file resta su Cloudinary, viene solo scollegato dall'evento.`;
+  if (!confirm(warn)) return;
 
   const wasCover = item.img === filename;
-  item.gallery = (item.gallery || []).filter(f => f !== filename);
+  item.gallery.splice(index, 1);
   if (wasCover) item.img = '';
+  markDirty();
   syncHiddenInputs(id);
   renderMediaManager(id);
 
@@ -1385,28 +1429,8 @@ function movePhoto(id, index, dir) {
   const ni = index + dir;
   if (ni < 0 || ni >= g.length) return;
   [g[index], g[ni]] = [g[ni], g[index]];
+  markDirty();
   syncHiddenInputs(id);
-  renderMediaManager(id);
-}
-
-function addVideoItem(id) {
-  const input = document.getElementById(`video-input-${id}`);
-  const url = input?.value?.trim();
-  if (!url || !url.startsWith('http')) { showToast('⚠️ Inserisci un URL YouTube o Vimeo valido', 'error'); return; }
-  const item = getArchiveItem(id);
-  if (!item) return;
-  item.videos = item.videos || [];
-  if (item.videos.includes(url)) { showToast('⚠️ Video già presente in lista', 'error'); return; }
-  item.videos.push(url);
-  renderMediaManager(id);
-  showToast('✅ Video aggiunto', 'success');
-}
-
-function removeVideoItem(id, index) {
-  const item = getArchiveItem(id);
-  if (!item || !item.videos) return;
-  if (!confirm('Rimuovere questo video dalla lista?')) return;
-  item.videos.splice(index, 1);
   renderMediaManager(id);
 }
 
@@ -1495,6 +1519,7 @@ function attachUploadedFileToEvent(filename) {
   const eventVal = sel?.value;
   const imageType = typeEl?.value || 'gallery';
   if (!eventVal) return;
+  markDirty();
 
   if (eventVal === 'featured') {
     DATA.featuredEvent = DATA.featuredEvent || {};
@@ -1562,31 +1587,8 @@ async function uploadFiles(files) {
     statusText.textContent = `Caricamento ${i+1}/${validFiles.length}: ${file.name}`;
     fill.style.width = `${Math.round((i/validFiles.length)*100)}%`;
     try {
-      let fileRef; // sarà URL Cloudinary oppure nome file GitHub
-
-      if (useCloudinary) {
-        // ── CLOUDINARY ──────────────────────────────────────────────
-        fileRef = await uploadToCloudinary(file);
-      } else {
-        // ── GITHUB ──────────────────────────────────────────────────
-        const base64 = await fileToBase64(file);
-        const b64content = base64.split(',')[1];
-        let sha = undefined;
-        try {
-          const check = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file.name}`,
-            { headers: { Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json' } });
-          if (check.ok) { const ex = await check.json(); sha = ex.sha; }
-        } catch(e) {}
-        const body = { message:`🖼️ Upload: ${file.name}`, content:b64content };
-        if (sha) body.sha = sha;
-        const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file.name}`, {
-          method:'PUT',
-          headers:{ Authorization:`token ${TOKEN}`, Accept:'application/vnd.github.v3+json', 'Content-Type':'application/json' },
-          body:JSON.stringify(body)
-        });
-        if (!res.ok) { const err = await res.json(); showToast(`❌ ${file.name}: ${err.message}`, 'error'); continue; }
-        fileRef = file.name;
-      }
+      // URL Cloudinary oppure nome file GitHub
+      const fileRef = await uploadOne(file);
 
       // Collega il file all'evento selezionato
       attachUploadedFileToEvent(fileRef);
@@ -1635,6 +1637,10 @@ function addUploadedChip(fileRef, displayName, autoLinked) {
 
 window.addEventListener('DOMContentLoaded', () => {
   initStaticRichEditors();
+  // Traccia modifiche non salvate (input testuali, select, rich editor)
+  const app = document.getElementById('app');
+  app.addEventListener('input',  markDirty);
+  app.addEventListener('change', markDirty);
   const o   = localStorage.getItem('crea_owner');
   const r   = localStorage.getItem('crea_repo');
   const enc = localStorage.getItem('crea_token_enc');
