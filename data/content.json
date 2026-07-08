@@ -100,16 +100,16 @@
     ]
   },
   "featuredEvent": {
-    "title": "SCHIUMA PARTY!",
+    "title": "",
     "sub": "",
-    "day": "04",
-    "month": "LUG",
-    "fullDate": "Sabato 4 Luglio 2026 - ore 17",
-    "place": "Bar ComeTe",
-    "prices": "15€ - schiuma party + baby dance + panino e bibita",
-    "desc": "Il 4 luglio arriva l'evento più fresco dell'estate: l'Associazione CREA e il Bar ComeTe vi aspettano in Piazza della Chiesa a Pieve Emanuele per un imperdibile Schiuma Party! Tra baby dance, musica e ottimi panini con la salamella, il divertimento è assicurato per grandi e piccini!<br>",
+    "day": "",
+    "month": "",
+    "fullDate": "",
+    "place": "",
+    "prices": "",
+    "desc": "",
     "wa": "",
-    "img": "WhatsApp Image 2026-06-09 at 00.33.48.jpeg"
+    "img": ""
   },
   "archive": [
     {
@@ -156,7 +156,7 @@
       "d": "Novembre 2025",
       "n": "Sold Out!",
       "desc": "Il Cinema in Auditorium!",
-      "fullDesc": "<span style=\"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); font-size: medium;\">90 minuti di divertimento per i piccoli con K-Pop Demon Hunters, e meritato relax per i genitori!</span><br>",
+      "fullDesc": "<span style=\"color: rgb(0, 0, 0);\">90 minuti di divertimento per i piccoli con K-Pop Demon Hunters, e meritato relax per i genitori!</span>",
       "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753844/jbbrs7eheaeitwtvq1da.jpg",
       "gallery": [
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751615/nby3rriinrhlaeldebtj.jpg",
@@ -213,7 +213,7 @@
       "d": "Maggio 2026",
       "n": "100+ Partecipanti",
       "desc": "L’emozione de \"Il Robot Selvaggio\" sotto il cielo stellato",
-      "fullDesc": "L’emozione de \"<i>Il Robot Selvaggio</i>\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini&nbsp;<br>",
+      "fullDesc": "L’emozione de \"<i>Il Robot Selvaggio</i>\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini&nbsp;",
       "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg",
       "gallery": [
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg",
@@ -234,7 +234,7 @@
       "d": "Maggio 2026",
       "n": "",
       "desc": "Festa del Grazie",
-      "fullDesc": "Il nostro piccolo contributo alla Festa del Grazie, con le \"<i>Olimpiadi dei giochi di una volta</i>”.  Sfide senza tempo, sorrisi e tanto divertimento all'aria aperta per grandi e piccini!&nbsp;<br>",
+      "fullDesc": "Il nostro piccolo contributo alla Festa del Grazie, con le \"<i>Olimpiadi dei giochi di una volta</i>”.  Sfide senza tempo, sorrisi e tanto divertimento all'aria aperta per grandi e piccini!&nbsp;",
       "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312269/ldnv5bbt4xn1urnfmuzy.jpg",
       "gallery": [
         "https://res.cloudinary.com/daxrdik7k/video/upload/v1780312399/iepieoecz73isgmklahl.mp4",
@@ -242,6 +242,20 @@
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312452/llq6vwku3grmkrm4qrad.jpg",
         "https://res.cloudinary.com/daxrdik7k/video/upload/v1780312437/agtqq3vdnvx3njbnliqb.mov",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312468/ho8os9hesck74jo32ufd.jpg"
+      ]
+    },
+    {
+      "id": 9,
+      "date": "2026-07-08",
+      "tag": "famiglie",
+      "t": "SCHIUMA PARTY!",
+      "d": "Luglio 2026",
+      "n": "Sold out!",
+      "desc": "Il 4 luglio arriva l'evento più fresco dell'estate: l'Associazione CREA e il Bar ComeTe vi aspettano in Piazza della Chi",
+      "fullDesc": "Il 4 luglio arriva l'evento più fresco dell'estate: l'Associazione CREA e il Bar ComeTe vi aspettano in Piazza della Chiesa a Pieve Emanuele per un imperdibile Schiuma Party! Tra baby dance, musica e ottimi panini con la salamella, il divertimento è assicurato per grandi e piccini!",
+      "img": "WhatsApp Image 2026-06-09 at 00.33.48.jpeg",
+      "gallery": [
+        "WhatsApp Image 2026-06-09 at 00.33.48.jpeg"
       ]
     }
   ],
