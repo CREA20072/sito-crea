@@ -403,7 +403,10 @@
         }
         function cld(u, w) {
             if (!u || !u.includes('res.cloudinary.com') || !u.includes('/upload/')) return u || '';
-            if (isVideoUrl(u)) return u.replace('/upload/', '/upload/q_auto/');
+            // Video: transcodifica forzata a MP4 H.264 + audio AAC — l'unico formato
+            // che tutti i browser riproducono con audio (i .mov/HEVC di iPhone no).
+            if (isVideoUrl(u)) return u.replace('/upload/', '/upload/f_mp4,vc_h264,ac_aac,q_auto/')
+                                       .replace(/\.(mp4|mov|webm)(\?.*)?$/i, '.mp4');
             return u.replace('/upload/', `/upload/f_auto,q_auto${w ? ',w_' + w : ''}/`);
         }
         /* Poster jpg del primo frame di un video Cloudinary */
