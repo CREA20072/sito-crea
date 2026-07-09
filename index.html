@@ -257,7 +257,7 @@
         <button id="lightbox-close" onclick="closeLightbox()" aria-label="Chiudi foto"><i data-lucide="x" class="w-4 h-4"></i></button>
         <button id="lightbox-prev" onclick="event.stopPropagation();moveLightbox(-1)" aria-label="Foto precedente" style="display:none"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
         <img id="lightbox-img" src="" alt="Foto evento">
-        <video id="lightbox-video" controls playsinline style="display:none" onclick="event.stopPropagation()"></video>
+        <video id="lightbox-video" controls playsinline preload="metadata" style="display:none" onclick="event.stopPropagation()"></video>
         <button id="lightbox-next" onclick="event.stopPropagation();moveLightbox(1)" aria-label="Foto successiva" style="display:none"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
 
@@ -405,7 +405,8 @@
             if (!u || !u.includes('res.cloudinary.com') || !u.includes('/upload/')) return u || '';
             // Video: transcodifica forzata a MP4 H.264 + audio AAC — l'unico formato
             // che tutti i browser riproducono con audio (i .mov/HEVC di iPhone no).
-            if (isVideoUrl(u)) return u.replace('/upload/', '/upload/f_mp4,vc_h264,ac_aac,q_auto/')
+            // w_1280,c_limit: i video iPhone 4K pesano decine di MB, per il web basta 1280px.
+            if (isVideoUrl(u)) return u.replace('/upload/', '/upload/f_mp4,vc_h264,ac_aac,q_auto,w_1280,c_limit/')
                                        .replace(/\.(mp4|mov|webm)(\?.*)?$/i, '.mp4');
             return u.replace('/upload/', `/upload/f_auto,q_auto${w ? ',w_' + w : ''}/`);
         }
