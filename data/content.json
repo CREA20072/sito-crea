@@ -259,6 +259,12 @@
       ]
     }
   ],
+  "community": {
+    "count": "250+",
+    "caption": "cittadini attivi nella nostra community.<br>Unisciti all'alveare! 🐝",
+    "bannerTitle": "Non perderti il prossimo evento!",
+    "bannerText": "Seguici per scoprire in anteprima le iniziative di CREA 20072."
+  },
   "footer": {
     "email": "accrea20072@gmail.com",
     "quote": "Ogni evento è un passo in più per rendere Pieve Emanuele un luogo vivo, accogliente e partecipato.",

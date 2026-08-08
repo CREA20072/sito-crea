@@ -138,12 +138,6 @@
   .upload-zone .upload-icon { font-size:2rem; margin-bottom:.5rem; }
   .upload-zone .upload-text { font-size:.78rem; font-weight:700; color:var(--text-light); text-transform:uppercase; letter-spacing:.06em; }
   .upload-zone .upload-sub  { font-size:.7rem; color:var(--text-light); margin-top:.25rem; }
-  .upload-progress { margin-top:.75rem; display:none; }
-  .upload-progress-bar  { height:4px; background:var(--gray-mid); border-radius:999px; overflow:hidden; }
-  .upload-progress-fill { height:100%; background:var(--honey); border-radius:999px; transition:width .3s; }
-  .uploaded-files { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.75rem; }
-  .uploaded-chip { background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; border-radius:999px; padding:.3rem .8rem; font-size:.72rem; font-weight:700; display:flex; align-items:center; gap:.4rem; cursor:pointer; transition:all .2s; }
-  .uploaded-chip:hover { background:#dcfce7; }
 
   /* ── STATUS BAR ── */
   .status-bar { background:white; border-radius:var(--radius); padding:1rem 1.5rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 12px rgba(0,0,0,.06); }
@@ -279,7 +273,6 @@
         <div class="nav-group-label">EVENTI</div>
         <div class="nav-item active" onclick="showSection('evento')"   id="nav-evento">  <span class="icon">⭐</span> Prossimo Evento</div>
         <div class="nav-item"        onclick="showSection('archivio')" id="nav-archivio"><span class="icon">📁</span> Archivio</div>
-        <div class="nav-item"        onclick="showSection('upload')"   id="nav-upload">  <span class="icon">🖼️</span> Carica Foto</div>
         <div class="nav-divider"></div>
         <div class="nav-group-label">SITO</div>
         <div class="nav-item" onclick="showSection('home')"     id="nav-home">    <span class="icon">🏠</span> Homepage</div>
@@ -333,7 +326,25 @@
             <div class="dim-hint"><span class="ratio-icon">📐</span>
               Dimensioni ideali: <strong>600 × 900 px</strong> — verticale 2:3 (tipo flyer Instagram o A4 portrait) — evita il ritaglio automatico
             </div>
-            <div class="field"><label>Nome file immagine (già caricato su GitHub)</label><input id="ev-img" type="text" placeholder="mago.png"></div>
+            <div style="display:flex;gap:.75rem;align-items:flex-start;flex-wrap:wrap">
+              <div style="flex:1;min-width:220px">
+                <div class="field" style="margin-bottom:.5rem"><label>Locandina (carica qui a destra, o incolla un URL)</label><input id="ev-img" type="text" placeholder="Carica →" oninput="updateEvImgPreview(this.value)"></div>
+                <div id="ev-img-preview" style="display:none;margin-top:.5rem;border-radius:10px;overflow:hidden;height:120px;background:#eee;width:90px">
+                  <img id="ev-img-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover">
+                </div>
+              </div>
+              <div style="flex-shrink:0;padding-top:1.6rem">
+                <div class="upload-zone" style="padding:.9rem 1.25rem;min-width:180px;text-align:center"
+                     ondragover="event.preventDefault();this.classList.add('drag-over')"
+                     ondragleave="this.classList.remove('drag-over')"
+                     ondrop="event.preventDefault();this.classList.remove('drag-over');uploadFeaturedImg(Array.from(event.dataTransfer.files))">
+                  <input type="file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%" onchange="uploadFeaturedImg(Array.from(this.files));this.value=''">
+                  <div style="font-size:1.5rem;margin-bottom:.25rem">🖼️</div>
+                  <div class="upload-text" style="font-size:.72rem">Carica locandina</div>
+                  <div class="upload-sub" style="font-size:.65rem;margin-top:.15rem">JPG, PNG, WebP</div>
+                </div>
+              </div>
+            </div>
           </div>
           <!-- ARCHIVIA EVENTO -->
           <div class="archive-trigger">
@@ -351,49 +362,6 @@
         <div class="panel-body">
           <div id="archive-list" class="archive-list"></div>
           <button class="add-event-btn" onclick="addArchiveItem()" style="margin-top:1rem">+ Aggiungi nuovo evento passato</button>
-        </div>
-      </div>
-
-      <!-- 🖼️ CARICA FOTO -->
-      <div class="panel" id="panel-upload">
-        <div class="panel-header"><span class="icon">🖼️</span>
-          <div><h2>Carica Immagini</h2><p>Trascina i file — vengono caricati direttamente su GitHub</p></div>
-        </div>
-        <div class="panel-body">
-          <div class="section-block">
-            <div class="section-label">🎯 A quale evento appartengono le foto?</div>
-            <div class="field-row">
-              <div class="field">
-                <label>Evento di destinazione</label>
-                <select id="upload-event-selector">
-                  <option value="">— Seleziona evento —</option>
-                  <option value="featured">⭐ Prossimo Evento (copertina)</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Tipo di immagine</label>
-                <select id="upload-image-type">
-                  <option value="gallery">📸 Galleria foto</option>
-                  <option value="cover">🖼️ Immagine copertina</option>
-                </select>
-              </div>
-            </div>
-            <div id="upload-destination-preview" style="font-size:.72rem;color:var(--honey-dark);font-weight:700;background:#fffbe6;border:1px solid #ffe082;border-radius:8px;padding:.5rem .9rem;display:none;"></div>
-          </div>
-          <div class="section-block">
-            <div class="section-label">📤 Carica file</div>
-            <div class="upload-zone" id="upload-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-              <input type="file" id="file-input" multiple accept="image/*,video/*" onchange="handleFileSelect(event)">
-              <div class="upload-icon">📤</div>
-              <div class="upload-text">Trascina foto o video qui, oppure clicca per sceglierli</div>
-              <div class="upload-sub" id="upload-zone-sub">PNG, JPG, JPEG, WebP — max 5 MB per file (GitHub)</div>
-            </div>
-            <div class="upload-progress" id="upload-progress">
-              <div style="font-size:.75rem;font-weight:700;color:var(--text-light);margin-bottom:.4rem" id="upload-status-text">Caricamento...</div>
-              <div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-progress-fill" style="width:0%"></div></div>
-            </div>
-            <div id="uploaded-files-list" class="uploaded-files" style="margin-top:1rem"></div>
-          </div>
         </div>
       </div>
 
@@ -459,6 +427,18 @@
                 style="flex:1;padding:.6rem;border-radius:8px;border:2px solid var(--honey);background:#FFF8E6;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:.2s">
                 Alta<div style="font-size:.65rem;font-weight:400;color:var(--text-light);margin-top:.15rem">~90%</div>
               </button>
+            </div>
+          </div>
+          <!-- COMMUNITY / BANNER -->
+          <div class="section-block" style="margin-top:1.25rem">
+            <div class="section-label">📣 Numeri community e banner mobile</div>
+            <div class="field-row">
+              <div class="field"><label>Numero grande (sezione scura)</label><input id="comm-count" type="text" placeholder="250+"></div>
+              <div class="field"><label>Testo sotto il numero</label><input id="comm-caption" type="text" placeholder="cittadini attivi nella nostra community.&lt;br&gt;Unisciti all'alveare! 🐝"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Titolo banner social (solo mobile)</label><input id="comm-banner-title" type="text" placeholder="Non perderti il prossimo evento!"></div>
+              <div class="field"><label>Testo banner social (solo mobile)</label><input id="comm-banner-text" type="text" placeholder="Seguici per scoprire in anteprima..."></div>
             </div>
           </div>
           <!-- ANTEPRIMA LIVE -->
@@ -567,7 +547,34 @@ let CLOUDINARY_CLOUD = '', CLOUDINARY_PRESET = '';
 
 // ─── MODIFICHE NON SALVATE ────────────────────────────────────────────────
 let DIRTY = false;
-function markDirty() { DIRTY = true; }
+let _draftTimer = null;
+
+function updateSaveBtn() {
+  const btn = document.getElementById('save-btn');
+  if (!btn) return;
+  btn.disabled = !DIRTY;
+  btn.textContent = DIRTY ? '💾 Salva modifiche' : '✓ Tutto salvato';
+}
+
+function markDirty() {
+  DIRTY = true;
+  updateSaveBtn();
+  // Bozza automatica in localStorage (1,5s dopo l'ultima modifica):
+  // un crash del browser non butta via il lavoro non salvato.
+  clearTimeout(_draftTimer);
+  _draftTimer = setTimeout(() => {
+    try {
+      collectForm();
+      localStorage.setItem('crea_draft', JSON.stringify({ when: Date.now(), data: DATA }));
+    } catch(e) {}
+  }, 1500);
+}
+
+function clearDraft() {
+  clearTimeout(_draftTimer);
+  localStorage.removeItem('crea_draft');
+}
+
 window.addEventListener('beforeunload', e => {
   if (DIRTY) { e.preventDefault(); e.returnValue = ''; }
 });
@@ -781,7 +788,22 @@ function startApp() {
   document.getElementById('unlock-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   document.getElementById('repo-label').textContent = `${OWNER}/${REPO}`;
+  // Ripristino bozza non salvata (es. dopo un crash o una chiusura accidentale)
+  try {
+    const raw = localStorage.getItem('crea_draft');
+    if (raw) {
+      const draft = JSON.parse(raw);
+      const when = new Date(draft.when).toLocaleString('it-IT');
+      if (draft.data && confirm(`📝 Trovata una bozza non salvata (${when}).\n\nOK = riprendi la bozza\nAnnulla = scartala e usa i dati pubblicati`)) {
+        DATA = draft.data;
+        DIRTY = true;
+      } else {
+        clearDraft();
+      }
+    }
+  } catch(e) { clearDraft(); }
   populateForm();
+  updateSaveBtn();
   showToast('✅ Connesso con successo!', 'success');
 }
 
@@ -818,10 +840,26 @@ async function saveAll() {
         body: JSON.stringify({ message: '✏️ Admin: aggiornamento contenuti', content, sha: SHA })
       }
     );
+    if (res.status === 409) {
+      // Conflitto: il file su GitHub è cambiato dopo l'ultimo caricamento.
+      // Recupera lo SHA aggiornato: al prossimo Salva le modifiche del form
+      // verranno pubblicate (sovrascrivendo quelle fatte altrove).
+      const fresh = await fetch(
+        `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/content.json`,
+        { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
+      );
+      if (fresh.ok) SHA = (await fresh.json()).sha;
+      showToast('⚠️ Qualcun altro ha salvato nel frattempo. Premi di nuovo «Salva modifiche»: pubblicherai la TUA versione (la sua verrà sovrascritta).', 'error');
+      btn.disabled = false;
+      return;
+    }
     if (!res.ok) throw new Error((await res.json()).message);
     SHA = (await res.json()).content.sha;
     DIRTY = false;
+    clearDraft();
+    updateSaveBtn();
     showToast('✅ Salvato! Il sito si aggiorna tra pochi secondi.', 'success');
+    return;
   } catch(e) { showToast('❌ Errore nel salvataggio: ' + e.message, 'error'); }
   btn.disabled = false;
 }
@@ -847,6 +885,9 @@ function populateForm() {
   setTimeout(updateHeroPreview, 100);
   setRich('hero-subtitle', D.hero?.subtitle);
   if (D.hero?.bg) updateHeroBgPreview(D.hero.bg);
+  // Community / banner
+  set('comm-count', D.community?.count); set('comm-caption', D.community?.caption);
+  set('comm-banner-title', D.community?.bannerTitle); set('comm-banner-text', D.community?.bannerText);
   // Chi siamo
   set('about-title', D.about?.title); set('about-tagline', D.about?.tagline);
   setRich('about-text', D.about?.text);
@@ -866,8 +907,8 @@ function populateForm() {
   updateCloudinaryStatus();
   // Archivio
   renderArchiveList();
-  // Upload selector
-  populateUploadSelector();
+  // Anteprima locandina
+  updateEvImgPreview(ev.img || '');
 }
 
 function set(id, val) { const el = document.getElementById(id); if (el) el.value = val || ''; }
@@ -883,6 +924,7 @@ function collectForm() {
     desc: getRich('ev-desc'), wa: g('ev-wa'), img: g('ev-img')
   };
   DATA.hero = { title: g('hero-title'), subtitle: getRich('hero-subtitle'), cta: g('hero-cta'), bg: g('hero-bg'), overlay: parseInt(document.getElementById('hero-overlay-val')?.value ?? 65), height: _heroHeight };
+  DATA.community = { count: g('comm-count'), caption: g('comm-caption'), bannerTitle: g('comm-banner-title'), bannerText: g('comm-banner-text') };
   DATA.about = { ...DATA.about, title: g('about-title'), text: getRich('about-text'), tagline: g('about-tagline'), pillars: collectPillars() };
   DATA.decalogo = { ...DATA.decalogo, items: collectDecalogo() };
   DATA.footer = { ...DATA.footer, email: g('footer-email'), quote: getRich('footer-quote'),
@@ -1015,7 +1057,7 @@ function renderArchiveList() {
         <div class="section-block">
           <div class="section-label">🎬 Gestione Media</div>
           <div class="dim-hint"><span class="ratio-icon">📐</span>
-            Copertina ideale: <strong>800 × 600 px</strong> orizzontale — Vai in <strong>Carica Foto</strong> per aggiungere immagini
+            Copertina ideale: <strong>800 × 600 px</strong> orizzontale — trascina le foto nella zona qui sotto
           </div>
           <input type="hidden" id="ai-img-${item.id}" value="${esc(item.img)}">
           <input type="hidden" id="ai-gallery-${item.id}" value="${esc((item.gallery||[]).join(', '))}">
@@ -1241,14 +1283,9 @@ function updateCloudinaryStatus() {
   if (cloud && preset) {
     el.textContent = `☁️ Cloudinary attivo — ${cloud} / preset: ${preset}`;
     el.style.cssText = 'display:block;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:8px;margin-top:.25rem';
-    // Aggiorna la zona di upload
-    const sub = document.getElementById('upload-zone-sub');
-    if (sub) sub.textContent = 'PNG, JPG, WebP, MP4, MOV — caricati su Cloudinary (privati)';
   } else {
-    el.textContent = '⚠️ Cloudinary non configurato — le foto vengono caricate su GitHub (pubblico)';
+    el.textContent = '⚠️ Cloudinary non configurato — le foto vengono caricate su GitHub (pubblico), niente video';
     el.style.cssText = 'display:block;background:#fffbe6;border:1px solid #ffe082;color:#92670a;font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:8px;margin-top:.25rem';
-    const sub = document.getElementById('upload-zone-sub');
-    if (sub) sub.textContent = 'PNG, JPG, JPEG, WebP — max 5 MB per file (GitHub)';
   }
 }
 
@@ -1362,8 +1399,22 @@ function renderMediaManager(id) {
     });
     html += `</div>`;
   } else {
-    html += `<p class="media-empty">Nessuna foto — vai in «Carica Foto» e collega le immagini a questo evento.</p>`;
+    html += `<p class="media-empty">Nessuna foto — trascinala qui sotto.</p>`;
   }
+
+  /* ── UPLOAD DIRETTO NELL'EVENTO ── */
+  const useCloudinary = !!(CLOUDINARY_CLOUD && CLOUDINARY_PRESET);
+  html += `
+    <div class="upload-zone" style="margin-top:.9rem;padding:1rem"
+         ondragover="event.preventDefault();this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="event.preventDefault();this.classList.remove('drag-over');uploadEventMedia(${id},Array.from(event.dataTransfer.files))">
+      <input type="file" multiple accept="${useCloudinary ? 'image/*,video/*' : 'image/*'}"
+             onchange="uploadEventMedia(${id},Array.from(this.files));this.value=''">
+      <div class="upload-icon" style="font-size:1.4rem;margin-bottom:.2rem">📤</div>
+      <div class="upload-text" style="font-size:.7rem">Trascina qui foto${useCloudinary ? ' e video' : ''} — o clicca per sceglierli</div>
+      <div class="upload-sub">${useCloudinary ? 'Caricati su Cloudinary e collegati subito a questo evento' : 'PNG/JPG max 5MB (GitHub) — collegati subito a questo evento'}</div>
+    </div>`;
 
   container.innerHTML = html;
 }
@@ -1485,136 +1536,59 @@ function esc(s) {
 
 // ─── UPLOAD ────────────────────────────────────────────────────────────────
 
-function populateUploadSelector() {
-  const sel = document.getElementById('upload-event-selector');
-  if (!sel) return;
-  // Rimuovi le opzioni archivio precedenti (tieni le prime 2: vuota + featured)
-  while (sel.options.length > 2) sel.remove(2);
-  const sorted = [...(DATA.archive||[])].sort((a,b) => new Date(b.date) - new Date(a.date));
-  sorted.forEach(ev => {
-    const opt = document.createElement('option');
-    opt.value = String(ev.id);
-    opt.textContent = `${ev.d ? ev.d + ' — ' : ''}${ev.t}`;
-    sel.appendChild(opt);
-  });
-  sel.addEventListener('change', () => {
-    updateDestinationPreview();
-    document.getElementById('uploaded-files-list').innerHTML = ''; // pulisce i chip al cambio evento
-  });
-  document.getElementById('upload-image-type')?.addEventListener('change', updateDestinationPreview);
+/* Anteprima locandina Prossimo Evento */
+function updateEvImgPreview(val) {
+  const wrap = document.getElementById('ev-img-preview');
+  const img  = document.getElementById('ev-img-preview-img');
+  if (!wrap || !img) return;
+  if (val) { img.src = mediaThumb(val); wrap.style.display = 'block'; }
+  else     { wrap.style.display = 'none'; }
 }
 
-function updateDestinationPreview() {
-  const sel   = document.getElementById('upload-event-selector');
-  const type  = document.getElementById('upload-image-type');
-  const prev  = document.getElementById('upload-destination-preview');
-  if (!sel || !prev) return;
-  const eventVal = sel.value;
-  const typeVal  = type?.value || 'gallery';
-  if (!eventVal) { prev.style.display = 'none'; return; }
-  let label = '';
-  if (eventVal === 'featured') {
-    label = `⭐ Prossimo Evento → Immagine copertina`;
-  } else {
-    const ev = DATA.archive?.find(e => String(e.id) === eventVal);
-    const typeLabel = typeVal === 'cover' ? 'Immagine copertina' : 'Galleria foto';
-    label = `📁 ${ev?.t || '?'} → ${typeLabel}`;
-  }
-  prev.textContent = `Le prossime foto andranno a: ${label}`;
-  prev.style.display = 'block';
+/* Upload locandina Prossimo Evento */
+async function uploadFeaturedImg(files) {
+  const file = files?.[0];
+  if (!file || !file.type.startsWith('image/')) { showToast('⚠️ Seleziona un file immagine', 'error'); return; }
+  showToast('Caricamento locandina…', 'loading');
+  try {
+    const url = await uploadOne(file, '🖼️ Locandina');
+    set('ev-img', url);
+    updateEvImgPreview(url);
+    markDirty();
+    showToast('✅ Locandina caricata — clicca Salva tutto per pubblicare', 'success');
+  } catch(e) { showToast('❌ Errore: ' + e.message, 'error'); }
 }
 
-function attachUploadedFileToEvent(filename) {
-  const sel      = document.getElementById('upload-event-selector');
-  const typeEl   = document.getElementById('upload-image-type');
-  const eventVal = sel?.value;
-  const imageType = typeEl?.value || 'gallery';
-  if (!eventVal) return;
-  markDirty();
-
-  if (eventVal === 'featured') {
-    DATA.featuredEvent = DATA.featuredEvent || {};
-    DATA.featuredEvent.img = filename;
-    set('ev-img', filename);
-    return;
-  }
-
-  const eventId = parseInt(eventVal);
-  const ev = DATA.archive?.find(e => e.id === eventId);
-  if (!ev) return;
-
-  if (imageType === 'cover') {
-    ev.img = filename;
-    const inp = document.getElementById(`ai-img-${eventId}`);
-    if (inp) inp.value = filename;
-  } else {
-    if (!ev.gallery) ev.gallery = [];
-    if (!ev.gallery.includes(filename)) ev.gallery.push(filename);
-    const inp = document.getElementById(`ai-gallery-${eventId}`);
-    if (inp) {
-      const cur = inp.value.trim();
-      inp.value = cur ? `${cur}, ${filename}` : filename;
-    }
-  }
-  // Aggiorna il media manager se l'evento è aperto
-  if (document.getElementById(`media-mgr-${eventId}`)) renderMediaManager(eventId);
-}
-
-function handleDragOver(e)  { e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
-function handleDragLeave(e) { document.getElementById('upload-zone').classList.remove('drag-over'); }
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('upload-zone').classList.remove('drag-over');
-  uploadFiles(Array.from(e.dataTransfer.files));
-}
-function handleFileSelect(e) { uploadFiles(Array.from(e.target.files)); }
-
-async function uploadFiles(files) {
+/* Upload foto/video direttamente dentro un evento dell'archivio */
+async function uploadEventMedia(id, files) {
+  const item = getArchiveItem(id);
+  if (!item) return;
   const useCloudinary = !!(CLOUDINARY_CLOUD && CLOUDINARY_PRESET);
-
-  // Filtra per tipo: Cloudinary accetta anche video, GitHub solo immagini
-  const validFiles = useCloudinary
-    ? files.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'))
-    : files.filter(f => f.type.startsWith('image/'));
-
-  if (!validFiles.length) {
-    showToast(useCloudinary ? '⚠️ Seleziona file immagine o video' : '⚠️ Seleziona solo file immagine', 'error');
+  const valid = files.filter(f => f.type.startsWith('image/') || (useCloudinary && f.type.startsWith('video/')));
+  if (!valid.length) {
+    showToast(useCloudinary ? '⚠️ Seleziona file immagine o video' : '⚠️ Solo immagini (configura Cloudinary in Contatti per i video)', 'error');
     return;
   }
-
-  // Limiti dimensione: Cloudinary free 100MB per file, GitHub 25MB
   const maxSize = useCloudinary ? 100*1024*1024 : 5*1024*1024;
-  const maxLabel = useCloudinary ? '100MB' : '5MB';
-  const tooBig = validFiles.filter(f => f.size > maxSize);
-  if (tooBig.length) { showToast(`⚠️ File troppo grandi (max ${maxLabel}): ${tooBig.map(f=>f.name).join(', ')}`, 'error'); return; }
+  const tooBig = valid.filter(f => f.size > maxSize);
+  if (tooBig.length) { showToast(`⚠️ File troppo grandi (max ${useCloudinary?'100MB':'5MB'}): ${tooBig.map(f=>f.name).join(', ')}`, 'error'); return; }
 
-  const prog = document.getElementById('upload-progress');
-  const fill = document.getElementById('upload-progress-fill');
-  const statusText = document.getElementById('upload-status-text');
-  prog.style.display = 'block';
-
-  for (let i = 0; i < validFiles.length; i++) {
-    const file = validFiles[i];
-    statusText.textContent = `Caricamento ${i+1}/${validFiles.length}: ${file.name}`;
-    fill.style.width = `${Math.round((i/validFiles.length)*100)}%`;
+  let ok = 0;
+  for (let i = 0; i < valid.length; i++) {
+    showToast(`⏳ Caricamento ${i+1}/${valid.length}: ${valid[i].name}`, 'loading');
     try {
-      // URL Cloudinary oppure nome file GitHub
-      const fileRef = await uploadOne(file);
-
-      // Collega il file all'evento selezionato
-      attachUploadedFileToEvent(fileRef);
-      const eventVal = document.getElementById('upload-event-selector')?.value;
-      addUploadedChip(fileRef, file.name, !!eventVal);
-      const dest = useCloudinary ? 'Cloudinary' : 'GitHub';
-      showToast(`✅ ${file.name} caricato su ${dest}${eventVal ? ' e collegato!' : '!'}`, 'success');
-
-    } catch(e) { showToast(`❌ ${file.name}: ${e.message}`, 'error'); }
+      const ref = await uploadOne(valid[i]);
+      item.gallery = item.gallery || [];
+      if (!item.gallery.includes(ref)) item.gallery.push(ref);
+      // Prima immagine caricata su un evento senza copertina → diventa copertina
+      if (!item.img && !isVideoUrl(ref)) item.img = ref;
+      ok++;
+      markDirty();
+      syncHiddenInputs(id);
+      renderMediaManager(id);
+    } catch(e) { showToast(`❌ ${valid[i].name}: ${e.message}`, 'error'); }
   }
-
-  fill.style.width = '100%';
-  statusText.textContent = '✅ Completato!';
-  setTimeout(() => { prog.style.display='none'; fill.style.width='0%'; }, 2000);
-  document.getElementById('file-input').value = '';
+  if (ok) showToast(`✅ ${ok} file caricat${ok===1?'o':'i'} e collegat${ok===1?'o':'i'} — ricorda «Salva tutto»`, 'success');
 }
 
 function fileToBase64(file) {
@@ -1624,24 +1598,6 @@ function fileToBase64(file) {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
-}
-
-function addUploadedChip(fileRef, displayName, autoLinked) {
-  const list = document.getElementById('uploaded-files-list');
-  const chip = document.createElement('div');
-  chip.className = 'uploaded-chip';
-  const icon = autoLinked ? '🔗' : '📋';
-  const suffix = autoLinked ? ' (collegato)' : '';
-  const label = displayName || fileRef;
-  chip.title = `${fileRef}\n${autoLinked ? 'Collegato all\'evento' : 'Clicca per copiare'}`;
-  chip.innerHTML = `<span>${icon}</span> ${esc(label)}<span style="font-weight:400;font-size:.65rem;opacity:.7">${suffix}</span>`;
-  chip.onclick = () => {
-    navigator.clipboard.writeText(fileRef).then(() => {
-      chip.innerHTML = `<span>✅</span> Copiato!`;
-      setTimeout(() => { chip.innerHTML = `<span>${icon}</span> ${esc(label)}<span style="font-weight:400;font-size:.65rem;opacity:.7">${suffix}</span>`; }, 1500);
-    });
-  };
-  list.appendChild(chip);
 }
 
 // ─── AUTO-LOGIN ────────────────────────────────────────────────────────────
