@@ -149,7 +149,7 @@
   .danger-zone { border:2px solid var(--danger-soft); }
 
   /* ── TOAST ── */
-  #toast { position:fixed; bottom:1.5rem; right:1.5rem; max-width:380px; background:var(--black); color:white; padding:.9rem 1.2rem; border-radius:12px; font-size:.85rem; font-weight:600; box-shadow:0 8px 30px rgba(0,0,0,.3); z-index:999; transform:translateY(120px); opacity:0; transition:all .3s; border-left:4px solid var(--honey); line-height:1.5; }
+  #toast { cursor:pointer; position:fixed; bottom:1.5rem; right:1.5rem; max-width:380px; background:var(--black); color:white; padding:.9rem 1.2rem; border-radius:12px; font-size:.85rem; font-weight:600; box-shadow:0 8px 30px rgba(0,0,0,.3); z-index:999; transform:translateY(120px); opacity:0; transition:all .3s; border-left:4px solid var(--honey); line-height:1.5; }
   #toast.show { transform:none; opacity:1; }
   #toast.success { border-left-color:var(--ok); }
   #toast.error { border-left-color:var(--danger); }
@@ -349,9 +349,19 @@
             <div class="field" style="align-self:end"><button class="btn" onclick="saveCloudinary()">Salva configurazione Cloudinary</button></div>
           </div>
         </div>
+        <div class="card" id="token-card" data-nodirty>
+          <h2>Token GitHub</h2><p class="sub">Connesso a <strong id="repo-label">—</strong>. Sostituisci il token se è scaduto o se il salvataggio non funziona: bozza e modifiche restano.</p>
+          <div class="row">
+            <div class="field"><label for="new-token">Nuovo token</label><input id="new-token" type="password" placeholder="ghp_…" autocomplete="off">
+              <div class="help"><a href="https://github.com/settings/tokens/new?scopes=repo&description=CREA20072+Admin" target="_blank" rel="noopener">Crea un token con permesso «repo» →</a></div></div>
+            <div class="field"><label for="new-token-master">Password master</label><input id="new-token-master" type="password" autocomplete="current-password"></div>
+          </div>
+          <button class="btn" onclick="replaceToken()">Verifica e sostituisci token</button>
+          <button class="btn" onclick="checkTokenNow()">Controlla il token attuale</button>
+        </div>
         <div class="card danger-zone">
-          <h2>Account</h2><p class="sub">Connesso a <strong id="repo-label">—</strong></p>
-          <p style="font-size:.85rem;margin-bottom:1rem;line-height:1.6"><strong>Blocca</strong> chiude il pannello: riapri con la password master.<br><strong>Disconnetti</strong> cancella token e Cloudinary da questo computer: per rientrare servirà di nuovo il token GitHub.</p>
+          <h2>Account</h2>
+          <p style="font-size:.85rem;margin-bottom:1rem;line-height:1.6"><strong>Blocca</strong> chiude il pannello: riapri con la password master.<br><strong>Disconnetti</strong> cancella token e Cloudinary da questo computer: per rientrare servirà di nuovo il token GitHub. Le modifiche non salvate restano come bozza.</p>
           <button class="btn btn-danger" onclick="doDisconnect()">Disconnetti questo computer</button>
         </div>
       </section>
@@ -506,9 +516,9 @@ function doLock() {
 }
 
 function doDisconnect() {
-  const warn = DIRTY.size ? '\n\nATTENZIONE: hai modifiche non salvate, andranno perse.' : '';
-  if (!confirm('Disconnettere questo computer?\n\nVengono cancellati token GitHub e configurazione Cloudinary: per rientrare servirà di nuovo il token.' + warn)) return;
-  ['crea_vault', 'crea_owner', 'crea_repo', 'crea_draft', ...LEGACY_KEYS].forEach(k => localStorage.removeItem(k));
+  if (!confirm('Disconnettere questo computer?\n\nVengono cancellati token GitHub e configurazione Cloudinary: per rientrare servirà di nuovo il token. Le modifiche non salvate restano come bozza.')) return;
+  if (DIRTY.size) saveDraftNow();
+  ['crea_vault', 'crea_owner', 'crea_repo', ...LEGACY_KEYS].forEach(k => localStorage.removeItem(k));
   sessionStorage.removeItem('crea_session');
   DIRTY.clear();
   location.reload();
@@ -519,6 +529,48 @@ function gh(path, opts = {}) {
   const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path.split('/').map(encodeURIComponent).join('/')}`;
   return fetch(url, { ...opts, headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', ...(opts.body ? { 'Content-Type': 'application/json' } : {}) } });
 }
+/* Chiede a GitHub chi è il token e cosa può fare. Restituisce { ok, msg }.
+   Serve perché con un repository pubblico la LETTURA funziona anche con un token
+   senza permessi di scrittura: il problema emerge solo al salvataggio, come "Not Found". */
+async function diagnoseToken(token = TOKEN) {
+  const headers = { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' };
+  try {
+    const u = await fetch('https://api.github.com/user', { headers });
+    if (u.status === 401) return { ok: false, msg: 'il token non è più valido (scaduto o revocato su GitHub).' };
+    if (!u.ok) return { ok: false, msg: `GitHub ha risposto con errore ${u.status} alla verifica del token.` };
+    const login  = (await u.json()).login;
+    const scopes = u.headers.get('x-oauth-scopes');          // null per i token "fine-grained"
+    const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}`, { headers });
+    const push = r.ok ? (await r.json()).permissions?.push : undefined;
+    if (scopes !== null && !/(^|,\s*)(repo|public_repo)(,|$)/.test(scopes))
+      return { ok: false, msg: `il token dell'account «${esc(login)}» non ha il permesso di scrittura (permessi attuali: ${esc(scopes) || 'nessuno'}). Serve un token con «repo».` };
+    if (push === false)
+      return { ok: false, msg: `l'account «${esc(login)}» non ha il permesso di scrivere su ${esc(OWNER)}/${esc(REPO)}.` };
+    if (scopes === null && push !== true)
+      return { ok: false, msg: `il token (tipo «fine-grained») non sembra avere il permesso «Contents: Read and write» su ${esc(OWNER)}/${esc(REPO)}.` };
+    return { ok: true, msg: `token valido: account «${esc(login)}», permessi ${esc(scopes ?? 'fine-grained')}.` };
+  } catch (e) { return { ok: false, msg: 'non riesco a contattare GitHub: ' + esc(e.message) }; }
+}
+async function checkTokenNow() {
+  toast('Controllo il token…', '', 0);
+  const d = await diagnoseToken();
+  toast((d.ok ? 'Tutto a posto: ' : 'Problema: ') + d.msg, d.ok ? 'success' : 'error', 12000);
+}
+async function replaceToken() {
+  const token = get('new-token'), master = $('new-token-master').value;
+  if (!token || !master) return toast('Inserisci il nuovo token e la password master.', 'error');
+  try { await decryptStr(localStorage.getItem('crea_vault'), master); }
+  catch (e) { return toast('Password master errata.', 'error'); }
+  toast('Verifico il nuovo token…', '', 0);
+  const d = await diagnoseToken(token);
+  if (!d.ok) return toast('Token non sostituito: ' + d.msg, 'error', 12000);
+  TOKEN = token;
+  await saveVault(master);
+  startSession();
+  val('new-token', ''); val('new-token-master', '');
+  toast(`Token sostituito (${d.msg}) ${DIRTY.size ? 'Ora premi «Salva e pubblica».' : ''}`, 'success', 9000);
+}
+
 const b64utf8 = str => btoa(Array.from(new TextEncoder().encode(str), b => String.fromCharCode(b)).join(''));
 const unb64utf8 = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g, '')), c => c.charCodeAt(0)));
 
@@ -560,6 +612,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   bindEditor();
   $('hero-height').addEventListener('click', e => { const v = e.target.closest('button')?.dataset.v; if (v) setHeroHeight(v); });
   $('site-link').href = SITE_URL;
+  $('toast').addEventListener('click', e => { if (e.target.tagName !== 'A') $('toast').className = ''; });   // clic = chiudi
   document.addEventListener('keydown', e => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's' && !$('app').hidden) { e.preventDefault(); if (DIRTY.size) saveAll(); }
   });
@@ -859,6 +912,7 @@ async function uploadOne(file) {
   const path = `${name}-${Date.now().toString(36)}${ext}`;      // nome unico: niente sovrascritture
   const content = (await fileToBase64(file)).split(',')[1];
   const res = await gh(path, { method: 'PUT', body: JSON.stringify({ message: `🖼️ Upload: ${path}`, content }) });
+  if ([401, 403, 404].includes(res.status)) throw new Error('GitHub rifiuta la scrittura: ' + (await diagnoseToken()).msg);
   if (!res.ok) throw new Error((await res.json()).message);
   return path;
 }
@@ -1000,6 +1054,13 @@ async function saveAll() {
       if (fresh.ok) SHA = (await fresh.json()).sha;
       updateSaveUI();
       return toast('Qualcun altro ha salvato nel frattempo. Premi di nuovo «Salva e pubblica» per pubblicare la TUA versione (sovrascrive l\'altra).', 'error', 12000);
+    }
+    if ([401, 403, 404].includes(res.status)) {
+      // quasi sempre un problema di permessi del token: chiedo a GitHub la causa precisa
+      const d = await diagnoseToken();
+      updateSaveUI();
+      return toast(`Salvataggio non riuscito: ${d.ok ? 'GitHub ha rifiutato la scrittura (' + res.status + ') anche se il token sembra a posto.' : d.msg}
+        <br>Le modifiche restano qui. Vai in <a href="#" onclick="showArea('impostazioni');$('new-token').focus();return false">Impostazioni → Token GitHub</a> per sostituire il token.`, 'error', 0);
     }
     if (!res.ok) throw new Error((await res.json()).message);
     SHA = (await res.json()).content.sha;
