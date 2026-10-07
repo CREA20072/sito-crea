@@ -1312,7 +1312,7 @@ async function uploadToCloudinary(file) {
 /* Richiesta in background (2 byte) che fa generare a Cloudinary la derivata video.
  * Deve produrre ESATTAMENTE lo stesso URL usato da cld() in index.html. */
 function prewarmVideo(url) {
-  const warm = url.replace('/upload/', '/upload/f_mp4,vc_h264,ac_aac,q_auto,w_1280,c_limit/')
+  const warm = url.replace('/upload/', '/upload/f_mp4,vc_h264,ac_aac,q_auto,w_1280,h_1280,c_limit/')
                   .replace(/\.(mp4|mov|webm)(\?.*)?$/i, '.mp4');
   fetch(warm, { headers: { Range: 'bytes=0-1' } }).catch(() => {});
 }

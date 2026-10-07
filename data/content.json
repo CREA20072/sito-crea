@@ -156,7 +156,7 @@
       "d": "Novembre 2025",
       "n": "Sold Out!",
       "desc": "Il Cinema in Auditorium!",
-      "fullDesc": "<span style=\"color: rgb(0, 0, 0);\">90 minuti di divertimento per i piccoli con K-Pop Demon Hunters, e meritato relax per i genitori!</span>",
+      "fullDesc": "90 minuti di divertimento per i piccoli con K-Pop Demon Hunters, e meritato relax per i genitori!",
       "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753844/jbbrs7eheaeitwtvq1da.jpg",
       "gallery": [
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751615/nby3rriinrhlaeldebtj.jpg",
@@ -213,7 +213,7 @@
       "d": "Maggio 2026",
       "n": "100+ Partecipanti",
       "desc": "L’emozione de \"Il Robot Selvaggio\" sotto il cielo stellato",
-      "fullDesc": "L’emozione de \"<i>Il Robot Selvaggio</i>\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini&nbsp;",
+      "fullDesc": "L’emozione de \"<i>Il Robot Selvaggio</i>\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini",
       "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg",
       "gallery": [
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg",
@@ -234,7 +234,7 @@
       "d": "Maggio 2026",
       "n": "",
       "desc": "Festa del Grazie",
-      "fullDesc": "Il nostro piccolo contributo alla Festa del Grazie, con le \"<i>Olimpiadi dei giochi di una volta</i>”.  Sfide senza tempo, sorrisi e tanto divertimento all'aria aperta per grandi e piccini!&nbsp;",
+      "fullDesc": "Il nostro piccolo contributo alla Festa del Grazie, con le \"<i>Olimpiadi dei giochi di una volta</i>”.  Sfide senza tempo, sorrisi e tanto divertimento all'aria aperta per grandi e piccini!",
       "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312269/ldnv5bbt4xn1urnfmuzy.jpg",
       "gallery": [
         "https://res.cloudinary.com/daxrdik7k/video/upload/v1780312399/iepieoecz73isgmklahl.mp4",
@@ -246,17 +246,15 @@
     },
     {
       "id": 9,
-      "date": "2026-07-08",
+      "date": "2026-07-04",
       "tag": "famiglie",
       "t": "SCHIUMA PARTY!",
       "d": "Luglio 2026",
-      "n": "Sold out!",
-      "desc": "Il 4 luglio arriva l'evento più fresco dell'estate: l'Associazione CREA e il Bar ComeTe vi aspettano in Piazza della Chi",
+      "n": "Sold Out!",
+      "desc": "Il 4 luglio arriva l'evento più fresco dell'estate: l'Associazione CREA e il Bar ComeTe vi aspettano in Piazza della Chiesa a Pieve Emanuele per un imperdibile Schiuma Party!",
       "fullDesc": "Il 4 luglio arriva l'evento più fresco dell'estate: l'Associazione CREA e il Bar ComeTe vi aspettano in Piazza della Chiesa a Pieve Emanuele per un imperdibile Schiuma Party! Tra baby dance, musica e ottimi panini con la salamella, il divertimento è assicurato per grandi e piccini!",
-      "img": "WhatsApp Image 2026-06-09 at 00.33.48.jpeg",
-      "gallery": [
-        "WhatsApp Image 2026-06-09 at 00.33.48.jpeg"
-      ]
+      "img": "schiuma-party-2026.webp",
+      "gallery": []
     }
   ],
   "community": {

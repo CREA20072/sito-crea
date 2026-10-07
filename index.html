@@ -13,7 +13,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://res.cloudinary.com">
     <link rel="preload" href="data/content.json" as="fetch" crossorigin="anonymous">
-    <!-- CSS Tailwind precompilato (19KB) — per aggiungere nuove classi Tailwind all'HTML va rigenerato: npx tailwindcss -i input.css -o tailwind.css --content index.html --minify -->
+    <!-- CSS Tailwind precompilato. Se aggiungi classi Tailwind nuove all'HTML, rigeneralo dalla cartella del sito con:
+         npx tailwindcss@3.4.17 --content index.html -o tailwind.css --minify -->
+
     <link rel="stylesheet" href="tailwind.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -24,6 +26,9 @@
         .text-crea-honey { color:var(--honey); }
         .bg-crea-honey   { background-color:var(--honey); }
         .bg-crea-soft    { background-color:var(--soft-bg); }
+        /* Varianti hover dei colori del brand (non sono classi Tailwind standard) */
+        .hover\:text-crea-honey:hover, .group:hover .group-hover\:text-crea-honey { color:var(--honey); }
+        .hover\:bg-crea-honey:hover { background-color:var(--honey); }
         .fade-up { opacity:0; transform:translateY(30px); transition:opacity .8s ease,transform .8s ease; }
         .fade-up.visible { opacity:1; transform:translateY(0); }
         .cta-button {
@@ -182,7 +187,7 @@
     <nav id="main-nav" class="fixed w-full z-[90] bg-white/95 backdrop-blur-md border-b border-gray-100 transition-shadow duration-300">
         <div class="container mx-auto px-5 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-                <div id="nav-logo-container"><img src="logo.png" alt="Logo CREA 20072" class="logo-img" onerror="this.outerHTML='<span style=\'font-size:2rem\'>🐝</span>'"></div>
+                <img src="logo-96.webp" alt="Logo CREA 20072" class="logo-img" width="45" height="45" onerror="this.onerror=null;this.src='logo.png'">
                 <span class="text-xl md:text-2xl font-bold tracking-tighter uppercase headline-strong">CREA 20072</span>
             </div>
             <div class="hidden lg:flex items-center gap-8">
@@ -290,8 +295,8 @@
     <section id="decalogo" class="section-padding bg-crea-soft border-y border-gray-100 text-center">
         <div class="container mx-auto px-6">
             <div class="mb-10 md:mb-20">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight headline-strong text-black">Il Decalogo di CREA 20072</h2>
-                <p class="text-gray-500 font-bold text-xs tracking-widest uppercase">I valori che ci guidano ogni giorno</p>
+                <h2 id="decalogo-title" class="text-3xl md:text-4xl font-bold mb-4 uppercase tracking-tight headline-strong text-black">Il Decalogo di CREA 20072</h2>
+                <p id="decalogo-subtitle" class="text-gray-500 font-bold text-xs tracking-widest uppercase">I valori che ci guidano ogni giorno</p>
             </div>
             <!-- Controlli freccia — solo mobile -->
             <div class="md:hidden flex justify-between items-center mb-4 px-1">
@@ -348,13 +353,13 @@
                 <div class="flex flex-col justify-between">
                     <div>
                         <div class="flex items-center gap-4 mb-8">
-                            <div id="footer-logo-container"><img src="logo.png" alt="Logo" class="logo-img" onerror="this.outerHTML='<span style=\'font-size:2rem\'>🐝</span>'"></div>
+                            <img src="logo-96.webp" alt="Logo CREA 20072" class="logo-img" width="45" height="45" loading="lazy" onerror="this.onerror=null;this.src='logo.png'">
                             <span class="text-2xl font-bold tracking-tighter uppercase headline-strong">CREA 20072</span>
                         </div>
                         <div id="contact-methods" class="flex flex-col gap-4 text-sm text-gray-400 font-medium"></div>
                         <div id="social-links" class="flex gap-6 mt-8"></div>
                     </div>
-                    <div class="hidden lg:block text-xs text-gray-500 uppercase tracking-widest mt-12">&copy; 2026 CREA 20072 – Progetto Indipendente – Pieve Emanuele (MI)</div>
+                    <div class="hidden lg:block text-xs text-gray-500 uppercase tracking-widest mt-12">&copy; <span class="js-year">2026</span> CREA 20072 – Progetto Indipendente – Pieve Emanuele (MI)</div>
                 </div>
                 <div class="bg-white/5 p-8 md:p-10 rounded-3xl border border-white/10">
                     <h3 class="text-2xl font-bold mb-2 headline-strong">Scrivici un messaggio</h3>
@@ -367,7 +372,7 @@
                         <p id="form-feedback" class="text-center text-sm mt-3 hidden"></p>
                     </form>
                 </div>
-                <div class="lg:hidden text-center text-xs text-gray-500 uppercase tracking-widest mt-4">&copy; 2026 CREA 20072 – Pieve Emanuele (MI)</div>
+                <div class="lg:hidden text-center text-xs text-gray-500 uppercase tracking-widest mt-4">&copy; <span class="js-year">2026</span> CREA 20072 – Pieve Emanuele (MI)</div>
             </div>
         </div>
     </footer>
@@ -428,8 +433,8 @@
             if (!u || !u.includes('res.cloudinary.com') || !u.includes('/upload/')) return u || '';
             // Video: transcodifica forzata a MP4 H.264 + audio AAC — l'unico formato
             // che tutti i browser riproducono con audio (i .mov/HEVC di iPhone no).
-            // w_1280,c_limit: i video iPhone 4K pesano decine di MB, per il web basta 1280px.
-            if (isVideoUrl(u)) return u.replace('/upload/', '/upload/f_mp4,vc_h264,ac_aac,q_auto,w_1280,c_limit/')
+            // w_1280,h_1280,c_limit: lato lungo max 1280px (vale anche per i video verticali).
+            if (isVideoUrl(u)) return u.replace('/upload/', '/upload/f_mp4,vc_h264,ac_aac,q_auto,w_1280,h_1280,c_limit/')
                                        .replace(/\.(mp4|mov|webm)(\?.*)?$/i, '.mp4');
             return u.replace('/upload/', `/upload/f_auto,q_auto${w ? ',w_' + w : ''}/`);
         }
@@ -564,9 +569,9 @@
                     </div>
                 </div>
                 <div style="padding:2rem 2.5rem 2.5rem">
-                    <div class="inline-flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-6">
+                    ${item.n ? `<div class="inline-flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-6">
                         <i data-lucide="users" class="w-3.5 h-3.5"></i> ${esc(item.n)}
-                    </div>
+                    </div>` : ''}
                     <p class="text-gray-600 text-base leading-relaxed">${item.fullDesc || item.desc}</p>
                     ${galleryHtml}
                 </div>`;
@@ -583,21 +588,23 @@
             focusBack();
         }
 
+        const isOpen = id => document.getElementById(id).classList.contains('open');
         document.addEventListener('keydown', e => {
             if (e.key !== 'Escape') {
-                if (document.getElementById('lightbox').classList.contains('open')) {
+                if (isOpen('lightbox')) {
                     if (e.key === 'ArrowLeft')  moveLightbox(-1);
                     else if (e.key === 'ArrowRight') moveLightbox(1);
                 }
                 return;
             }
-            if (document.getElementById('lightbox').classList.contains('open'))        closeLightbox();
-            else if (document.getElementById('booking-overlay').classList.contains('open')) closeBookingModal();
-            else closeModal();
+            // Esc chiude solo ciò che è effettivamente aperto, dal livello più alto
+            if (isOpen('lightbox'))             closeLightbox();
+            else if (isOpen('booking-overlay')) closeBookingModal();
+            else if (isOpen('modal-overlay'))   closeModal();
+            else if (document.getElementById('mobile-menu').classList.contains('active')) toggleMenu(false);
         });
 
         const ARCHIVE_LIMIT = 9;   // card visibili prima del bottone "Mostra altri"
-        let _archShowAll = false;
 
         function archiveCard(item) {
             return `
@@ -625,7 +632,6 @@
         }
 
         function renderArchive(tag, showAll) {
-            _archShowAll = !!showAll;
             const grid = document.getElementById('archive-grid');
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.id === `btn-${tag}`));
 
@@ -634,10 +640,10 @@
                 .sort((a, b) => new Date(b.date) - new Date(a.date));
 
             if (!items.length) {
-                grid.innerHTML = '<p class="col-span-3 text-gray-400 text-center py-12">Nessun evento in questa categoria.</p>';
+                grid.innerHTML = '<p class="col-span-full text-gray-400 text-center py-12">Nessun evento in questa categoria.</p>';
                 return;
             }
-            const shown = _archShowAll ? items : items.slice(0, ARCHIVE_LIMIT);
+            const shown = showAll ? items : items.slice(0, ARCHIVE_LIMIT);
             let html = shown.map(archiveCard).join('');
             if (items.length > shown.length) {
                 html += `
@@ -669,6 +675,7 @@
         }
 
         /* INIZIALIZZAZIONE */
+        document.querySelectorAll('.js-year').forEach(el => el.textContent = new Date().getFullYear());
         fetch('data/content.json')
             .then(r => { if(!r.ok) throw new Error(); return r.json(); })
             .then(D => {
@@ -685,7 +692,7 @@
                 document.getElementById('hero-title').innerHTML = heroText.includes(keyword)
                     ? heroText.replace(keyword, `<span class="text-crea-honey whitespace-nowrap">${keyword}</span>`)
                     : heroText;
-                document.getElementById('hero-subtitle').innerText = D.hero.subtitle;
+                document.getElementById('hero-subtitle').innerHTML = D.hero.subtitle;  // HTML dall'editor ricco dell'admin
                 document.getElementById('hero-cta').innerText      = D.hero.cta;
                 document.getElementById('hero-bg').style.backgroundImage = `url('${cld(D.hero.bg, 1600)}')`;
                 // Overlay
@@ -705,7 +712,9 @@
                     `<div class="flex flex-col items-center"><div class="w-20 h-20 bg-crea-soft rounded-3xl flex items-center justify-center mb-6 text-crea-honey"><i data-lucide="${esc(p.icon)}" class="w-10 h-10"></i></div><h3 class="text-xl font-bold mb-3 headline-strong text-black uppercase">${esc(p.t)}</h3><p class="text-sm text-gray-500 max-w-[200px] text-body-crea">${esc(p.d)}</p></div>`
                 ).join('');
 
-                // DECALOGO
+                // DECALOGO (titoli da JSON; se mancano restano quelli scritti nell'HTML)
+                if (D.decalogo.title)    document.getElementById('decalogo-title').textContent    = D.decalogo.title;
+                if (D.decalogo.subtitle) document.getElementById('decalogo-subtitle').textContent = D.decalogo.subtitle;
                 document.getElementById('decalogo-grid').innerHTML = D.decalogo.items.map(v =>
                     `<div class="decalogo-card decalogo-snap-card"><div class="font-bold tracking-widest text-crea-honey text-xs">${esc(v.n)}</div><div class="text-gray-800"><i data-lucide="${esc(v.i)}" class="w-8 h-8"></i></div><div><h3 class="font-bold text-lg mb-2 uppercase headline-strong text-black">${esc(v.t)}</h3><p class="text-sm leading-relaxed text-gray-600">${v.d}</p></div></div>`
                 ).join('');
@@ -717,7 +726,7 @@
                         <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden flex flex-col lg:flex-row">
                             <div class="relative lg:w-5/12 h-96 lg:h-auto bg-gray-100">
                                 <div class="date-badge"><span class="text-3xl font-extrabold leading-none">${esc(ev.day)}</span><span class="text-xs font-bold tracking-widest mt-1 block">${esc(ev.month)}</span></div>
-                                <img src="${cld(ev.img, 900)||'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800'}" ${srcsetAttr(ev.img, [600, 900, 1200], '(min-width:1024px) 40vw, 100vw')} class="img-contain w-full h-full" alt="Locandina ${esc(ev.title)}" decoding="async">
+                                ${ev.img ? `<img src="${cld(ev.img, 900)}" ${srcsetAttr(ev.img, [600, 900, 1200], '(min-width:1024px) 40vw, 100vw')} class="img-contain w-full h-full" alt="Locandina ${esc(ev.title)}" decoding="async">` : `<img src="logo.png" class="img-contain w-full h-full p-16" alt="CREA 20072">`}
                             </div>
                             <div class="p-8 lg:p-16 lg:w-7/12 flex flex-col justify-center text-left">
                                 <h3 class="text-4xl md:text-6xl headline-strong mb-4 uppercase text-black leading-tight">${esc(ev.title)}</h3>
@@ -756,7 +765,6 @@
                             </p>
                             <div id="placeholder-social-links" class="flex flex-wrap justify-center gap-4"></div>
                         </div>`;
-                    // I link social del placeholder vengono popolati più sotto (esiste #placeholder-social-links)
                 }
 
                 // ARCHIVIO
@@ -774,7 +782,7 @@
 
                 // FOOTER
                 document.getElementById('strategic-quote').innerHTML = D.footer.quote;
-                document.getElementById('contact-methods').innerHTML = `<a href="mailto:${D.footer.email}" class="flex items-center gap-3 hover:text-crea-honey transition-colors text-gray-400"><i data-lucide="mail" class="w-5 h-5"></i> ${D.footer.email}</a>`;
+                document.getElementById('contact-methods').innerHTML = `<a href="mailto:${esc(D.footer.email)}" class="flex items-center gap-3 hover:text-crea-honey transition-colors text-gray-400"><i data-lucide="mail" class="w-5 h-5"></i> ${esc(D.footer.email)}</a>`;
                 const socialLabels = { facebook:'Facebook', instagram:'Instagram', whatsapp:'WhatsApp' };
                 let sbH = '', navH = '', hamH = '', mobH = '', proofH = '', bannerH = '', phH = '';
                 D.footer.socials.forEach(s => {
@@ -783,8 +791,8 @@
                     const url   = esc(s.url);
                     sbH    += `<a href="${url}" target="_blank" rel="noopener" aria-label="${label}" class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center hover:bg-crea-honey transition-colors text-white">${icon}</a>`;
                     navH   += `<a href="${url}" target="_blank" rel="noopener" aria-label="${label}" title="${label}" class="text-gray-400 hover:text-crea-honey transition-colors flex items-center">${icon}</a>`;
-                    hamH   += `<a href="${url}" target="_blank" rel="noopener" aria-label="${label}" class="text-gray-400 hover:text-crea-honey transition-colors flex items-center">${icon}</a>`;
-                    mobH   += `<a href="${url}" target="_blank" rel="noopener" aria-label="${label}" class="text-gray-500 hover:text-crea-honey transition-colors flex items-center">${icon}</a>`;
+                    hamH   += `<a href="${url}" target="_blank" rel="noopener" aria-label="${label}" class="w-11 h-11 text-gray-400 hover:text-crea-honey transition-colors flex items-center justify-center">${icon}</a>`;
+                    mobH   += `<a href="${url}" target="_blank" rel="noopener" aria-label="${label}" class="w-11 h-11 text-gray-500 hover:text-crea-honey transition-colors flex items-center justify-center">${icon}</a>`;
                     proofH += `<a href="${url}" target="_blank" rel="noopener" class="cta-button gap-3">${icon} Seguici su ${label}</a>`;
                     if (s.icon !== 'whatsapp') {
                         phH     += `<a href="${url}" target="_blank" rel="noopener" class="cta-button gap-3">${icon} Seguici su ${label}</a>`;
@@ -811,7 +819,6 @@
                 const heroEl = document.getElementById('hero-section');
                 if (heroEl) heroObs.observe(heroEl);
 
-                // LOGO — caricato direttamente dall'HTML (src="logo.png")
                 refreshIcons();
             })
             .catch(err => {
