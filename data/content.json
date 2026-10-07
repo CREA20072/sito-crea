@@ -101,6 +101,100 @@
   },
   "events": [
     {
+      "id": 9,
+      "date": "2026-07-04",
+      "time": "",
+      "tag": "famiglie",
+      "t": "SCHIUMA PARTY!",
+      "sub": "",
+      "place": "",
+      "prices": "",
+      "wa": "",
+      "n": "Sold Out!",
+      "desc": "Lo Schiuma Party più divertente dell'estate!",
+      "fullDesc": "Il 4 luglio arriva l'evento più fresco dell'estate: l'Associazione CREA e il Bar ComeTe vi aspettano in Piazza della Chiesa a Pieve Emanuele per un imperdibile Schiuma Party! Tra baby dance, musica e ottimi panini con la salamella, il divertimento è assicurato per grandi e piccini!",
+      "img": "schiuma-party-2026.webp",
+      "gallery": [
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1791408127/qx6fvhvukethj5eius7i.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1791408158/uopggp8yh6x3x9x1nve7.jpg",
+        "https://res.cloudinary.com/daxrdik7k/video/upload/v1791408111/begdqp7zdghqitex2cks.mp4",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1791408193/lp91ssuvkzq6e6hh4a5a.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1791408131/cf51jr8labm4uewq3k0u.jpg",
+        "https://res.cloudinary.com/daxrdik7k/video/upload/v1791408067/pwsu1yhmc3lsbyijwil4.mp4"
+      ]
+    },
+    {
+      "id": 8,
+      "date": "2026-06-01",
+      "time": "",
+      "tag": "tradizioni",
+      "t": "Mani che costruiscono la comunità!",
+      "sub": "",
+      "place": "",
+      "prices": "",
+      "wa": "",
+      "n": "",
+      "desc": "Festa del Grazie",
+      "fullDesc": "Il nostro piccolo contributo alla Festa del Grazie, con le \"<i>Olimpiadi dei giochi di una volta</i>”.  Sfide senza tempo, sorrisi e tanto divertimento all'aria aperta per grandi e piccini!",
+      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312269/ldnv5bbt4xn1urnfmuzy.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780312399/iepieoecz73isgmklahl.mp4",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312416/f8texhsvqpr1mdvl20de.heic",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312452/llq6vwku3grmkrm4qrad.jpg",
+        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780312437/agtqq3vdnvx3njbnliqb.mov",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312468/ho8os9hesck74jo32ufd.jpg"
+      ],
+      "d": "Maggio 2026"
+    },
+    {
+      "id": 6,
+      "date": "2026-05-24",
+      "time": "",
+      "tag": "famiglie",
+      "t": "CINEMA SOTTO LE STELLE",
+      "sub": "",
+      "place": "",
+      "prices": "",
+      "wa": "",
+      "n": "100+ Partecipanti",
+      "desc": "L’emozione de \"Il Robot Selvaggio\" sotto il cielo stellato",
+      "fullDesc": "L’emozione de \"<i>Il Robot Selvaggio</i>\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini",
+      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg",
+        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780311195/xjv1h36ida7lx7qzammz.mp4",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311301/vgouzwwghy0qntodnoed.heic",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311307/v2g91nhi7800jvllimhs.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311305/h6lblgm7ab50mkpyljtt.heic",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311309/lciqa77gw7xafx7w3i85.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311308/y4e8bj2bymenquzh9xpd.heic",
+        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780311179/qocsylutbahyyoeyhasl.mp4"
+      ]
+    },
+    {
+      "id": 5,
+      "date": "2026-03-04",
+      "time": "",
+      "tag": "spettacoli",
+      "t": "Magic Show",
+      "sub": "",
+      "place": "",
+      "prices": "",
+      "wa": "",
+      "n": "Sold Out!",
+      "desc": "Un pomeriggio di magia!",
+      "fullDesc": "Uno spettacolo magico per famiglie con il Mago Daniel, dove l'impossibile è diventato realtà e lo stupore garantito per grandi e piccoli.",
+      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1772755721/jygwa101wsclp7xir1sd.png",
+      "imgPos": "center bottom",
+      "gallery": [
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753495/vylbzkdnh7n0j2tjrsvm.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753560/hg5hcopgdq6jqjtjdxkr.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753508/kynq1oyoat1oe9gidxjr.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753572/wowyxkwfhoyfmvxl4ltz.jpg",
+        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753577/t49eoie7ss1gqtqmrnvs.jpg"
+      ]
+    },
+    {
       "id": 1,
       "date": "2026-01-17",
       "time": "",
@@ -114,6 +208,7 @@
       "desc": "La tradizione che scalda l'inverno.",
       "fullDesc": "Una serata magica attorno al fuoco per riscoprire le antiche tradizioni contadine. Tra vin brulé, chiacchiere e il calore della comunità, abbiamo celebrato Sant'Antonio come si faceva una volta.",
       "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1772754973/gizrtsipzt8oc8egbc8e.png",
+      "imgPos": "center top",
       "gallery": [
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751428/bxvqqpqdcbcwtw75rbzu.jpg",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751435/nygzzfvpsju3vfsaaa4s.jpg",
@@ -122,8 +217,7 @@
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751496/ijft3ddai5k1xdggeq3f.jpg",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751441/v0lierxyrab2pd97zfyc.jpg",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772751456/zjpjwaoqqqvuz4evautp.jpg"
-      ],
-      "imgPos": "center top"
+      ]
     },
     {
       "id": 2,
@@ -189,93 +283,6 @@
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772752465/dc3zzuobfopnpytcf9wa.jpg",
         "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753379/dbkrg39ltihf1qdjrtgp.jpg"
       ]
-    },
-    {
-      "id": 5,
-      "date": "2026-03-04",
-      "time": "",
-      "tag": "spettacoli",
-      "t": "Magic Show",
-      "sub": "",
-      "place": "",
-      "prices": "",
-      "wa": "",
-      "n": "Sold Out!",
-      "desc": "Un pomeriggio di magia!",
-      "fullDesc": "Uno spettacolo magico per famiglie con il Mago Daniel, dove l'impossibile è diventato realtà e lo stupore garantito per grandi e piccoli.",
-      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1772755721/jygwa101wsclp7xir1sd.png",
-      "gallery": [
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753495/vylbzkdnh7n0j2tjrsvm.jpg",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753560/hg5hcopgdq6jqjtjdxkr.jpg",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753508/kynq1oyoat1oe9gidxjr.jpg",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753572/wowyxkwfhoyfmvxl4ltz.jpg",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1772753577/t49eoie7ss1gqtqmrnvs.jpg"
-      ],
-      "imgPos": "center bottom"
-    },
-    {
-      "id": 6,
-      "date": "2026-05-24",
-      "time": "",
-      "tag": "famiglie",
-      "t": "CINEMA SOTTO LE STELLE",
-      "sub": "",
-      "place": "",
-      "prices": "",
-      "wa": "",
-      "n": "100+ Partecipanti",
-      "desc": "L’emozione de \"Il Robot Selvaggio\" sotto il cielo stellato",
-      "fullDesc": "L’emozione de \"<i>Il Robot Selvaggio</i>\" sotto il cielo stellato, tra il profumo dei popcorn e la gioia di ritrovarsi. Un’esperienza magica per grandi e bambini",
-      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg",
-      "gallery": [
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1777926784/c7q3nzmqml73a0uei5jn.jpg",
-        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780311195/xjv1h36ida7lx7qzammz.mp4",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311301/vgouzwwghy0qntodnoed.heic",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311307/v2g91nhi7800jvllimhs.jpg",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311305/h6lblgm7ab50mkpyljtt.heic",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311309/lciqa77gw7xafx7w3i85.jpg",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780311308/y4e8bj2bymenquzh9xpd.heic",
-        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780311179/qocsylutbahyyoeyhasl.mp4"
-      ]
-    },
-    {
-      "id": 8,
-      "date": "2026-06-01",
-      "time": "",
-      "tag": "tradizioni",
-      "t": "Mani che costruiscono la comunità!",
-      "sub": "",
-      "place": "",
-      "prices": "",
-      "wa": "",
-      "n": "",
-      "desc": "Festa del Grazie",
-      "fullDesc": "Il nostro piccolo contributo alla Festa del Grazie, con le \"<i>Olimpiadi dei giochi di una volta</i>”.  Sfide senza tempo, sorrisi e tanto divertimento all'aria aperta per grandi e piccini!",
-      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312269/ldnv5bbt4xn1urnfmuzy.jpg",
-      "gallery": [
-        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780312399/iepieoecz73isgmklahl.mp4",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312416/f8texhsvqpr1mdvl20de.heic",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312452/llq6vwku3grmkrm4qrad.jpg",
-        "https://res.cloudinary.com/daxrdik7k/video/upload/v1780312437/agtqq3vdnvx3njbnliqb.mov",
-        "https://res.cloudinary.com/daxrdik7k/image/upload/v1780312468/ho8os9hesck74jo32ufd.jpg"
-      ],
-      "d": "Maggio 2026"
-    },
-    {
-      "id": 9,
-      "date": "2026-07-04",
-      "time": "",
-      "tag": "famiglie",
-      "t": "SCHIUMA PARTY!",
-      "sub": "",
-      "place": "",
-      "prices": "",
-      "wa": "",
-      "n": "Sold Out!",
-      "desc": "Il 4 luglio arriva l'evento più fresco dell'estate: l'Associazione CREA e il Bar ComeTe vi aspettano in Piazza della Chiesa a Pieve Emanuele per un imperdibile Schiuma Party!",
-      "fullDesc": "Il 4 luglio arriva l'evento più fresco dell'estate: l'Associazione CREA e il Bar ComeTe vi aspettano in Piazza della Chiesa a Pieve Emanuele per un imperdibile Schiuma Party! Tra baby dance, musica e ottimi panini con la salamella, il divertimento è assicurato per grandi e piccini!",
-      "img": "schiuma-party-2026.webp",
-      "gallery": []
     }
   ],
   "community": {
