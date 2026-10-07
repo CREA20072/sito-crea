@@ -362,7 +362,656 @@
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
-/*__SCRIPT__*/
+'use strict';
+/* ═══════════════════════════════════════════════════════════════════════════
+   CREA 20072 — pannello admin
+   Dati: data/content.json nel repository GitHub (letto/scritto via API).
+   Media: Cloudinary (se configurato) altrimenti file nel repository.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+const SITE_URL = location.protocol.startsWith('http') ? location.origin + '/' : 'https://crea20072.it/';
+// DEVE coincidere con la trasformazione video usata da cld() in index.html
+const VIDEO_T  = 'f_mp4,vc_h264,ac_aac,q_auto,w_1280,h_1280,c_limit';
+const AREAS    = ['eventi', 'testi', 'impostazioni'];
+const TAGS     = { famiglie: 'Famiglie', tradizioni: 'Tradizioni', spettacoli: 'Spettacoli' };
+const EVENT_DEFAULTS = { date:'', time:'', tag:'famiglie', t:'', sub:'', place:'', prices:'', wa:'', n:'', desc:'', fullDesc:'', img:'', gallery:[] };
+const EVENT_KEYS = ['id','date','time','tag','t','sub','place','prices','wa','n','desc','fullDesc','img','imgPos','gallery','d'];
+
+let OWNER = '', REPO = '', TOKEN = '', SHA = '', DATA = null;
+let CLD = { cloud: '', preset: '' };
+const DIRTY = new Set();
+let _current = null, _draftTimer = null, _toastTimer = null, _heroH = 'alta';
+
+/* ─── UTILITÀ ──────────────────────────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const val = (id, v) => { const el = $(id); if (el) el.value = v ?? ''; };
+const get = id => ($(id)?.value || '').trim();
+const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const useCloudinary = () => !!(CLD.cloud && CLD.preset);
+
+function toast(html, type = '', ms = 4500) {
+  const t = $('toast');
+  t.innerHTML = html;               // i testi variabili vanno passati già con esc()
+  t.className = 'show ' + type;
+  clearTimeout(_toastTimer);
+  if (ms) _toastTimer = setTimeout(() => { t.className = ''; }, ms);
+}
+
+/* ─── DATE ─────────────────────────────────────────────────────────────────── */
+const MESI   = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+const GIORNI = ['domenica','lunedì','martedì','mercoledì','giovedì','venerdì','sabato'];
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const todayRome = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(new Date());
+function parseISO(iso) { const [y, m, d] = (iso || '').split('-').map(Number); return { y, m, d, wd: new Date(Date.UTC(y, m - 1, d)).getUTCDay() }; }
+const autoLabel = e => { const p = parseISO(e.date); return `${cap(MESI[p.m - 1])} ${p.y}`; };
+const monthLabel = e => (e.d || '').trim() || (e.date ? autoLabel(e) : '');
+const fullDate = e => { const p = parseISO(e.date); return `${cap(GIORNI[p.wd])} ${p.d} ${MESI[p.m - 1]} ${p.y}${e.time ? ' – ore ' + e.time : ''}`; };
+const shortDate = iso => { const p = parseISO(iso); return `${GIORNI[p.wd].slice(0, 3)} ${p.d} ${MESI[p.m - 1].slice(0, 3)} ${p.y}`; };
+const sortKey = e => e.date + (e.time || '');
+
+/* ─── MEDIA: URL ───────────────────────────────────────────────────────────── */
+const isVideoUrl = u => typeof u === 'string' && (/\/video\/upload\//.test(u) || /\.(mp4|mov|webm)(\?|#|$)/i.test(u));
+function rawUrl(f) {
+  if (!f) return '';
+  return f.startsWith('http') ? f : `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${encodeURIComponent(f)}`;
+}
+/* Miniatura leggera: video → fotogramma jpg; immagini Cloudinary → larghezza w */
+function mediaThumb(u, w = 220) {
+  if (!u) return '';
+  if (u.includes('res.cloudinary.com') && u.includes('/upload/')) {
+    if (isVideoUrl(u)) return u.replace('/upload/', `/upload/so_0,f_auto,q_auto,w_${w}/`).replace(/\.(mp4|mov|webm)(\?.*)?$/i, '.jpg');
+    return u.replace('/upload/', `/upload/f_auto,q_auto,w_${w}/`);
+  }
+  return rawUrl(u);
+}
+
+/* ─── CIFRATURA (AES-GCM + PBKDF2) ─────────────────────────────────────────── */
+async function deriveKey(password, salt) {
+  const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptStr(text, password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await deriveKey(password, salt), new TextEncoder().encode(text)));
+  const all = new Uint8Array(28 + enc.length); all.set(salt, 0); all.set(iv, 16); all.set(enc, 28);
+  return btoa(String.fromCharCode(...all));
+}
+async function decryptStr(b64, password) {
+  const all = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  const dec = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: all.slice(16, 28) }, await deriveKey(password, all.slice(0, 16)), all.slice(28));
+  return new TextDecoder().decode(dec);
+}
+
+/* ─── ACCESSO ──────────────────────────────────────────────────────────────────
+   localStorage  crea_owner, crea_repo, crea_vault (token + Cloudinary cifrati con la password master)
+   sessionStorage crea_session (token in chiaro, solo per questa scheda: le ricariche non chiedono la password)
+   I vecchi crea_token_enc / crea_cloudinary_* vengono migrati nel vault al primo sblocco. */
+const LEGACY_KEYS = ['crea_token_enc', 'crea_cloudinary_cloud', 'crea_cloudinary_preset'];
+
+function show(which) {
+  $('login-screen').hidden  = which !== 'login';
+  $('unlock-screen').hidden = which !== 'unlock';
+  $('app').hidden           = which !== 'app';
+  if (which === 'unlock') setTimeout(() => $('inp-unlock').focus(), 50);
+}
+async function saveVault(master) {
+  localStorage.setItem('crea_vault', await encryptStr(JSON.stringify({ token: TOKEN, cloud: CLD.cloud, preset: CLD.preset }), master));
+}
+const startSession = () => sessionStorage.setItem('crea_session', JSON.stringify({ token: TOKEN, ...CLD }));
+const legacyCld = () => ({ cloud: localStorage.getItem('crea_cloudinary_cloud') || '', preset: localStorage.getItem('crea_cloudinary_preset') || '' });
+
+async function doLogin() {
+  OWNER = get('inp-owner'); REPO = get('inp-repo'); TOKEN = get('inp-token');
+  const master = $('inp-master').value;
+  if (!OWNER || !REPO || !TOKEN) return toast('Compila utente, repository e token.', 'error');
+  if (master.length < 6)         return toast('La password master deve avere almeno 6 caratteri.', 'error');
+  toast('Connessione a GitHub…', '', 0);
+  if (!(await loadData())) return;
+  CLD = legacyCld();
+  localStorage.setItem('crea_owner', OWNER);
+  localStorage.setItem('crea_repo', REPO);
+  await saveVault(master);
+  LEGACY_KEYS.forEach(k => localStorage.removeItem(k));
+  startSession();
+  startApp();
+}
+
+async function doUnlock() {
+  const master = $('inp-unlock').value;
+  if (!master) return toast('Inserisci la password master.', 'error');
+  toast('Verifica…', '', 0);
+  try {
+    const vault = localStorage.getItem('crea_vault');
+    if (vault) {
+      const v = JSON.parse(await decryptStr(vault, master));
+      TOKEN = v.token; CLD = { cloud: v.cloud || '', preset: v.preset || '' };
+    } else {                                   // migrazione dal vecchio pannello
+      TOKEN = await decryptStr(localStorage.getItem('crea_token_enc'), master);
+      CLD = legacyCld();
+      await saveVault(master);
+      LEGACY_KEYS.forEach(k => localStorage.removeItem(k));
+    }
+  } catch (e) { TOKEN = ''; return toast('Password master errata.', 'error'); }
+  $('inp-unlock').value = '';
+  if (!(await loadData())) return;
+  startSession();
+  startApp();
+}
+
+function doLock() {
+  if (DIRTY.size) saveDraftNow();             // al prossimo sblocco ti propongo di riprenderle
+  DIRTY.clear();
+  sessionStorage.removeItem('crea_session');
+  location.reload();
+}
+
+function doDisconnect() {
+  const warn = DIRTY.size ? '\n\nATTENZIONE: hai modifiche non salvate, andranno perse.' : '';
+  if (!confirm('Disconnettere questo computer?\n\nVengono cancellati token GitHub e configurazione Cloudinary: per rientrare servirà di nuovo il token.' + warn)) return;
+  ['crea_vault', 'crea_owner', 'crea_repo', 'crea_draft', ...LEGACY_KEYS].forEach(k => localStorage.removeItem(k));
+  sessionStorage.removeItem('crea_session');
+  DIRTY.clear();
+  location.reload();
+}
+
+/* ─── GITHUB ───────────────────────────────────────────────────────────────── */
+function gh(path, opts = {}) {
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path.split('/').map(encodeURIComponent).join('/')}`;
+  return fetch(url, { ...opts, headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', ...(opts.body ? { 'Content-Type': 'application/json' } : {}) } });
+}
+const b64utf8 = str => btoa(Array.from(new TextEncoder().encode(str), b => String.fromCharCode(b)).join(''));
+const unb64utf8 = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g, '')), c => c.charCodeAt(0)));
+
+async function loadData() {
+  try {
+    const res = await gh('data/content.json');
+    if (res.status === 401) { toast('Il token GitHub non è valido o è scaduto. Disconnetti questo computer e rientra con un token nuovo.', 'error', 12000); return false; }
+    if (!res.ok)            { toast(`Non riesco a leggere i dati (errore ${res.status}). Controlla utente e repository.`, 'error', 8000); return false; }
+    const file = await res.json();
+    SHA = file.sha;
+    DATA = normalizeData(JSON.parse(unb64utf8(file.content)));
+    return true;
+  } catch (e) { toast('Connessione a GitHub non riuscita: ' + esc(e.message), 'error', 8000); return false; }
+}
+
+/* Porta qualunque versione di content.json (anche bozze vecchie) al formato attuale */
+function normalizeData(D) {
+  if (!Array.isArray(D.events)) {
+    D.events = (D.archive || []).map(a => { const e = { ...a }; if (e.d && e.date && e.d === autoLabel(e)) delete e.d; return e; });
+    const fe = D.featuredEvent;
+    if (fe && fe.title) {
+      const id = Math.max(0, ...D.events.map(e => e.id)) + 1;
+      D.events.push({ id, t: fe.title, sub: fe.sub, place: fe.place, prices: fe.prices, wa: fe.wa, img: fe.img, fullDesc: fe.desc, date: '' });
+    }
+    delete D.archive; delete D.featuredEvent;
+  }
+  D.events.forEach(e => { for (const [k, v] of Object.entries(EVENT_DEFAULTS)) if (e[k] === undefined || e[k] === null) e[k] = Array.isArray(v) ? [] : v; });
+  D.settings ||= {}; D.hero ||= {}; D.community ||= {}; D.footer ||= {};
+  D.about ||= {}; D.about.pillars ||= [];
+  D.decalogo ||= {}; D.decalogo.items ||= [];
+  D.footer.socials ||= [];
+  return D;
+}
+
+/* ─── AVVIO ────────────────────────────────────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', async () => {
+  initRichEditors();
+  bindDirtyTracking();
+  bindEditor();
+  $('hero-height').addEventListener('click', e => { const v = e.target.closest('button')?.dataset.v; if (v) setHeroHeight(v); });
+  $('site-link').href = SITE_URL;
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's' && !$('app').hidden) { e.preventDefault(); if (DIRTY.size) saveAll(); }
+  });
+
+  OWNER = localStorage.getItem('crea_owner') || '';
+  REPO  = localStorage.getItem('crea_repo')  || '';
+  const hasSecret = localStorage.getItem('crea_vault') || localStorage.getItem('crea_token_enc');
+  if (!OWNER || !REPO || !hasSecret) return show('login');
+
+  const sess = sessionStorage.getItem('crea_session');
+  if (sess) {
+    try {
+      const s = JSON.parse(sess);
+      TOKEN = s.token; CLD = { cloud: s.cloud || '', preset: s.preset || '' };
+      if (await loadData()) return startApp();
+    } catch (e) {}
+    sessionStorage.removeItem('crea_session');
+  }
+  show('unlock');
+});
+
+function startApp() {
+  show('app');
+  $('repo-label').textContent = `${OWNER}/${REPO}`;
+  try {
+    const raw = localStorage.getItem('crea_draft');
+    if (raw) {
+      const dr = JSON.parse(raw);
+      const when = new Date(dr.when).toLocaleString('it-IT');
+      if (dr.data && confirm(`Hai modifiche non salvate del ${when}.\n\nOK = riprendile\nAnnulla = scartale e usa la versione pubblicata`)) {
+        DATA = normalizeData(dr.data);
+        (dr.areas || AREAS).forEach(a => DIRTY.add(a));
+      } else clearDraft();
+    }
+  } catch (e) { clearDraft(); }
+  populateAll();
+  updateSaveUI();
+  toast('Pannello pronto.', 'success', 2000);
+}
+
+function populateAll() {
+  _current = null;
+  $('ev-editor').hidden = true; $('ev-list-view').hidden = false;
+  renderEventList();
+  populateTexts();
+  val('formspree', DATA.settings.formspreeUrl);
+  val('cld-cloud', CLD.cloud); val('cld-preset', CLD.preset);
+  renderCldStatus();
+}
+
+function showArea(area) {
+  AREAS.forEach(a => {
+    $('area-' + a).hidden = a !== area;
+    $('nav-' + a).classList.toggle('active', a === area);
+  });
+  if (area === 'eventi' && !_current) renderEventList();
+  window.scrollTo(0, 0);
+}
+
+/* ─── MODIFICHE NON SALVATE + BOZZA ────────────────────────────────────────── */
+function bindDirtyTracking() {
+  document.querySelectorAll('[data-area]').forEach(sec => {
+    const h = ev => { if (!ev.target.closest('[data-nodirty]')) markDirty(sec.dataset.area); };
+    sec.addEventListener('input', h);
+    sec.addEventListener('change', h);
+  });
+}
+function markDirty(area) { DIRTY.add(area); updateSaveUI(); scheduleDraft(); }
+function updateSaveUI() {
+  AREAS.forEach(a => $('nav-' + a).classList.toggle('dirty', DIRTY.has(a)));
+  const st = $('save-status');
+  st.textContent = DIRTY.size ? 'Modifiche non salvate' : 'Tutto salvato';
+  st.classList.toggle('dirty', DIRTY.size > 0);
+  $('save-btn').disabled = DIRTY.size === 0;
+}
+function scheduleDraft() { clearTimeout(_draftTimer); _draftTimer = setTimeout(saveDraftNow, 1500); }
+function saveDraftNow() {
+  try { collectTexts(); localStorage.setItem('crea_draft', JSON.stringify({ when: Date.now(), areas: [...DIRTY], data: DATA })); } catch (e) {}
+}
+function clearDraft() { clearTimeout(_draftTimer); localStorage.removeItem('crea_draft'); }
+window.addEventListener('beforeunload', e => { if (DIRTY.size) { e.preventDefault(); e.returnValue = ''; } });
+
+/* ─── EDITOR DI TESTO RICCO ────────────────────────────────────────────────── */
+const RICH_TOOLBAR = `<div class="rich-toolbar">
+  <button type="button" class="tb-btn" onmousedown="execFmt(event,'bold')" title="Grassetto"><b>B</b></button>
+  <button type="button" class="tb-btn" onmousedown="execFmt(event,'italic')" title="Corsivo"><i>I</i></button>
+  <button type="button" class="tb-btn" onmousedown="execFmt(event,'underline')" title="Sottolineato"><u>U</u></button>
+  <span class="tb-sep"></span>
+  ${[['#E3A500','Giallo miele'],['#e74c3c','Rosso'],['#27ae60','Verde'],['#1F2933','Nero'],['#6B7280','Grigio']]
+    .map(([c, n]) => `<span class="tb-dot" style="background:${c}" title="${n}" onmousedown="execColor(event,'${c}')"></span>`).join('')}
+  <span class="tb-sep"></span>
+  <button type="button" class="tb-btn" onmousedown="execFmt(event,'removeFormat')" title="Rimuovi formattazione">✕ formato</button>
+</div>`;
+const richEditor = (id, ph = '', html = '') => `<div class="rich-editor">${RICH_TOOLBAR}<div class="rich-content" id="${id}" contenteditable="true" data-placeholder="${esc(ph)}">${html}</div></div>`;
+function initRichEditors() {
+  [['e-fulldesc-wrap', 'e-fulldesc', 'Racconta l\'evento ai visitatori…'],
+   ['hero-subtitle-wrap', 'hero-subtitle', ''],
+   ['about-text-wrap', 'about-text', ''],
+   ['footer-quote-wrap', 'footer-quote', '']].forEach(([w, id, ph]) => { $(w).innerHTML = richEditor(id, ph); });
+}
+function execFmt(e, cmd)    { e.preventDefault(); document.execCommand(cmd, false, null); }
+function execColor(e, c)    { e.preventDefault(); document.execCommand('foreColor', false, c); }
+const getRich = id => sanitizeRich($(id)?.innerHTML || '');
+const setRich = (id, html) => { if ($(id)) $(id).innerHTML = html || ''; };
+
+/* Tiene solo b/strong/i/em/u/br/a/span colorati: via stili spuri, script, attributi */
+function sanitizeRich(html) {
+  if (!html) return '';
+  const root = document.createElement('div');
+  root.innerHTML = html;
+  root.querySelectorAll('script,style').forEach(el => el.remove());
+  root.querySelectorAll('font').forEach(f => {
+    const span = document.createElement('span');
+    const c = f.getAttribute('color'); if (c) span.style.color = c;
+    span.innerHTML = f.innerHTML; f.replaceWith(span);
+  });
+  const allowed = { B:1, STRONG:1, I:1, EM:1, U:1, BR:1, A:1, SPAN:1 };
+  [...root.querySelectorAll('*')].reverse().forEach(el => {
+    const tag = el.tagName;
+    if (tag === 'DIV' || tag === 'P') { el.insertAdjacentHTML('afterend', '<br>'); el.replaceWith(...el.childNodes); }
+    else if (!allowed[tag]) el.replaceWith(...el.childNodes);
+    else {
+      const color = tag === 'SPAN' ? el.style.color : '';
+      const href  = tag === 'A' ? el.getAttribute('href') : '';
+      [...el.attributes].forEach(a => el.removeAttribute(a.name));
+      if (color) el.style.color = color;
+      if (href && /^(https?:|mailto:)/i.test(href)) { el.setAttribute('href', href); el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener'); }
+      if (tag === 'SPAN' && !el.getAttribute('style')) el.replaceWith(...el.childNodes);
+    }
+  });
+  return root.innerHTML.replace(/&nbsp;/g, ' ').replace(/(\s*<br\s*\/?>\s*)+$/i, '').trim();
+}
+
+/* ═══ EVENTI ═══════════════════════════════════════════════════════════════════ */
+const cur = () => DATA.events.find(e => e.id === _current);
+const isBlank = e => !e.t.trim() && !e.date && !e.img && !e.gallery.length && !e.desc.trim() && !e.fullDesc.trim();
+
+function renderEventList() {
+  const today = todayRome(), evs = DATA.events;
+  const noDate = evs.filter(e => !e.date);
+  const up     = evs.filter(e => e.date && e.date >= today).sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
+  const past   = evs.filter(e => e.date && e.date < today).sort((a, b) => sortKey(b).localeCompare(sortKey(a)));
+  const badge  = (cls, txt) => `<span class="badge badge-${cls}">${txt}</span>`;
+  let html = '';
+  if (noDate.length) html += group('Da completare', noDate, () => badge('err', 'Manca la data'));
+  html += group('In programma', up, (e, i) => (i === 0 ? badge('live', 'In evidenza sul sito') : badge('queue', 'In coda')) + (e.img ? '' : ' ' + badge('warn', 'Senza locandina')),
+                'Nessun evento in programma: il sito mostra «Stiamo organizzando qualcosa di speciale per voi».');
+  html += group(`Passati · ${past.length}`, past, e => e.img ? `<span class="ev-meta">${e.gallery.length} foto/video</span>` : badge('warn', 'Senza copertina'));
+  $('ev-groups').innerHTML = html;
+}
+function group(title, list, right, emptyMsg) {
+  if (!list.length && !emptyMsg) return '';
+  const rows = list.length ? list.map((e, i) => evRow(e, right(e, i))).join('') : `<div class="empty">${emptyMsg}</div>`;
+  return `<div class="ev-group-title">${title}</div><div class="ev-list">${rows}</div>`;
+}
+function evRow(e, right) {
+  const th = e.img ? `<img class="ev-thumb" src="${esc(mediaThumb(e.img, 120))}" alt="" loading="lazy">` : `<div class="ev-thumb">🖼</div>`;
+  const meta = [e.date ? shortDate(e.date) + (e.time ? ' · ' + esc(e.time) : '') : 'senza data', esc(TAGS[e.tag] || e.tag), esc(e.place)].filter(Boolean).join(' · ');
+  return `<button type="button" class="ev-row" onclick="openEditor(${e.id})">${th}<div class="ev-main"><div class="ev-title">${esc(e.t || 'Evento senza titolo')}</div><div class="ev-meta">${meta}</div></div>${right}</button>`;
+}
+
+function newEvent() {
+  const id = Math.max(0, ...DATA.events.map(e => e.id)) + 1;
+  DATA.events.push({ id, ...structuredClone(EVENT_DEFAULTS) });
+  openEditor(id);
+  $('e-t').focus();
+}
+function openEditor(id) {
+  _current = id;
+  const e = cur(); if (!e) return;
+  document.querySelectorAll('#ev-editor [data-k]').forEach(el => { el.value = e[el.dataset.k] ?? ''; });
+  setRich('e-fulldesc', e.fullDesc);
+  document.querySelectorAll('#ev-editor .invalid').forEach(f => f.classList.remove('invalid'));
+  $('ev-editor').querySelector('details.more').open = !!(e.sub || e.wa || e.n || e.d);
+  $('ev-list-view').hidden = true; $('ev-editor').hidden = false;
+  updatePreview(); renderMedia();
+  window.scrollTo(0, 0);
+}
+function closeEditor() {
+  const e = cur();
+  if (e && isBlank(e)) DATA.events = DATA.events.filter(x => x !== e);   // "Nuovo evento" aperto e lasciato vuoto
+  _current = null;
+  $('ev-editor').hidden = true; $('ev-list-view').hidden = false;
+  renderEventList();
+}
+function deleteEvent() {
+  const e = cur(); if (!e) return;
+  if (!confirm(`Eliminare «${e.t || 'evento senza titolo'}»?\n\nFoto e video restano su Cloudinary. L'evento sparisce dal sito quando salvi.`)) return;
+  DATA.events = DATA.events.filter(x => x !== e);
+  _current = null;
+  markDirty('eventi');
+  closeEditor();
+}
+
+/* I campi del modulo scrivono subito nell'evento (niente "raccolta" al salvataggio) */
+function bindEditor() {
+  $('ev-editor').addEventListener('input', ev => {
+    const e = cur(); if (!e) return;
+    const k = ev.target.dataset?.k;
+    if (k) {
+      e[k] = ev.target.value;
+      ev.target.closest('.field')?.classList.remove('invalid');
+      if (['t', 'date', 'time', 'd'].includes(k)) updatePreview();
+    } else if (ev.target.id === 'e-fulldesc') e.fullDesc = ev.target.innerHTML;
+  });
+}
+
+function updatePreview() {
+  const e = cur(), box = $('e-preview');
+  if (!e.date) { box.innerHTML = 'Scegli la data: badge, data estesa ed etichetta del mese si calcolano da soli.'; return; }
+  const p = parseISO(e.date), today = todayRome();
+  const firstUp = DATA.events.filter(x => x.date && x.date >= today).sort((a, b) => sortKey(a).localeCompare(sortKey(b)))[0];
+  const where = e.date >= today
+    ? (firstUp === e ? 'sarà <strong>in evidenza</strong> sul sito' : 'è in programma, <strong>in coda</strong> dopo un evento più vicino')
+    : `è <strong>in archivio</strong> come «${esc(monthLabel(e))}»`;
+  box.innerHTML = `Sul sito: <strong>${String(p.d).padStart(2, '0')} ${MESI[p.m - 1].slice(0, 3).toUpperCase()}</strong> · <strong>${esc(fullDate(e))}</strong> — ${where}.`;
+}
+
+/* ─── MEDIA DELL'EVENTO ────────────────────────────────────────────────────── */
+const POS = [['center center', 'Inquadratura: centro'], ['center top', 'Inquadratura: alto'], ['center bottom', 'Inquadratura: basso'], ['left center', 'Inquadratura: sinistra'], ['right center', 'Inquadratura: destra']];
+
+function renderMedia() {
+  const e = cur(), g = e.gallery, vid = useCloudinary();
+  const pos = e.imgPos || 'center center';
+  const cover = e.img
+    ? `<img src="${esc(mediaThumb(e.img, 300))}" alt="Copertina" style="object-position:${esc(pos)}" onerror="this.style.opacity=.2">`
+    : `<div class="none">Nessuna copertina</div>`;
+  let h = `<div class="media-wrap"><div class="cover-slot">${cover}⭐ Copertina / locandina
+      <div class="drop" style="padding:.45rem;margin-top:.45rem;font-size:.72rem"><input type="file" accept="image/*" onchange="uploadMedia(this.files,'cover');this.value=''">${e.img ? 'Cambia' : 'Carica'}</div>
+      ${e.img ? `<select onchange="setPos(this.value)">${POS.map(([v, l]) => `<option value="${v}"${v === pos ? ' selected' : ''}>${l}</option>`).join('')}</select>
+      <button type="button" class="linkbtn" style="margin-top:.4rem" onclick="removeCover()">Togli copertina</button>` : ''}
+    </div><div>`;
+  if (g.length) h += `<div class="thumbs">${g.map((f, i) => `
+      <div class="thumb"><img src="${esc(mediaThumb(f))}" alt="" loading="lazy" onerror="this.style.opacity=.2">${isVideoUrl(f) ? '<span class="vid">VIDEO</span>' : ''}
+        <div class="acts">
+          ${i > 0 ? `<button type="button" onclick="movePhoto(${i},-1)" title="Sposta prima">◀</button>` : ''}
+          ${i < g.length - 1 ? `<button type="button" onclick="movePhoto(${i},1)" title="Sposta dopo">▶</button>` : ''}
+          ${isVideoUrl(f) ? '' : `<button type="button" onclick="setCover(${i})" title="Usa come copertina">⭐</button>`}
+          <button type="button" onclick="removePhoto(${i})" title="Togli dall'evento">✕</button>
+        </div></div>`).join('')}</div>`;
+  h += `<div class="drop"><input type="file" multiple accept="${vid ? 'image/*,video/*' : 'image/*'}" onchange="uploadMedia(this.files);this.value=''">
+      <strong>Trascina qui foto${vid ? ' e video' : ''}, o clicca per sceglierli</strong>${g.length ? 'Si aggiungono in fondo alla galleria' : 'Se manca la copertina, la prima immagine diventa la copertina'}</div>`;
+  if (!vid) h += `<p class="field help" style="margin-top:.5rem">⚠️ Cloudinary non configurato: le foto vanno su GitHub (max 5MB) e i video non si possono caricare. Configuralo in Impostazioni.</p>`;
+  $('e-media').innerHTML = h + '</div></div>';
+  $('e-media').querySelectorAll('.drop').forEach(d => {
+    d.addEventListener('dragenter', () => d.classList.add('over'));
+    ['dragleave', 'drop'].forEach(t => d.addEventListener(t, () => d.classList.remove('over')));
+  });
+}
+function mediaChanged() { markDirty('eventi'); renderMedia(); }
+function setPos(v)      { cur().imgPos = v; markDirty('eventi'); renderMedia(); }
+function setCover(i)    { cur().img = cur().gallery[i]; mediaChanged(); toast('Copertina aggiornata.', 'success', 2000); }
+function removeCover()  { cur().img = ''; mediaChanged(); }
+function movePhoto(i, d) { const g = cur().gallery; [g[i], g[i + d]] = [g[i + d], g[i]]; mediaChanged(); }
+function removePhoto(i) {
+  if (!confirm('Togliere questo file dall\'evento?\n\nIl file non viene cancellato: resta su Cloudinary/GitHub.')) return;
+  cur().gallery.splice(i, 1); mediaChanged();
+}
+
+async function uploadMedia(fileList, mode) {
+  const e = cur(); if (!e) return;
+  const id = e.id, vid = useCloudinary();
+  let files = [...fileList].filter(f => f.type.startsWith('image/') || (vid && f.type.startsWith('video/')));
+  if (mode === 'cover') files = files.filter(f => f.type.startsWith('image/')).slice(0, 1);
+  if (!files.length) return toast(vid ? 'Scegli foto o video.' : 'Scegli solo immagini (per i video configura Cloudinary).', 'error');
+  const maxMB = vid ? 100 : 5;
+  const big = files.filter(f => f.size > maxMB * 1048576);
+  if (big.length) return toast(`File troppo grandi (max ${maxMB}MB): ${esc(big.map(f => f.name).join(', '))}`, 'error', 8000);
+
+  let done = 0;
+  for (const [i, f] of files.entries()) {
+    toast(`Caricamento ${i + 1} di ${files.length}: ${esc(f.name)}…`, '', 0);
+    try {
+      const ref = await uploadOne(f);
+      const ev = DATA.events.find(x => x.id === id); if (!ev) return;
+      const isImg = !isVideoUrl(ref);
+      if (mode === 'cover' || (isImg && !ev.img)) {
+        ev.img = ref;
+        // evento già passato: la prima foto è sia copertina sia parte della galleria
+        if (mode !== 'cover' && ev.date && ev.date < todayRome()) ev.gallery.push(ref);
+      } else if (!ev.gallery.includes(ref)) ev.gallery.push(ref);
+      done++;
+      markDirty('eventi');
+      if (_current === id) renderMedia();
+    } catch (err) { return toast(`Errore su ${esc(f.name)}: ${esc(err.message)}`, 'error', 10000); }
+  }
+  toast(`${done} file caricat${done === 1 ? 'o' : 'i'}. Ricorda «Salva e pubblica».`, 'success');
+}
+
+/* Upload: Cloudinary se configurato, altrimenti file nel repository GitHub.
+   Restituisce l'URL Cloudinary oppure il nome del file nel repository. */
+async function uploadOne(file) {
+  if (useCloudinary()) return uploadToCloudinary(file);
+  if (file.size > 5 * 1048576) throw new Error('File troppo grande per GitHub (max 5MB)');
+  const ext  = (file.name.match(/\.[a-z0-9]+$/i)?.[0] || '').toLowerCase();
+  const name = file.name.replace(/\.[^.]+$/, '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'immagine';
+  const path = `${name}-${Date.now().toString(36)}${ext}`;      // nome unico: niente sovrascritture
+  const content = (await fileToBase64(file)).split(',')[1];
+  const res = await gh(path, { method: 'PUT', body: JSON.stringify({ message: `🖼️ Upload: ${path}`, content }) });
+  if (!res.ok) throw new Error((await res.json()).message);
+  return path;
+}
+async function uploadToCloudinary(file) {
+  const type = file.type.startsWith('video/') ? 'video' : 'image';
+  const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', CLD.preset);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(CLD.cloud)}/${type}/upload`, { method: 'POST', body: fd });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || 'caricamento su Cloudinary non riuscito');
+  if (type === 'video') {
+    // fa preparare subito a Cloudinary la versione che il sito userà: il primo visitatore non aspetta
+    const warm = data.secure_url.replace('/upload/', `/upload/${VIDEO_T}/`).replace(/\.(mp4|mov|webm)(\?.*)?$/i, '.mp4');
+    fetch(warm, { headers: { Range: 'bytes=0-1' } }).catch(() => {});
+  }
+  return data.secure_url;
+}
+const fileToBase64 = file => new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = ko; r.readAsDataURL(file); });
+
+/* ═══ TESTI DEL SITO ═══════════════════════════════════════════════════════════ */
+function populateTexts() {
+  const { hero, community: c, about, decalogo, footer } = DATA;
+  val('hero-title', hero.title); setRich('hero-subtitle', hero.subtitle); val('hero-cta', hero.cta); val('hero-bg', hero.bg);
+  $('hero-overlay').value = hero.overlay ?? 65;
+  setHeroHeight(hero.height || 'alta', true);
+  updateHeroPreview();
+  val('comm-count', c.count); val('comm-caption', c.caption); val('comm-btitle', c.bannerTitle); val('comm-btext', c.bannerText);
+  val('about-title', about.title); setRich('about-text', about.text); val('about-tagline', about.tagline);
+  $('pillars').innerHTML = [0, 1, 2].map(i => { const p = about.pillars[i] || {}; return `
+    <div class="row" style="--cols:3">
+      <div class="field"><label for="p-t-${i}">Pilastro ${i + 1}: titolo</label><input id="p-t-${i}" value="${esc(p.t)}"></div>
+      <div class="field"><label for="p-d-${i}">Descrizione</label><input id="p-d-${i}" value="${esc(p.d)}"></div>
+      <div class="field"><label for="p-i-${i}">Icona</label><input id="p-i-${i}" value="${esc(p.icon)}"></div>
+    </div>`; }).join('');
+  val('dec-title', decalogo.title); val('dec-subtitle', decalogo.subtitle);
+  $('decalogo').innerHTML = decalogo.items.map((it, i) => `
+    <details class="dec-item"><summary><span class="n">${esc(it.n || String(i + 1).padStart(2, '0'))}</span><span id="dec-l-${i}">${esc(it.t)}</span></summary>
+      <div class="body">
+        <div class="row"><div class="field"><label for="dec-t-${i}">Titolo</label><input id="dec-t-${i}" value="${esc(it.t)}" oninput="$('dec-l-${i}').textContent=this.value"></div>
+        <div class="field"><label for="dec-i-${i}">Icona</label><input id="dec-i-${i}" value="${esc(it.i)}"></div></div>
+        <div class="field"><span class="lbl">Testo</span>${richEditor('dec-d-' + i, '', it.d || '')}</div>
+      </div></details>`).join('');
+  val('footer-email', footer.email); setRich('footer-quote', footer.quote);
+  val('social-fb', footer.socials.find(s => s.icon === 'facebook')?.url);
+  val('social-ig', footer.socials.find(s => s.icon === 'instagram')?.url);
+}
+
+function collectTexts() {
+  const D = DATA;
+  Object.assign(D.hero, { title: get('hero-title'), subtitle: getRich('hero-subtitle'), cta: get('hero-cta'), bg: get('hero-bg'), overlay: +$('hero-overlay').value, height: _heroH });
+  Object.assign(D.community, { count: get('comm-count'), caption: get('comm-caption'), bannerTitle: get('comm-btitle'), bannerText: get('comm-btext') });
+  Object.assign(D.about, { title: get('about-title'), text: getRich('about-text'), tagline: get('about-tagline'),
+    pillars: [0, 1, 2].map(i => ({ icon: get(`p-i-${i}`), t: get(`p-t-${i}`), d: get(`p-d-${i}`) })).filter(p => p.t || p.icon) });
+  Object.assign(D.decalogo, { title: get('dec-title'), subtitle: get('dec-subtitle'),
+    items: D.decalogo.items.map((it, i) => ({ n: it.n || String(i + 1).padStart(2, '0'), t: get(`dec-t-${i}`), d: getRich(`dec-d-${i}`), i: get(`dec-i-${i}`) })) });
+  const others = D.footer.socials.filter(s => s.icon !== 'facebook' && s.icon !== 'instagram');   // es. whatsapp: non toccati
+  Object.assign(D.footer, { email: get('footer-email'), quote: getRich('footer-quote'),
+    socials: [{ icon: 'facebook', url: get('social-fb') }, { icon: 'instagram', url: get('social-ig') }].filter(s => s.url).concat(others) });
+  D.settings.formspreeUrl = get('formspree');
+}
+
+function setHeroHeight(v, silent) {
+  _heroH = v;
+  document.querySelectorAll('#hero-height button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  if (!silent) markDirty('testi');
+}
+function updateHeroPreview() {
+  const bg = get('hero-bg');
+  $('hero-preview').style.backgroundImage = bg ? `url("${mediaThumb(bg, 800)}")` : 'none';
+  $('hero-preview-ov').style.opacity = $('hero-overlay').value / 100;
+  $('hero-overlay-out').textContent = $('hero-overlay').value;
+  $('hero-preview-t').textContent = get('hero-title');
+}
+async function uploadHeroBg(files) {
+  const f = files[0];
+  if (!f || !f.type.startsWith('image/')) return toast('Scegli un file immagine.', 'error');
+  toast('Caricamento sfondo…', '', 0);
+  try {
+    val('hero-bg', await uploadOne(f));
+    updateHeroPreview(); markDirty('testi');
+    toast('Sfondo caricato. Ricorda «Salva e pubblica».', 'success');
+  } catch (e) { toast('Errore: ' + esc(e.message), 'error', 8000); }
+}
+
+/* ═══ IMPOSTAZIONI ═════════════════════════════════════════════════════════════ */
+function renderCldStatus() {
+  const el = $('cld-status'), ok = useCloudinary();
+  el.textContent = ok ? `Attivo: ${CLD.cloud} · preset «${CLD.preset}»` : 'Non configurato: foto su GitHub (max 5MB), niente video';
+  el.style.background = ok ? 'var(--ok-soft)' : 'var(--honey-soft)';
+  el.style.color = ok ? 'var(--ok)' : '#8a6100';
+}
+async function saveCloudinary() {
+  const master = $('cld-master').value;
+  if (!master) return toast('Inserisci la password master per confermare.', 'error');
+  try { await decryptStr(localStorage.getItem('crea_vault'), master); }
+  catch (e) { return toast('Password master errata.', 'error'); }
+  CLD = { cloud: get('cld-cloud'), preset: get('cld-preset') };
+  await saveVault(master);
+  startSession();
+  $('cld-master').value = '';
+  renderCldStatus();
+  if (_current) renderMedia();
+  toast('Configurazione Cloudinary salvata su questo computer.', 'success');
+}
+
+/* ═══ SALVATAGGIO ══════════════════════════════════════════════════════════════ */
+/* Copia pulita per content.json: campi trimmati, HTML sanificato, chiavi vuote opzionali rimosse */
+function cleanForSave(D) {
+  const out = structuredClone(D);
+  out.events = out.events.filter(e => !isBlank(e)).map(e => {
+    const o = {};
+    EVENT_KEYS.forEach(k => { if (e[k] !== undefined) o[k] = typeof e[k] === 'string' ? e[k].trim() : e[k]; });
+    o.fullDesc = sanitizeRich(o.fullDesc);
+    if (!o.d) delete o.d;
+    if (!o.imgPos || o.imgPos === 'center center') delete o.imgPos;
+    return o;
+  }).sort((a, b) => sortKey(b).localeCompare(sortKey(a)));
+  return out;
+}
+
+async function saveAll() {
+  collectTexts();
+  const bad = DATA.events.filter(e => !isBlank(e) && (!e.t.trim() || !e.date));
+  if (bad.length) {
+    const e = bad[0];
+    showArea('eventi'); openEditor(e.id);
+    if (!e.t.trim()) $('e-t').closest('.field').classList.add('invalid');
+    if (!e.date)     $('e-date').closest('.field').classList.add('invalid');
+    return toast(`Completa titolo e data di «${esc(e.t || 'evento senza titolo')}» prima di salvare.`, 'error', 8000);
+  }
+  const btn = $('save-btn');
+  btn.disabled = true;
+  toast('Salvataggio…', '', 0);
+  const clean = cleanForSave(DATA);
+  try {
+    const res = await gh('data/content.json', { method: 'PUT', body: JSON.stringify({ message: '✏️ Admin: aggiornamento contenuti', content: b64utf8(JSON.stringify(clean, null, 2) + '\n'), sha: SHA }) });
+    if (res.status === 409) {
+      // il file è cambiato su GitHub dopo il caricamento: aggiorno lo SHA, il prossimo salvataggio vince
+      const fresh = await gh('data/content.json');
+      if (fresh.ok) SHA = (await fresh.json()).sha;
+      updateSaveUI();
+      return toast('Qualcun altro ha salvato nel frattempo. Premi di nuovo «Salva e pubblica» per pubblicare la TUA versione (sovrascrive l\'altra).', 'error', 12000);
+    }
+    if (!res.ok) throw new Error((await res.json()).message);
+    SHA = (await res.json()).content.sha;
+    DATA = normalizeData(clean);
+    DIRTY.clear(); clearDraft(); updateSaveUI();
+    if (!_current) renderEventList();
+    toast(`Pubblicato. Il sito si aggiorna entro un paio di minuti. <a href="${SITE_URL}" target="_blank" rel="noopener">Apri il sito ↗</a>`, 'success', 9000);
+  } catch (e) {
+    updateSaveUI();
+    toast('Salvataggio non riuscito: ' + esc(e.message), 'error', 10000);
+  }
+}
 </script>
 </body>
 </html>
