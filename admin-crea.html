@@ -3,1662 +3,366 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>Admin — CREA 20072</title>
+<link rel="icon" type="image/webp" href="logo-96.webp">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --honey: #E3A500; --honey-dark: #C28D00; --black: #1a1a1a;
-    --gray: #f4f4f4; --gray-mid: #e0e0e0; --text: #333; --text-light: #777;
-    --danger: #e74c3c; --success: #27ae60; --radius: 14px;
+    --honey:#E3A500; --honey-dark:#C28D00; --honey-soft:#FFF8E6; --honey-line:#FFE082;
+    --black:#1a1a1a; --gray:#f4f4f4; --gray-mid:#e2e2e2; --text:#2b2b2b; --muted:#777;
+    --danger:#d64545; --danger-soft:#fdecec; --ok:#1f8a4c; --ok-soft:#eaf7ef; --radius:12px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Montserrat', sans-serif; background: #f0f0f0; color: var(--text); min-height: 100vh; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Montserrat',sans-serif; background:#f2f2f0; color:var(--text); font-size:15px; }
+  button, input, select, textarea { font-family:inherit; font-size:inherit; color:inherit; }
+  [hidden] { display:none !important; }
 
-  /* ── LOGIN ── */
-  #login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--black); }
-  .login-box { background:white; border-radius:24px; padding:3rem; width:100%; max-width:420px; text-align:center; }
-  .login-box .bee { font-size:3.5rem; margin-bottom:1rem; }
-  .login-box h1 { font-size:1.5rem; font-weight:800; margin-bottom:.25rem; text-transform:uppercase; }
-  .login-box p { color:var(--text-light); font-size:.85rem; margin-bottom:2rem; }
-  .login-box label { display:block; text-align:left; font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--text-light); margin-bottom:.5rem; }
-  .login-box input { width:100%; padding:.9rem 1rem; border:2px solid var(--gray-mid); border-radius:10px; font-family:'Montserrat',sans-serif; font-size:.9rem; margin-bottom:1.25rem; transition:border-color .2s; }
-  .login-box input:focus { outline:none; border-color:var(--honey); }
-  .login-box .hint { font-size:.72rem; color:var(--text-light); text-align:left; background:#fffbe6; border:1px solid #ffe082; border-radius:8px; padding:.75rem 1rem; margin-bottom:1.5rem; line-height:1.7; }
-  .login-box .hint a { color:var(--honey-dark); font-weight:700; }
+  /* ── ACCESSO ── */
+  .gate { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--black); padding:1rem; }
+  .gate-box { background:white; border-radius:22px; padding:2.5rem; width:100%; max-width:420px; }
+  .gate-box img { width:64px; height:64px; display:block; margin:0 auto 1rem; }
+  .gate-box h1 { font-size:1.3rem; font-weight:800; text-align:center; text-transform:uppercase; }
+  .gate-box > p { color:var(--muted); font-size:.85rem; text-align:center; margin:.3rem 0 1.75rem; }
+  .gate-box .hint { font-size:.75rem; color:var(--muted); background:var(--honey-soft); border:1px solid var(--honey-line); border-radius:10px; padding:.8rem 1rem; margin:.25rem 0 1.25rem; line-height:1.7; }
+  .gate-box .hint a { color:var(--honey-dark); font-weight:700; }
+  .linkbtn { background:none; border:none; color:var(--muted); font-size:.8rem; cursor:pointer; text-decoration:underline; display:block; margin:1rem auto 0; }
 
-  /* ── LAYOUT ── */
-  #app { display:none; }
-  .topbar { background:var(--black); color:white; padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
-  .topbar-left { display:flex; align-items:center; gap:.75rem; }
-  .topbar-left .bee { font-size:1.6rem; }
-  .topbar-left h1 { font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; }
-  .topbar-right { display:flex; align-items:center; gap:1rem; }
-  .save-btn { background:var(--honey); color:white; border:none; border-radius:999px; padding:.65rem 1.75rem; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; cursor:pointer; transition:background .2s,transform .2s; }
-  .save-btn:hover { background:var(--honey-dark); transform:translateY(-2px); }
-  .save-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
-  .logout-btn { background:transparent; color:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.2); border-radius:999px; padding:.5rem 1rem; font-family:'Montserrat',sans-serif; font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.08em; cursor:pointer; transition:all .2s; }
-  .logout-btn:hover { color:white; border-color:white; }
-  .main-layout { display:flex; max-width:1200px; margin:0 auto; padding:2rem; gap:2rem; }
-
-  /* ── SIDEBAR ── */
-  .sidebar { width:220px; flex-shrink:0; position:sticky; top:80px; height:fit-content; }
-  .sidebar nav { background:white; border-radius:var(--radius); overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.06); }
-  .nav-group-label { font-size:.6rem; font-weight:800; text-transform:uppercase; letter-spacing:.15em; color:var(--text-light); padding:.8rem 1.25rem .3rem; background:white; }
-  .nav-divider { height:1px; background:var(--gray-mid); margin:.3rem 0; }
-  .nav-item { display:flex; align-items:center; gap:.75rem; padding:.85rem 1.25rem; font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-light); cursor:pointer; border-left:3px solid transparent; transition:all .2s; border-bottom:1px solid var(--gray); }
-  .nav-item:last-child { border-bottom:none; }
-  .nav-item:hover { color:var(--honey); background:#fffbe6; }
-  .nav-item.active { color:var(--honey); background:#fffbe6; border-left-color:var(--honey); }
-  .nav-item .icon { font-size:1.1rem; }
-
-  /* ── CONTENT / PANELS ── */
-  .content { flex:1; min-width:0; }
-  .panel { background:white; border-radius:var(--radius); box-shadow:0 2px 12px rgba(0,0,0,.06); overflow:hidden; display:none; margin-bottom:1.5rem; }
-  .panel.active { display:block; }
-  .panel-header { padding:1.5rem 2rem; border-bottom:2px solid var(--gray); display:flex; align-items:center; gap:1rem; }
-  .panel-header .icon { font-size:1.5rem; }
-  .panel-header h2 { font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
-  .panel-header p { font-size:.78rem; color:var(--text-light); margin-top:.15rem; }
-  .panel-body { padding:2rem; }
-
-  /* ── FORM ── */
-  .field { margin-bottom:1.25rem; }
-  .field label { display:block; font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--text-light); margin-bottom:.45rem; }
-  .field input, .field textarea, .field select { width:100%; padding:.85rem 1rem; border:2px solid var(--gray-mid); border-radius:10px; font-family:'Montserrat',sans-serif; font-size:.9rem; color:var(--text); transition:border-color .2s; background:white; }
+  /* ── CAMPI ── */
+  .field { margin-bottom:1rem; }
+  .field > label, .lbl { display:block; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:.4rem; }
+  .field input, .field textarea, .field select { width:100%; padding:.7rem .9rem; border:2px solid var(--gray-mid); border-radius:10px; background:white; transition:border-color .15s; }
   .field input:focus, .field textarea:focus, .field select:focus { outline:none; border-color:var(--honey); }
-  .field textarea { resize:vertical; min-height:80px; line-height:1.6; }
-  .field-row  { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-  .field-row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+  .field.invalid input { border-color:var(--danger); background:var(--danger-soft); }
+  .field .help { font-size:.75rem; color:var(--muted); margin-top:.3rem; line-height:1.5; }
+  .row { display:grid; gap:1rem; grid-template-columns:repeat(var(--cols,2), minmax(0,1fr)); }
 
-  /* ── RICH TEXT EDITOR ── */
-  .rich-editor { border:2px solid var(--gray-mid); border-radius:10px; overflow:hidden; transition:border-color .2s; }
+  /* ── BOTTONI ── */
+  .btn { display:inline-flex; align-items:center; gap:.45rem; padding:.6rem 1.1rem; border-radius:999px; border:2px solid var(--gray-mid); background:white; font-weight:700; font-size:.82rem; cursor:pointer; transition:all .15s; white-space:nowrap; text-decoration:none; color:var(--text); }
+  .btn:hover { border-color:var(--honey); color:var(--honey-dark); }
+  .btn-primary { background:var(--honey); border-color:var(--honey); color:white; }
+  .btn-primary:hover { background:var(--honey-dark); border-color:var(--honey-dark); color:white; }
+  .btn-primary[disabled] { background:#d9d9d9; border-color:#d9d9d9; cursor:default; }
+  .btn-danger { color:var(--danger); }
+  .btn-danger:hover { border-color:var(--danger); background:var(--danger-soft); color:var(--danger); }
+  .btn-block { width:100%; justify-content:center; padding:.85rem; font-size:.9rem; }
+  .btn-sm { padding:.35rem .75rem; font-size:.75rem; }
+
+  /* ── LAYOUT APP ── */
+  .topbar { position:sticky; top:0; z-index:50; background:var(--black); color:white; display:flex; align-items:center; gap:1rem; padding:.75rem 1.5rem; }
+  .topbar .brand { display:flex; align-items:center; gap:.6rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; font-size:.9rem; margin-right:auto; }
+  .topbar .brand img { width:30px; height:30px; border-radius:6px; background:white; }
+  #save-status { font-size:.8rem; color:rgba(255,255,255,.65); }
+  #save-status.dirty { color:var(--honey); font-weight:700; }
+  .topbar .btn:not(.btn-primary) { background:transparent; color:rgba(255,255,255,.8); border-color:rgba(255,255,255,.25); }
+  .topbar .btn:not(.btn-primary):hover { color:white; border-color:white; }
+  .layout { display:grid; grid-template-columns:210px minmax(0,1fr); gap:1.75rem; max-width:1180px; margin:0 auto; padding:1.75rem 1.5rem 4rem; }
+  .sidenav { position:sticky; top:84px; align-self:start; display:flex; flex-direction:column; gap:.3rem; }
+  .sidenav button { display:flex; align-items:center; gap:.65rem; padding:.75rem 1rem; border:none; background:transparent; border-radius:10px; font-weight:700; font-size:.88rem; color:var(--muted); cursor:pointer; text-align:left; }
+  .sidenav button:hover { background:white; color:var(--text); }
+  .sidenav button.active { background:white; color:var(--text); box-shadow:inset 3px 0 0 var(--honey); }
+  .sidenav .dot { margin-left:auto; width:8px; height:8px; border-radius:50%; background:var(--honey); visibility:hidden; }
+  .sidenav button.dirty .dot { visibility:visible; }
+  .card { background:white; border-radius:var(--radius); box-shadow:0 1px 3px rgba(0,0,0,.06); padding:1.5rem 1.75rem; margin-bottom:1.25rem; }
+  .card > h2 { font-size:1.05rem; font-weight:800; margin-bottom:.25rem; }
+  .card > .sub { font-size:.82rem; color:var(--muted); margin-bottom:1.25rem; }
+  .card h3 { font-size:.8rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:1.5rem 0 .9rem; padding-top:1.25rem; border-top:1px solid var(--gray); }
+  .card h3:first-of-type { border-top:none; padding-top:0; margin-top:.25rem; }
+  .page-head { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+  .page-head h1 { font-size:1.35rem; font-weight:800; }
+  .anchors { display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1.25rem; }
+  .anchors a { font-size:.78rem; font-weight:700; padding:.35rem .8rem; border-radius:999px; background:white; color:var(--muted); text-decoration:none; }
+  .anchors a:hover { color:var(--honey-dark); }
+
+  /* ── LISTA EVENTI ── */
+  .ev-group-title { font-size:.75rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:1.5rem 0 .6rem; }
+  .ev-list { background:white; border-radius:var(--radius); box-shadow:0 1px 3px rgba(0,0,0,.06); overflow:hidden; }
+  .ev-row { display:flex; align-items:center; gap:1rem; padding:.8rem 1.1rem; border-bottom:1px solid var(--gray); cursor:pointer; width:100%; background:white; border-left:none; border-right:none; border-top:none; text-align:left; }
+  .ev-row:last-child { border-bottom:none; }
+  .ev-row:hover { background:var(--honey-soft); }
+  .ev-thumb { width:52px; height:52px; border-radius:8px; object-fit:cover; background:var(--gray); flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.2rem; }
+  .ev-main { flex:1; min-width:0; }
+  .ev-title { font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ev-meta { font-size:.8rem; color:var(--muted); margin-top:.15rem; }
+  .badge { font-size:.7rem; font-weight:700; padding:.25rem .6rem; border-radius:999px; white-space:nowrap; }
+  .badge-live { background:var(--ok-soft); color:var(--ok); }
+  .badge-queue { background:var(--gray); color:var(--muted); }
+  .badge-warn { background:var(--honey-soft); color:#8a6100; }
+  .badge-err { background:var(--danger-soft); color:var(--danger); }
+  .empty { padding:1.5rem; text-align:center; color:var(--muted); font-size:.88rem; }
+
+  /* ── EDITOR EVENTO ── */
+  .preview-line { font-size:.82rem; color:var(--muted); background:var(--gray); border-radius:8px; padding:.6rem .9rem; margin:-.25rem 0 1rem; line-height:1.6; }
+  .preview-line strong { color:var(--text); }
+  details.more { margin-top:1.25rem; border-top:1px solid var(--gray); padding-top:1rem; }
+  details.more summary { cursor:pointer; font-weight:700; font-size:.85rem; color:var(--muted); list-style:none; }
+  details.more summary::before { content:'▸ '; }
+  details.more[open] summary::before { content:'▾ '; }
+  details.more[open] summary { margin-bottom:1rem; }
+
+  /* ── EDITOR TESTO RICCO ── */
+  .rich-editor { border:2px solid var(--gray-mid); border-radius:10px; overflow:hidden; background:white; }
   .rich-editor:focus-within { border-color:var(--honey); }
-  .rich-toolbar { background:var(--gray); padding:.4rem .75rem; display:flex; gap:.3rem; align-items:center; flex-wrap:wrap; border-bottom:1px solid var(--gray-mid); }
-  .tb-btn { background:white; border:1px solid var(--gray-mid); border-radius:6px; padding:.2rem .55rem; cursor:pointer; font-size:.8rem; font-family:'Montserrat',sans-serif; transition:all .2s; min-width:28px; text-align:center; line-height:1.4; }
-  .tb-btn:hover { background:var(--honey); color:white !important; border-color:var(--honey); }
-  .tb-sep { width:1px; height:16px; background:var(--gray-mid); margin:0 .1rem; flex-shrink:0; }
-  .tb-dot { width:18px; height:18px; border-radius:50%; border:2px solid rgba(0,0,0,.15); cursor:pointer; display:inline-block; transition:transform .2s,box-shadow .2s; flex-shrink:0; }
-  .tb-dot:hover { transform:scale(1.35); box-shadow:0 0 0 2px white, 0 0 0 3px currentColor; }
-  .rich-content { padding:.85rem 1rem; min-height:90px; font-family:'Montserrat',sans-serif; font-size:.9rem; color:var(--text); outline:none; line-height:1.7; }
-  .rich-content:empty:before { content:attr(data-placeholder); color:#bbb; pointer-events:none; display:block; }
+  .rich-toolbar { background:var(--gray); padding:.35rem .6rem; display:flex; gap:.3rem; align-items:center; flex-wrap:wrap; border-bottom:1px solid var(--gray-mid); }
+  .tb-btn { background:white; border:1px solid var(--gray-mid); border-radius:6px; padding:.15rem .5rem; cursor:pointer; font-size:.8rem; min-width:28px; }
+  .tb-btn:hover { background:var(--honey); color:white; border-color:var(--honey); }
+  .tb-sep { width:1px; height:16px; background:var(--gray-mid); margin:0 .15rem; }
+  .tb-dot { width:18px; height:18px; border-radius:50%; border:2px solid rgba(0,0,0,.15); cursor:pointer; }
+  .tb-dot:hover { transform:scale(1.25); }
+  .rich-content { padding:.75rem .9rem; min-height:90px; outline:none; line-height:1.7; }
+  .rich-content:empty::before { content:attr(data-placeholder); color:#bbb; }
 
-  /* ── DIMENSION HINT ── */
-  .dim-hint { display:inline-flex; align-items:center; gap:.5rem; background:#fffbe6; border:1px solid #ffe082; border-radius:8px; padding:.45rem .9rem; font-size:.7rem; font-weight:700; color:#92670a; margin-bottom:.75rem; line-height:1.5; }
-  .dim-hint .ratio-icon { font-size:1rem; }
+  /* ── MEDIA ── */
+  .media-wrap { display:grid; grid-template-columns:150px minmax(0,1fr); gap:1.25rem; }
+  .cover-slot { border:2px solid var(--honey-line); border-radius:10px; background:var(--honey-soft); padding:.6rem; text-align:center; font-size:.75rem; color:#8a6100; }
+  .cover-slot img { width:100%; aspect-ratio:3/4; object-fit:cover; border-radius:6px; display:block; margin-bottom:.5rem; background:white; }
+  .cover-slot .none { aspect-ratio:3/4; display:flex; align-items:center; justify-content:center; border-radius:6px; background:white; margin-bottom:.5rem; padding:.5rem; }
+  .cover-slot select { width:100%; margin-top:.4rem; padding:.3rem; border:1px solid var(--honey-line); border-radius:6px; font-size:.72rem; background:white; }
+  .thumbs { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:.5rem; margin-bottom:.75rem; }
+  .thumb { position:relative; aspect-ratio:1; border-radius:8px; overflow:hidden; background:var(--gray); }
+  .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .thumb .vid { position:absolute; top:.3rem; left:.3rem; background:rgba(0,0,0,.65); color:white; font-size:.62rem; font-weight:700; padding:.1rem .35rem; border-radius:4px; }
+  .thumb .acts { position:absolute; inset:auto 0 0 0; display:flex; justify-content:center; gap:.2rem; padding:.3rem; background:rgba(0,0,0,.6); opacity:0; transition:opacity .15s; }
+  .thumb:hover .acts, .thumb:focus-within .acts { opacity:1; }
+  .thumb .acts button { background:rgba(255,255,255,.2); color:white; border:none; border-radius:4px; padding:.15rem .4rem; cursor:pointer; font-size:.72rem; }
+  .thumb .acts button:hover { background:rgba(255,255,255,.4); }
+  .drop { position:relative; border:2px dashed var(--gray-mid); border-radius:10px; padding:1.1rem; text-align:center; color:var(--muted); font-size:.82rem; cursor:pointer; transition:all .15s; }
+  .drop:hover, .drop.over { border-color:var(--honey); background:var(--honey-soft); color:var(--honey-dark); }
+  .drop input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .drop strong { display:block; color:var(--text); margin-bottom:.15rem; }
 
-  /* ── SECTION BLOCKS inside panel ── */
-  .section-block { margin-bottom:1.75rem; padding-bottom:1.75rem; border-bottom:1px solid var(--gray); }
-  .section-block:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
-  .section-label { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:var(--text-light); margin-bottom:1rem; display:flex; align-items:center; gap:.4rem; }
+  /* ── TESTI DEL SITO ── */
+  .hero-preview { position:relative; border-radius:10px; overflow:hidden; background:#111 center/cover; height:140px; display:flex; align-items:center; justify-content:center; text-align:center; color:white; padding:1rem; }
+  .hero-preview .ov { position:absolute; inset:0; background:#000; }
+  .hero-preview span { position:relative; font-weight:800; text-transform:uppercase; font-size:.85rem; max-width:300px; }
+  .seg { display:flex; gap:.5rem; }
+  .seg button { flex:1; padding:.55rem; border:2px solid var(--gray-mid); background:white; border-radius:8px; font-weight:700; font-size:.8rem; cursor:pointer; }
+  .seg button.on { border-color:var(--honey); background:var(--honey-soft); }
+  .dec-item { border:1px solid var(--gray-mid); border-radius:10px; margin-bottom:.5rem; }
+  .dec-item summary { padding:.7rem 1rem; cursor:pointer; font-weight:700; font-size:.88rem; display:flex; gap:.6rem; align-items:center; }
+  .dec-item summary .n { font-size:.7rem; color:var(--honey-dark); background:var(--honey-soft); border-radius:5px; padding:.1rem .45rem; }
+  .dec-item[open] summary { border-bottom:1px solid var(--gray); }
+  .dec-item .body { padding:1rem; }
 
-  /* ── ARCHIVIO ── */
-  .archive-list { display:flex; flex-direction:column; gap:1rem; }
-  .archive-item { border:2px solid var(--gray-mid); border-radius:12px; overflow:hidden; transition:border-color .2s; }
-  .archive-item.editing { border-color:var(--honey); }
-  .archive-item-header { padding:1rem 1.25rem; display:flex; align-items:center; justify-content:space-between; cursor:pointer; background:var(--gray); transition:background .2s; }
-  .archive-item-header:hover { background:#fffbe6; }
-  .archive-item-title { display:flex; align-items:center; gap:.75rem; font-weight:700; font-size:.85rem; flex:1; min-width:0; overflow:hidden; }
-  .tag-badge { font-size:.65rem; padding:.2rem .6rem; border-radius:999px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; flex-shrink:0; }
-  .tag-famiglie  { background:#dbeafe; color:#1e40af; }
-  .tag-tradizioni{ background:#fed7aa; color:#9a3412; }
-  .tag-spettacoli{ background:#e9d5ff; color:#6b21a8; }
-  .archive-item-actions { display:flex; gap:.5rem; flex-shrink:0; }
-  .btn-sm { padding:.4rem .9rem; border-radius:8px; font-family:'Montserrat',sans-serif; font-size:.7rem; font-weight:700; text-transform:uppercase; cursor:pointer; border:none; transition:all .2s; white-space:nowrap; }
-  .btn-danger  { background:#fee2e2; color:var(--danger); }
-  .btn-danger:hover  { background:var(--danger); color:white; }
-  .btn-primary { background:#fef3c7; color:var(--honey-dark); }
-  .btn-primary:hover { background:var(--honey); color:white; }
-  .archive-item-body { padding:1.5rem; display:none; }
-  .archive-item.editing .archive-item-body { display:block; }
-  .add-event-btn { width:100%; padding:1rem; border:2px dashed var(--gray-mid); border-radius:12px; background:transparent; font-family:'Montserrat',sans-serif; font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-light); cursor:pointer; transition:all .2s; }
-  .add-event-btn:hover { border-color:var(--honey); color:var(--honey); background:#fffbe6; }
-
-  /* ── DECALOGO ── */
-  .decalogo-list { display:flex; flex-direction:column; gap:.6rem; }
-  .decalogo-item { border:1px solid var(--gray-mid); border-radius:10px; overflow:hidden; transition:border-color .2s; }
-  .decalogo-item.open { border-color:var(--honey); }
-  .decalogo-item-header { padding:.8rem 1rem; background:var(--gray); display:flex; align-items:center; gap:.75rem; cursor:pointer; transition:background .2s; }
-  .decalogo-item.open .decalogo-item-header { background:#fffbe6; }
-  .decalogo-item-header:hover { background:#fffbe6; }
-  .dec-num { font-size:.65rem; font-weight:800; color:var(--honey); background:white; border:1px solid #ffe082; border-radius:6px; padding:.15rem .5rem; flex-shrink:0; }
-  .dec-arrow { margin-left:auto; font-size:.75rem; color:var(--text-light); transition:transform .2s; }
-  .decalogo-item.open .dec-arrow { transform:rotate(90deg); }
-  .decalogo-item-body { padding:1.25rem; display:none; }
-  .decalogo-item.open .decalogo-item-body { display:block; }
-
-  /* ── PILLARS ── */
-  .pillar-list { display:flex; flex-direction:column; gap:.75rem; }
-  .pillar-item { border:1px solid var(--gray-mid); border-radius:10px; padding:1.25rem; background:var(--gray); }
-  .pillar-num { font-size:.65rem; font-weight:800; color:var(--honey); text-transform:uppercase; letter-spacing:.1em; margin-bottom:.75rem; }
-
-  /* ── UPLOAD ── */
-  .upload-zone { border:2px dashed var(--gray-mid); border-radius:10px; padding:1.5rem; text-align:center; cursor:pointer; transition:all .2s; background:white; position:relative; }
-  .upload-zone:hover,.upload-zone.drag-over { border-color:var(--honey); background:#fffbe6; }
-  .upload-zone input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-  .upload-zone .upload-icon { font-size:2rem; margin-bottom:.5rem; }
-  .upload-zone .upload-text { font-size:.78rem; font-weight:700; color:var(--text-light); text-transform:uppercase; letter-spacing:.06em; }
-  .upload-zone .upload-sub  { font-size:.7rem; color:var(--text-light); margin-top:.25rem; }
-
-  /* ── STATUS BAR ── */
-  .status-bar { background:white; border-radius:var(--radius); padding:1rem 1.5rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 12px rgba(0,0,0,.06); }
-  .status-bar .repo-info { font-size:.75rem; color:var(--text-light); }
-  .status-bar .repo-info strong { color:var(--text); }
-  .status-dot { width:8px; height:8px; border-radius:50%; background:var(--success); display:inline-block; margin-right:.5rem; }
+  /* ── IMPOSTAZIONI ── */
+  .status-pill { display:inline-block; font-size:.78rem; font-weight:700; padding:.45rem .8rem; border-radius:8px; margin-bottom:1rem; }
+  .danger-zone { border:2px solid var(--danger-soft); }
 
   /* ── TOAST ── */
-  #toast { position:fixed; bottom:2rem; right:2rem; background:var(--black); color:white; padding:1rem 1.5rem; border-radius:12px; font-size:.85rem; font-weight:600; box-shadow:0 8px 30px rgba(0,0,0,.3); z-index:9999; transform:translateY(100px); opacity:0; transition:all .35s cubic-bezier(.34,1.56,.64,1); max-width:340px; }
-  #toast.show { transform:translateY(0); opacity:1; }
-  #toast.success { border-left:4px solid var(--success); }
-  #toast.error   { border-left:4px solid var(--danger); }
-  #toast.loading { border-left:4px solid var(--honey); }
+  #toast { position:fixed; bottom:1.5rem; right:1.5rem; max-width:380px; background:var(--black); color:white; padding:.9rem 1.2rem; border-radius:12px; font-size:.85rem; font-weight:600; box-shadow:0 8px 30px rgba(0,0,0,.3); z-index:999; transform:translateY(120px); opacity:0; transition:all .3s; border-left:4px solid var(--honey); line-height:1.5; }
+  #toast.show { transform:none; opacity:1; }
+  #toast.success { border-left-color:var(--ok); }
+  #toast.error { border-left-color:var(--danger); }
+  #toast a { color:var(--honey); }
 
-  /* ── TRANSFER MODAL ── */
-  #transfer-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; padding:1rem; }
-  #transfer-overlay.open { display:flex; }
-  .transfer-box { background:white; border-radius:20px; padding:2rem; width:100%; max-width:500px; box-shadow:0 20px 60px rgba(0,0,0,.3); }
-  .transfer-box h3 { font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.2rem; }
-  .transfer-box .sub { font-size:.8rem; color:var(--text-light); margin-bottom:1.5rem; line-height:1.6; }
-  .transfer-preview { background:#fffbe6; border:1px solid #ffe082; border-radius:10px; padding:1rem 1.25rem; margin-bottom:1.5rem; }
-  .transfer-preview strong { display:block; font-size:1rem; font-weight:800; margin-bottom:.2rem; color:#1a1a1a; }
-  .transfer-preview span { font-size:.78rem; color:#7a5c00; }
-  .transfer-actions { display:flex; gap:.75rem; margin-top:1.5rem; }
-  .btn-transfer { flex:1; background:var(--honey); color:white; border:none; border-radius:999px; padding:.75rem; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.8rem; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; transition:background .2s; }
-  .btn-transfer:hover { background:var(--honey-dark); }
-  .btn-cancel-t { flex:1; background:var(--gray); color:var(--text); border:2px solid var(--gray-mid); border-radius:999px; padding:.75rem; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.8rem; text-transform:uppercase; cursor:pointer; transition:background .2s; }
-  .btn-cancel-t:hover { background:var(--gray-mid); }
-  .archive-trigger { background:#fffbe6; border:1px solid #ffe082; border-radius:12px; padding:1.25rem 1.5rem; margin-top:.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
-  .archive-trigger p { font-size:.8rem; color:#7a5c00; line-height:1.6; flex:1; }
-  .btn-archive-event { background:var(--honey); color:white; border:none; border-radius:999px; padding:.65rem 1.5rem; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; transition:background .2s,transform .2s; white-space:nowrap; flex-shrink:0; }
-  .btn-archive-event:hover { background:var(--honey-dark); transform:translateY(-2px); }
-
-  /* ── MEDIA MANAGER ── */
-  .media-sub-label { font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--text-light); margin-top:1rem; margin-bottom:.5rem; padding-top:.8rem; border-top:1px solid var(--gray-mid); display:block; }
-  .media-sub-label:first-child { border-top:none; margin-top:0; padding-top:0; }
-  .media-cover-wrap { display:flex; align-items:center; gap:1rem; background:var(--gray); border-radius:10px; padding:.75rem 1rem; }
-  .media-cover-wrap img { width:90px; height:68px; object-fit:cover; border-radius:8px; flex-shrink:0; border:2px solid var(--gray-mid); background:#ddd; }
-  .media-cover-info { flex:1; min-width:0; }
-  .media-filename { display:block; font-size:.73rem; font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-bottom:.35rem; }
-  .media-cover-badge { display:inline-flex; align-items:center; gap:.3rem; background:#fef3c7; color:#92670a; border-radius:999px; padding:.18rem .55rem; font-size:.62rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.45rem; }
-  .media-empty { font-size:.77rem; color:var(--text-light); font-style:italic; padding:.35rem 0; }
-  .media-thumb-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:.5rem; }
-  .media-thumb { position:relative; border-radius:8px; overflow:hidden; aspect-ratio:4/3; background:var(--gray-mid); border:2px solid transparent; transition:border-color .2s; }
-  .media-thumb:hover { border-color:var(--honey); }
-  .media-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
-  .media-thumb-overlay { position:absolute; inset:0; background:rgba(0,0,0,.65); opacity:0; transition:opacity .2s; display:flex; flex-direction:column; justify-content:space-between; padding:.35rem; }
-  .media-thumb:hover .media-thumb-overlay { opacity:1; }
-  .media-thumb-name { font-size:.58rem; color:rgba(255,255,255,.85); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.3; }
-  .media-thumb-actions { display:flex; gap:.2rem; justify-content:flex-end; flex-wrap:wrap; }
-  .media-thumb-btn { background:rgba(255,255,255,.18); color:white; border:none; border-radius:4px; padding:.15rem .32rem; font-size:.62rem; cursor:pointer; transition:background .15s; font-family:'Montserrat',sans-serif; font-weight:700; line-height:1.4; }
-  .media-thumb-btn:hover { background:rgba(255,255,255,.38); }
-  .media-thumb-btn.star:hover  { background:#E3A500; }
-  .media-thumb-btn.danger:hover { background:var(--danger); }
-  .media-thumb-video-badge { position:absolute; top:.3rem; left:.3rem; background:rgba(0,0,0,.6); color:white; font-size:.6rem; padding:.1rem .35rem; border-radius:4px; pointer-events:none; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width:768px) {
-    .main-layout { flex-direction:column; padding:1rem; }
-    .sidebar { width:100%; position:static; }
-    .sidebar nav { display:flex; overflow-x:auto; border-radius:var(--radius); }
-    .nav-group-label,.nav-divider { display:none; }
-    .nav-item { white-space:nowrap; border-left:none; border-bottom:3px solid transparent; flex-shrink:0; }
-    .nav-item.active { border-left:none; border-bottom-color:var(--honey); }
-    .field-row,.field-row3 { grid-template-columns:1fr; }
-    .topbar-left h1 { display:none; }
-    .status-bar { flex-direction:column; gap:.5rem; align-items:flex-start; }
+  @media (max-width:820px) {
+    .layout { grid-template-columns:1fr; padding:1rem; }
+    .sidenav { position:static; flex-direction:row; overflow-x:auto; }
+    .row { grid-template-columns:1fr; }
+    .media-wrap { grid-template-columns:1fr; }
+    #save-status, .topbar .brand span { display:none; }
   }
 </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN ═══ -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="bee">🐝</div>
+<!-- ═══ PRIMO ACCESSO ═══ -->
+<div id="login-screen" class="gate" hidden>
+  <form class="gate-box" onsubmit="event.preventDefault();doLogin()">
+    <img src="logo-96.webp" alt="">
     <h1>CREA 20072</h1>
-    <p>Pannello di gestione contenuti</p>
-    <label for="inp-owner">Username GitHub</label>
-    <input id="inp-owner" type="text" placeholder="es. CREA20072" autocomplete="off">
-    <label for="inp-repo">Nome repository GitHub</label>
-    <input id="inp-repo" type="text" placeholder="es. sito-crea" autocomplete="off">
-    <label for="inp-token">Personal Access Token</label>
-    <input id="inp-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
-    <label for="inp-master" style="margin-top:.5rem">Password master (cifra il token)</label>
-    <input id="inp-master" type="password" placeholder="Scegli una password sicura" autocomplete="new-password">
-    <div class="hint">
-      📌 <strong>Come creare il token (una volta sola):</strong><br>
-      1. GitHub → foto profilo → <em>Settings</em><br>
-      2. In fondo → <em>Developer settings → Personal access tokens → Tokens (classic)</em><br>
-      3. <em>Generate new token (classic)</em> → spunta <strong>repo</strong> → <em>Generate token</em><br>
-      4. Copia e incolla qui sopra.<br><br>
-      <a href="https://github.com/settings/tokens/new?scopes=repo&description=CREA20072+Admin" target="_blank">→ Clicca qui per crearlo direttamente</a>
+    <p>Primo accesso al pannello su questo computer</p>
+    <div class="row">
+      <div class="field"><label for="inp-owner">Utente GitHub</label><input id="inp-owner" value="CREA20072" autocomplete="off"></div>
+      <div class="field"><label for="inp-repo">Repository</label><input id="inp-repo" value="sito-crea" autocomplete="off"></div>
     </div>
-    <button class="save-btn" style="width:100%" onclick="doLogin()">🔑 Accedi</button>
-  </div>
+    <div class="field"><label for="inp-token">Token GitHub</label><input id="inp-token" type="password" placeholder="ghp_…" autocomplete="off"></div>
+    <div class="hint">
+      Serve un token GitHub con permesso <strong>repo</strong>, da creare una volta sola.
+      <a href="https://github.com/settings/tokens/new?scopes=repo&description=CREA20072+Admin" target="_blank" rel="noopener">Crea il token su GitHub →</a>
+    </div>
+    <div class="field"><label for="inp-master">Scegli una password master</label><input id="inp-master" type="password" autocomplete="new-password"><div class="help">Protegge il token su questo computer. Te la chiederò all'apertura del pannello.</div></div>
+    <button class="btn btn-primary btn-block">Accedi</button>
+  </form>
 </div>
 
-<!-- ═══ SBLOCCO (token già salvato) ═══ -->
-<div id="unlock-screen" style="display:none;min-height:100vh;display:none;align-items:center;justify-content:center;background:var(--black)">
-  <div class="login-box">
-    <div class="bee">🔐</div>
+<!-- ═══ SBLOCCO ═══ -->
+<div id="unlock-screen" class="gate" hidden>
+  <form class="gate-box" onsubmit="event.preventDefault();doUnlock()">
+    <img src="logo-96.webp" alt="">
     <h1>CREA 20072</h1>
-    <p>Inserisci la password master per sbloccare</p>
-    <label for="inp-unlock-master">Password master</label>
-    <input id="inp-unlock-master" type="password" placeholder="La tua password master" autocomplete="current-password"
-           onkeydown="if(event.key==='Enter')doUnlock()">
-    <button class="save-btn" style="width:100%;margin-top:.5rem" onclick="doUnlock()">🔓 Sblocca</button>
-    <button onclick="doLogout()" style="margin-top:1rem;background:none;border:none;color:var(--text-light);font-size:.8rem;cursor:pointer;text-decoration:underline">
-      Usa un token diverso
-    </button>
-  </div>
+    <p>Inserisci la password master per sbloccare il pannello</p>
+    <div class="field"><label for="inp-unlock">Password master</label><input id="inp-unlock" type="password" autocomplete="current-password"></div>
+    <button class="btn btn-primary btn-block">Sblocca</button>
+    <button type="button" class="linkbtn" onclick="doDisconnect()">Non ricordo la password: disconnetti questo computer</button>
+  </form>
 </div>
 
 <!-- ═══ APP ═══ -->
-<div id="app">
-  <div class="topbar">
-    <div class="topbar-left">
-      <span class="bee">🐝</span>
-      <h1>CREA 20072 — Admin</h1>
-    </div>
-    <div class="topbar-right">
-      <button class="save-btn" id="save-btn" onclick="saveAll()">💾 Salva tutto</button>
-      <button class="logout-btn" onclick="doLogout()">Esci</button>
-    </div>
-  </div>
+<div id="app" hidden>
+  <header class="topbar">
+    <div class="brand"><img src="logo-96.webp" alt=""><span>CREA 20072 · Admin</span></div>
+    <span id="save-status">Tutto salvato</span>
+    <button id="save-btn" class="btn btn-primary" onclick="saveAll()" disabled>Salva e pubblica</button>
+    <a class="btn" id="site-link" href="https://crea20072.it/" target="_blank" rel="noopener">Apri il sito ↗</a>
+    <button class="btn" onclick="doLock()" title="Blocca il pannello (resti connesso)">🔒 Blocca</button>
+  </header>
 
-  <div class="main-layout">
+  <div class="layout">
+    <nav class="sidenav" aria-label="Sezioni">
+      <button id="nav-eventi" class="active" onclick="showArea('eventi')">📅 Eventi<span class="dot"></span></button>
+      <button id="nav-testi" onclick="showArea('testi')">📝 Testi del sito<span class="dot"></span></button>
+      <button id="nav-impostazioni" onclick="showArea('impostazioni')">⚙️ Impostazioni<span class="dot"></span></button>
+    </nav>
 
-    <!-- ── SIDEBAR ── -->
-    <div class="sidebar">
-      <nav>
-        <div class="nav-group-label">EVENTI</div>
-        <div class="nav-item active" onclick="showSection('evento')"   id="nav-evento">  <span class="icon">⭐</span> Prossimo Evento</div>
-        <div class="nav-item"        onclick="showSection('archivio')" id="nav-archivio"><span class="icon">📁</span> Archivio</div>
-        <div class="nav-divider"></div>
-        <div class="nav-group-label">SITO</div>
-        <div class="nav-item" onclick="showSection('home')"     id="nav-home">    <span class="icon">🏠</span> Homepage</div>
-        <div class="nav-item" onclick="showSection('chisiamo')" id="nav-chisiamo"><span class="icon">👥</span> Chi Siamo</div>
-        <div class="nav-item" onclick="showSection('decalogo')" id="nav-decalogo"><span class="icon">📜</span> Decalogo</div>
-        <div class="nav-divider"></div>
-        <div class="nav-group-label">ALTRO</div>
-        <div class="nav-item" onclick="showSection('footer')" id="nav-footer"><span class="icon">📬</span> Contatti</div>
-      </nav>
-    </div>
-
-    <!-- ── CONTENT ── -->
-    <div class="content">
-      <div class="status-bar">
-        <span class="repo-info"><span class="status-dot"></span>Connesso a <strong id="repo-label">—</strong></span>
-        <span style="font-size:.72rem;color:var(--text-light)">Le modifiche vengono salvate su GitHub</span>
-      </div>
-
-      <!-- ⭐ PROSSIMO EVENTO -->
-      <div class="panel active" id="panel-evento">
-        <div class="panel-header"><span class="icon">⭐</span>
-          <div><h2>Prossimo Evento in Evidenza</h2><p>Appare nella sezione principale del sito</p></div>
+    <main>
+      <!-- ═══ EVENTI ═══ -->
+      <section id="area-eventi" data-area="eventi">
+        <div id="ev-list-view">
+          <div class="page-head"><h1>Eventi</h1><button class="btn btn-primary" onclick="newEvent()">＋ Nuovo evento</button></div>
+          <p style="font-size:.85rem;color:var(--muted)">Il sito mette in evidenza da solo il primo evento in programma e sposta in archivio quelli passati, il giorno dopo la data.</p>
+          <div id="ev-groups"></div>
         </div>
-        <div class="panel-body">
-          <div class="section-block">
-            <div class="section-label">📋 Informazioni</div>
-            <div class="field-row">
-              <div class="field"><label>Titolo evento *</label><input id="ev-title" type="text" placeholder="es. Magic Show"></div>
-              <div class="field"><label>Sottotitolo / Artista</label><input id="ev-sub" type="text" placeholder="es. Mago Daniel"></div>
-            </div>
-            <div class="field-row3">
-              <div class="field"><label>Giorno (2 cifre)</label><input id="ev-day" type="text" placeholder="01" maxlength="2"></div>
-              <div class="field"><label>Mese (3 lettere)</label><input id="ev-month" type="text" placeholder="MAR" maxlength="3"></div>
-              <div class="field"><label>Data completa per testo</label><input id="ev-fulldate" type="text" placeholder="Domenica 1 Marzo 2026 – Ore 16:00"></div>
-            </div>
-            <div class="field-row">
-              <div class="field"><label>Luogo</label><input id="ev-place" type="text" placeholder="Auditorium Sant'Alessandro"></div>
-              <div class="field"><label>Contributo / Prezzo</label><input id="ev-prices" type="text" placeholder="10€ – Spettacolo + Merenda"></div>
-            </div>
-            <div class="field"><label>Link WhatsApp prenotazioni</label><input id="ev-wa" type="text" placeholder="https://wa.me/393402231735"></div>
+
+        <div id="ev-editor" hidden>
+          <div class="page-head">
+            <button class="btn" onclick="closeEditor()">← Tutti gli eventi</button>
+            <button class="btn btn-danger" onclick="deleteEvent()">🗑 Elimina evento</button>
           </div>
-          <div class="section-block">
-            <div class="section-label">📝 Descrizione</div>
-            <div class="field">
-              <label>Testo descrittivo — supporta <b>grassetto</b>, <i>corsivo</i>, colori</label>
-              <div id="rich-ev-desc"></div>
+          <div class="card">
+            <h3>Informazioni</h3>
+            <div class="row" style="--cols:4">
+              <div class="field" style="grid-column:span 2"><label for="e-t">Titolo *</label><input id="e-t" data-k="t" placeholder="Halloween Party"></div>
+              <div class="field"><label for="e-date">Data *</label><input id="e-date" data-k="date" type="date"></div>
+              <div class="field"><label for="e-time">Ora</label><input id="e-time" data-k="time" type="time"></div>
             </div>
-          </div>
-          <div class="section-block">
-            <div class="section-label">🖼️ Locandina / Immagine copertina</div>
-            <div class="dim-hint"><span class="ratio-icon">📐</span>
-              Dimensioni ideali: <strong>600 × 900 px</strong> — verticale 2:3 (tipo flyer Instagram o A4 portrait) — evita il ritaglio automatico
+            <div class="preview-line" id="e-preview"></div>
+            <div class="row" style="--cols:3">
+              <div class="field"><label for="e-place">Luogo</label><input id="e-place" data-k="place" placeholder="Piazza della Chiesa"></div>
+              <div class="field"><label for="e-prices">Contributo</label><input id="e-prices" data-k="prices" placeholder="10€ – spettacolo + merenda"></div>
+              <div class="field"><label for="e-tag">Categoria</label>
+                <select id="e-tag" data-k="tag"><option value="famiglie">Famiglie</option><option value="tradizioni">Tradizioni</option><option value="spettacoli">Spettacoli</option></select></div>
             </div>
-            <div style="display:flex;gap:.75rem;align-items:flex-start;flex-wrap:wrap">
-              <div style="flex:1;min-width:220px">
-                <div class="field" style="margin-bottom:.5rem"><label>Locandina (carica qui a destra, o incolla un URL)</label><input id="ev-img" type="text" placeholder="Carica →" oninput="updateEvImgPreview(this.value)"></div>
-                <div id="ev-img-preview" style="display:none;margin-top:.5rem;border-radius:10px;overflow:hidden;height:120px;background:#eee;width:90px">
-                  <img id="ev-img-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover">
-                </div>
+            <h3>Testi</h3>
+            <div class="field"><label for="e-desc">Descrizione breve</label><input id="e-desc" data-k="desc" placeholder="Una frase per la card in archivio"><div class="help">Appare sotto il titolo nella card dell'archivio (max 2 righe).</div></div>
+            <div class="field"><span class="lbl">Descrizione completa</span><div id="e-fulldesc-wrap"></div></div>
+            <h3>Locandina, foto e video</h3>
+            <div id="e-media"></div>
+            <details class="more">
+              <summary>Altro: sottotitolo, WhatsApp, nota, etichetta</summary>
+              <div class="row">
+                <div class="field"><label for="e-sub">Sottotitolo / artista</label><input id="e-sub" data-k="sub" placeholder="Mago Daniel"></div>
+                <div class="field"><label for="e-wa">Link WhatsApp prenotazioni</label><input id="e-wa" data-k="wa" placeholder="https://wa.me/39…"></div>
               </div>
-              <div style="flex-shrink:0;padding-top:1.6rem">
-                <div class="upload-zone" style="padding:.9rem 1.25rem;min-width:180px;text-align:center"
-                     ondragover="event.preventDefault();this.classList.add('drag-over')"
-                     ondragleave="this.classList.remove('drag-over')"
-                     ondrop="event.preventDefault();this.classList.remove('drag-over');uploadFeaturedImg(Array.from(event.dataTransfer.files))">
-                  <input type="file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%" onchange="uploadFeaturedImg(Array.from(this.files));this.value=''">
-                  <div style="font-size:1.5rem;margin-bottom:.25rem">🖼️</div>
-                  <div class="upload-text" style="font-size:.72rem">Carica locandina</div>
-                  <div class="upload-sub" style="font-size:.65rem;margin-top:.15rem">JPG, PNG, WebP</div>
-                </div>
+              <div class="row">
+                <div class="field"><label for="e-n">Nota</label><input id="e-n" data-k="n" placeholder="Sold Out! · 150+ partecipanti"><div class="help">Badge nella scheda dell'evento passato.</div></div>
+                <div class="field"><label for="e-d">Etichetta mese</label><input id="e-d" data-k="d" placeholder="automatica"><div class="help">Lascia vuoto per usare quella calcolata dalla data.</div></div>
               </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ TESTI DEL SITO ═══ -->
+      <section id="area-testi" data-area="testi" hidden>
+        <div class="page-head"><h1>Testi del sito</h1></div>
+        <nav class="anchors"><a href="#t-home">Copertina</a><a href="#t-community">Community</a><a href="#t-about">Chi siamo</a><a href="#t-decalogo">Decalogo</a><a href="#t-contatti">Contatti</a></nav>
+
+        <div class="card" id="t-home">
+          <h2>Copertina</h2><p class="sub">La prima schermata del sito</p>
+          <div class="field"><label for="hero-title">Titolo</label><input id="hero-title" oninput="updateHeroPreview()"><div class="help">"Lo organizziamo." viene colorato in giallo automaticamente.</div></div>
+          <div class="field"><span class="lbl">Sottotitolo</span><div id="hero-subtitle-wrap"></div></div>
+          <div class="field"><label for="hero-cta">Testo del bottone</label><input id="hero-cta"><div class="help">Visibile solo quando c'è un evento in programma.</div></div>
+          <h3>Sfondo</h3>
+          <div class="row">
+            <div>
+              <div class="hero-preview" id="hero-preview"><div class="ov" id="hero-preview-ov"></div><span id="hero-preview-t"></span></div>
+              <div class="field" style="margin-top:.75rem"><label for="hero-overlay">Scurimento: <span id="hero-overlay-out">65</span>%</label><input type="range" id="hero-overlay" min="0" max="100" step="5" oninput="updateHeroPreview()" style="padding:0;border:none;accent-color:var(--honey)"></div>
+            </div>
+            <div>
+              <div class="drop" style="margin-bottom:1rem"><input type="file" accept="image/*" onchange="uploadHeroBg(this.files);this.value=''"><strong>Cambia immagine di sfondo</strong>Ideale 1920×1080, orizzontale</div>
+              <span class="lbl">Altezza</span>
+              <div class="seg" id="hero-height"><button type="button" data-v="bassa">Bassa</button><button type="button" data-v="media">Media</button><button type="button" data-v="alta">Alta</button></div>
             </div>
           </div>
-          <!-- ARCHIVIA EVENTO -->
-          <div class="archive-trigger">
-            <p>📦 <strong>Evento concluso?</strong> Trasferiscilo nell'archivio con un click. I dati vengono copiati e potrai subito inserire il prossimo evento.</p>
-            <button class="btn-archive-event" onclick="openTransferModal()">📦 Archivia questo evento</button>
+          <input id="hero-bg" type="hidden">
+        </div>
+
+        <div class="card" id="t-community">
+          <h2>Community</h2><p class="sub">Il numero grande nella sezione scura e il banner social (solo su telefono)</p>
+          <div class="row">
+            <div class="field"><label for="comm-count">Numero</label><input id="comm-count" placeholder="250+"></div>
+            <div class="field"><label for="comm-caption">Testo sotto il numero</label><input id="comm-caption"><div class="help">Per andare a capo scrivi &lt;br&gt;</div></div>
           </div>
-        </div>
-      </div>
-
-      <!-- 📁 ARCHIVIO -->
-      <div class="panel" id="panel-archivio">
-        <div class="panel-header"><span class="icon">📁</span>
-          <div><h2>Archivio Eventi Passati</h2><p>Ordinati automaticamente dal più recente</p></div>
-        </div>
-        <div class="panel-body">
-          <div id="archive-list" class="archive-list"></div>
-          <button class="add-event-btn" onclick="addArchiveItem()" style="margin-top:1rem">+ Aggiungi nuovo evento passato</button>
-        </div>
-      </div>
-
-      <!-- 🏠 HOMEPAGE / HERO -->
-      <div class="panel" id="panel-home">
-        <div class="panel-header"><span class="icon">🏠</span>
-          <div><h2>Homepage — Copertina</h2><p>La prima sezione che vede chi apre il sito</p></div>
-        </div>
-        <div class="panel-body">
-          <div class="field"><label>Titolo principale</label><input id="hero-title" type="text" placeholder="Non aspettiamo che succeda qualcosa. Lo organizziamo."></div>
-          <div class="field">
-            <label>Sottotitolo — supporta <b>grassetto</b>, <i>corsivo</i>, colori</label>
-            <div id="rich-hero-subtitle"></div>
-          </div>
-          <div class="field"><label>Testo bottone CTA</label><input id="hero-cta" type="text" placeholder="Guarda cosa stiamo preparando 🔥"></div>
-          <div class="section-block" style="margin-top:1.25rem">
-            <div class="section-label">🖼️ Immagine di sfondo homepage</div>
-            <div class="dim-hint"><span class="ratio-icon">📐</span>Ideale: <strong>1920 × 1080 px</strong> orizzontale — foto scura o con overlay scuro per leggibilità del testo</div>
-            <div style="display:flex;gap:.75rem;align-items:flex-start;flex-wrap:wrap">
-              <div style="flex:1;min-width:220px">
-                <div class="field" style="margin-bottom:.5rem"><label>URL immagine sfondo</label><input id="hero-bg" type="text" placeholder="https://... oppure carica qui a destra →"></div>
-                <div id="hero-bg-preview" style="display:none;margin-top:.5rem;border-radius:10px;overflow:hidden;height:90px;background:#eee">
-                  <img id="hero-bg-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover">
-                </div>
-              </div>
-              <div style="flex-shrink:0;padding-top:1.6rem">
-                <div class="upload-zone" id="hero-bg-zone" style="padding:.9rem 1.25rem;min-width:180px;text-align:center"
-                     ondragover="event.preventDefault();this.classList.add('drag-over')"
-                     ondragleave="this.classList.remove('drag-over')"
-                     ondrop="event.preventDefault();this.classList.remove('drag-over');uploadHeroBg(Array.from(event.dataTransfer.files))">
-                  <input type="file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%" onchange="uploadHeroBg(Array.from(this.files));this.value=''">
-                  <div style="font-size:1.5rem;margin-bottom:.25rem">🖼️</div>
-                  <div class="upload-text" style="font-size:.72rem">Carica immagine</div>
-                  <div class="upload-sub" id="hero-bg-sub" style="font-size:.65rem;margin-top:.15rem">JPG, PNG, WebP</div>
-                </div>
-              </div>
-            </div>
-          <!-- OVERLAY + ALTEZZA + ANTEPRIMA LIVE -->
-          <div class="section-block" style="margin-top:1.25rem">
-            <div class="section-label">🌓 Overlay scuro</div>
-            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.5rem">
-              <input type="range" id="hero-overlay-val" min="0" max="100" value="65"
-                     style="flex:1;accent-color:var(--honey)"
-                     oninput="document.getElementById('hero-overlay-label').textContent=this.value+'%';updateHeroPreview()">
-              <span id="hero-overlay-label" style="font-size:.85rem;font-weight:700;min-width:3rem;text-align:right">65%</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-light);margin-top:-.25rem">
-              <span>Nessun overlay</span><span>Molto scuro</span>
-            </div>
-          </div>
-          <div class="section-block" style="margin-top:1.25rem">
-            <div class="section-label">↕️ Altezza sezione</div>
-            <div style="display:flex;gap:.6rem;margin-top:.25rem">
-              <button type="button" id="btn-height-bassa" onclick="setHeroHeight('bassa')"
-                style="flex:1;padding:.6rem;border-radius:8px;border:2px solid var(--gray-mid);background:white;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:.2s">
-                Bassa<div style="font-size:.65rem;font-weight:400;color:var(--text-light);margin-top:.15rem">~55%</div>
-              </button>
-              <button type="button" id="btn-height-media" onclick="setHeroHeight('media')"
-                style="flex:1;padding:.6rem;border-radius:8px;border:2px solid var(--gray-mid);background:white;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:.2s">
-                Media<div style="font-size:.65rem;font-weight:400;color:var(--text-light);margin-top:.15rem">~72%</div>
-              </button>
-              <button type="button" id="btn-height-alta" onclick="setHeroHeight('alta')"
-                style="flex:1;padding:.6rem;border-radius:8px;border:2px solid var(--honey);background:#FFF8E6;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:.2s">
-                Alta<div style="font-size:.65rem;font-weight:400;color:var(--text-light);margin-top:.15rem">~90%</div>
-              </button>
-            </div>
-          </div>
-          <!-- COMMUNITY / BANNER -->
-          <div class="section-block" style="margin-top:1.25rem">
-            <div class="section-label">📣 Numeri community e banner mobile</div>
-            <div class="field-row">
-              <div class="field"><label>Numero grande (sezione scura)</label><input id="comm-count" type="text" placeholder="250+"></div>
-              <div class="field"><label>Testo sotto il numero</label><input id="comm-caption" type="text" placeholder="cittadini attivi nella nostra community.&lt;br&gt;Unisciti all'alveare! 🐝"></div>
-            </div>
-            <div class="field-row">
-              <div class="field"><label>Titolo banner social (solo mobile)</label><input id="comm-banner-title" type="text" placeholder="Non perderti il prossimo evento!"></div>
-              <div class="field"><label>Testo banner social (solo mobile)</label><input id="comm-banner-text" type="text" placeholder="Seguici per scoprire in anteprima..."></div>
-            </div>
-          </div>
-          <!-- ANTEPRIMA LIVE -->
-          <div class="section-block" style="margin-top:1.25rem">
-            <div class="section-label">👁️ Anteprima live</div>
-            <div id="hero-live-preview" style="position:relative;border-radius:12px;overflow:hidden;background:#111;transition:height .3s;height:120px">
-              <div id="hlp-bg" style="position:absolute;inset:0;background-size:cover;background-position:center"></div>
-              <div id="hlp-overlay" style="position:absolute;inset:0;background:#000;opacity:.65;transition:opacity .2s"></div>
-              <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;text-align:center;color:white;pointer-events:none">
-                <div style="font-size:.5rem;font-weight:800;letter-spacing:.15em;opacity:.6;margin-bottom:.35rem;text-transform:uppercase">Anteprima</div>
-                <div id="hlp-title" style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;line-height:1.2;max-width:220px"></div>
-              </div>
-            </div>
-            <div style="font-size:.65rem;color:var(--text-light);margin-top:.4rem;text-align:center">L'anteprima si aggiorna in tempo reale mentre modifichi i valori</div>
-          </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 👥 CHI SIAMO -->
-      <div class="panel" id="panel-chisiamo">
-        <div class="panel-header"><span class="icon">👥</span>
-          <div><h2>Chi Siamo</h2><p>Presentazione dell'associazione</p></div>
-        </div>
-        <div class="panel-body">
-          <div class="section-block">
-            <div class="section-label">📖 Testo principale</div>
-            <div class="field"><label>Titolo sezione</label><input id="about-title" type="text" placeholder="Perché lo facciamo"></div>
-            <div class="field">
-              <label>Testo descrittivo — supporta <b>grassetto</b>, <i>corsivo</i>, colori</label>
-              <div id="rich-about-text"></div>
-            </div>
-            <div class="field"><label>Frase finale (piccola, sotto il testo)</label><input id="about-tagline" type="text" placeholder="Un progetto indipendente, costruito con le nostre forze."></div>
-          </div>
-          <div class="section-block">
-            <div class="section-label">🏛️ I tre pilastri (colonne sotto il testo)</div>
-            <div class="pillar-list" id="pillars-list"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 📜 DECALOGO -->
-      <div class="panel" id="panel-decalogo">
-        <div class="panel-header"><span class="icon">📜</span>
-          <div><h2>Il Decalogo</h2><p>I 10 valori che guidano l'associazione</p></div>
-        </div>
-        <div class="panel-body">
-          <div class="decalogo-list" id="decalogo-list"></div>
-        </div>
-      </div>
-
-      <!-- 📬 CONTATTI -->
-      <div class="panel" id="panel-footer">
-        <div class="panel-header"><span class="icon">📬</span>
-          <div><h2>Contatti e Footer</h2><p>Email, social, frase finale</p></div>
-        </div>
-        <div class="panel-body">
-          <div class="section-block">
-            <div class="section-label">📧 Contatti</div>
-            <div class="field"><label>Email di contatto</label><input id="footer-email" type="email" placeholder="accrea20072@gmail.com"></div>
-          </div>
-          <div class="section-block">
-            <div class="section-label">🔗 Social</div>
-            <div class="field-row">
-              <div class="field"><label>URL Facebook</label><input id="social-fb" type="text" placeholder="https://www.facebook.com/..."></div>
-              <div class="field"><label>URL Instagram</label><input id="social-ig" type="text" placeholder="https://www.instagram.com/crea20072/"></div>
-            </div>
-          </div>
-          <div class="section-block">
-            <div class="section-label">💬 Frase ispirazionale (fondo pagina)</div>
-            <div class="field"><div id="rich-footer-quote"></div></div>
-          </div>
-          <div class="section-block">
-            <div class="section-label">⚙️ Impostazioni</div>
-            <div class="field"><label>Formspree URL (per ricevere email dal form contatti)</label><input id="settings-formspree" type="text" placeholder="https://formspree.io/f/..."></div>
-          </div>
-          <div class="section-block">
-            <div class="section-label">☁️ Cloudinary — storage foto e video</div>
-            <div class="field-row">
-              <div class="field">
-                <label>Cloud Name</label>
-                <input id="cloudinary-cloud" type="text" placeholder="es. daxrdik7k" autocomplete="off">
-              </div>
-              <div class="field">
-                <label>Upload Preset <span style="font-weight:400;text-transform:none">(unsigned)</span></label>
-                <input id="cloudinary-preset" type="text" placeholder="es. eventi crea" autocomplete="off">
-              </div>
-            </div>
-            <div id="cloudinary-status" style="font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:8px;margin-top:.25rem;display:none"></div>
-            <p style="font-size:.72rem;color:var(--text-light);margin-top:.5rem;line-height:1.6">
-              Se configurato, le foto e i video caricati vanno su Cloudinary invece che su GitHub — accessibili via link, non sfogliabili nel repository.
-            </p>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /content -->
-  </div><!-- /main-layout -->
-</div><!-- /app -->
-
-<div id="toast"></div>
-
-<script>
-let OWNER = '', REPO = '', TOKEN = '', SHA = '', DATA = null;
-let CLOUDINARY_CLOUD = '', CLOUDINARY_PRESET = '';
-
-// ─── MODIFICHE NON SALVATE ────────────────────────────────────────────────
-let DIRTY = false;
-let _draftTimer = null;
-
-function updateSaveBtn() {
-  const btn = document.getElementById('save-btn');
-  if (!btn) return;
-  btn.disabled = !DIRTY;
-  btn.textContent = DIRTY ? '💾 Salva modifiche' : '✓ Tutto salvato';
-}
-
-function markDirty() {
-  DIRTY = true;
-  updateSaveBtn();
-  // Bozza automatica in localStorage (1,5s dopo l'ultima modifica):
-  // un crash del browser non butta via il lavoro non salvato.
-  clearTimeout(_draftTimer);
-  _draftTimer = setTimeout(() => {
-    try {
-      collectForm();
-      localStorage.setItem('crea_draft', JSON.stringify({ when: Date.now(), data: DATA }));
-    } catch(e) {}
-  }, 1500);
-}
-
-function clearDraft() {
-  clearTimeout(_draftTimer);
-  localStorage.removeItem('crea_draft');
-}
-
-window.addEventListener('beforeunload', e => {
-  if (DIRTY) { e.preventDefault(); e.returnValue = ''; }
-});
-
-// ─── RICH TEXT ─────────────────────────────────────────────────────────────
-
-const RICH_TOOLBAR = `
-  <div class="rich-toolbar">
-    <button type="button" class="tb-btn" onmousedown="execFmt(event,'bold')" title="Grassetto (Ctrl+B)"><b>B</b></button>
-    <button type="button" class="tb-btn" onmousedown="execFmt(event,'italic')" title="Corsivo (Ctrl+I)"><i>I</i></button>
-    <button type="button" class="tb-btn" onmousedown="execFmt(event,'underline')" title="Sottolineato"><u>U</u></button>
-    <div class="tb-sep"></div>
-    <span class="tb-dot" style="background:#E3A500" onmousedown="execColor(event,'#E3A500')" title="Giallo miele"></span>
-    <span class="tb-dot" style="background:#e74c3c" onmousedown="execColor(event,'#e74c3c')" title="Rosso"></span>
-    <span class="tb-dot" style="background:#27ae60" onmousedown="execColor(event,'#27ae60')" title="Verde"></span>
-    <span class="tb-dot" style="background:#1F2933" onmousedown="execColor(event,'#1F2933')" title="Nero"></span>
-    <span class="tb-dot" style="background:#6B7280" onmousedown="execColor(event,'#6B7280')" title="Grigio"></span>
-    <div class="tb-sep"></div>
-    <button type="button" class="tb-btn" onmousedown="execFmt(event,'removeFormat')" title="Rimuovi formattazione" style="font-size:.7rem;color:#999">✕ fmt</button>
-  </div>`;
-
-function richEditorHTML(id, html, placeholder) {
-  const ph = placeholder || '';
-  return `<div class="rich-editor">${RICH_TOOLBAR}<div class="rich-content" id="${id}" contenteditable="true" data-placeholder="${ph}">${html || ''}</div></div>`;
-}
-
-function initStaticRichEditors() {
-  // Container IDs → [rich-content ID, placeholder]
-  const editors = [
-    ['rich-ev-desc',       'ev-desc',       'Descrizione dell\'evento per i visitatori...'],
-    ['rich-hero-subtitle', 'hero-subtitle',  'Descrizione breve...'],
-    ['rich-about-text',    'about-text',     'Racconta l\'associazione...'],
-    ['rich-footer-quote',  'footer-quote',   'Ogni evento è un passo in più...'],
-  ];
-  editors.forEach(([containerId, contentId, ph]) => {
-    const el = document.getElementById(containerId);
-    if (el) el.innerHTML = richEditorHTML(contentId, '', ph);
-  });
-}
-
-function execFmt(e, cmd) {
-  e.preventDefault();
-  document.execCommand(cmd, false, null);
-}
-function execColor(e, color) {
-  e.preventDefault();
-  document.execCommand('foreColor', false, color);
-}
-/* Pulisce l'HTML prodotto dal rich editor prima del salvataggio:
- * tiene solo b/strong/i/em/u/br/a/span-con-colore, elimina stili spuri
- * (caret-color, font-size, ecc.) che il browser inserisce da solo. */
-function sanitizeRich(html) {
-  if (!html) return '';
-  const root = document.createElement('div');
-  root.innerHTML = html;
-  // script/style: via con tutto il contenuto
-  root.querySelectorAll('script,style').forEach(el => el.remove());
-  // execCommand('foreColor') produce <font color> → normalizza in <span style="color">
-  root.querySelectorAll('font').forEach(f => {
-    const span = document.createElement('span');
-    const c = f.getAttribute('color');
-    if (c) span.style.color = c;
-    span.innerHTML = f.innerHTML;
-    f.replaceWith(span);
-  });
-  const allowed = { B:1, STRONG:1, I:1, EM:1, U:1, BR:1, A:1, SPAN:1 };
-  [...root.querySelectorAll('*')].reverse().forEach(el => {
-    const tag = el.tagName;
-    if (tag === 'DIV' || tag === 'P') {              // blocchi → a capo
-      el.insertAdjacentHTML('afterend', '<br>');
-      el.replaceWith(...el.childNodes);
-    } else if (!allowed[tag]) {                       // tag non permesso → tieni solo il testo
-      el.replaceWith(...el.childNodes);
-    } else {
-      const color = tag === 'SPAN' ? el.style.color : '';
-      const href  = tag === 'A' ? el.getAttribute('href') : '';
-      [...el.attributes].forEach(a => el.removeAttribute(a.name));
-      if (color) el.style.color = color;
-      if (href)  { el.setAttribute('href', href); el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener'); }
-      if (tag === 'SPAN' && !el.getAttribute('style')) el.replaceWith(...el.childNodes); // span vuoto → via
-    }
-  });
-  return root.innerHTML.replace(/(\s*<br\s*\/?>\s*)+$/i, '').trim();
-}
-
-function getRich(id) {
-  const el = document.getElementById(id);
-  if (!el) return '';
-  return el.classList.contains('rich-content') ? sanitizeRich(el.innerHTML) : (el.value || '');
-}
-function setRich(id, html) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (el.classList.contains('rich-content')) el.innerHTML = html || '';
-  else el.value = html || '';
-}
-
-// ─── HERO PREVIEW ──────────────────────────────────────────────────────────
-
-let _heroHeight = 'alta';
-
-function setHeroHeight(h) {
-  _heroHeight = h;
-  ['bassa','media','alta'].forEach(v => {
-    const btn = document.getElementById('btn-height-' + v);
-    if (!btn) return;
-    btn.style.borderColor  = v === h ? 'var(--honey)' : 'var(--gray-mid)';
-    btn.style.background   = v === h ? '#FFF8E6'      : 'white';
-  });
-  updateHeroPreview();
-}
-
-function updateHeroPreview() {
-  const overlay = document.getElementById('hero-overlay-val')?.value ?? 65;
-  const bg      = document.getElementById('hero-bg')?.value || '';
-  const title   = document.getElementById('hero-title')?.value || 'CREA 20072';
-  const previewH = { bassa: '80px', media: '110px', alta: '145px' };
-
-  const prev = document.getElementById('hero-live-preview');
-  const hlpBg = document.getElementById('hlp-bg');
-  const hlpOv = document.getElementById('hlp-overlay');
-  const hlpTi = document.getElementById('hlp-title');
-
-  if (prev)  prev.style.height   = previewH[_heroHeight] || '145px';
-  if (hlpBg) hlpBg.style.backgroundImage = bg ? `url('${bg}')` : 'none';
-  if (hlpOv) hlpOv.style.opacity = (overlay / 100).toFixed(2);
-  if (hlpTi) hlpTi.textContent   = title;
-}
-
-// ─── CRYPTO (AES-GCM + PBKDF2) ────────────────────────────────────────────
-
-async function deriveKey(password, salt) {
-  const enc = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
-  );
-  return crypto.subtle.deriveKey(
-    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
-    keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
-  );
-}
-
-async function encryptToken(token, password) {
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const iv   = crypto.getRandomValues(new Uint8Array(12));
-  const key  = await deriveKey(password, salt);
-  const enc  = new TextEncoder();
-  const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(token));
-  const combined  = new Uint8Array(16 + 12 + encrypted.byteLength);
-  combined.set(salt, 0);
-  combined.set(iv, 16);
-  combined.set(new Uint8Array(encrypted), 28);
-  return btoa(String.fromCharCode(...combined));
-}
-
-async function decryptToken(encryptedBase64, password) {
-  const combined = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
-  const salt = combined.slice(0, 16);
-  const iv   = combined.slice(16, 28);
-  const data = combined.slice(28);
-  const key  = await deriveKey(password, salt);
-  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
-  return new TextDecoder().decode(decrypted);
-}
-
-// ─── LOGIN ─────────────────────────────────────────────────────────────────
-
-async function doLogin() {
-  OWNER = document.getElementById('inp-owner').value.trim();
-  REPO  = document.getElementById('inp-repo').value.trim();
-  TOKEN = document.getElementById('inp-token').value.trim();
-  const master = document.getElementById('inp-master').value;
-  if (!OWNER || !REPO || !TOKEN) { showToast('⚠️ Compila tutti i campi', 'error'); return; }
-  if (!master) { showToast('⚠️ Inserisci una password master', 'error'); return; }
-  showToast('Connessione in corso...', 'loading');
-  try {
-    const ok = await loadData();
-    if (ok) {
-      const encrypted = await encryptToken(TOKEN, master);
-      localStorage.setItem('crea_owner',         OWNER);
-      localStorage.setItem('crea_repo',           REPO);
-      localStorage.setItem('crea_token_enc',      encrypted);
-      startApp();
-    }
-  } catch(e) { showToast('❌ Errore: controlla username, repo e token.', 'error'); }
-}
-
-async function doUnlock() {
-  const master = document.getElementById('inp-unlock-master').value;
-  if (!master) { showToast('⚠️ Inserisci la password master', 'error'); return; }
-  const enc = localStorage.getItem('crea_token_enc');
-  showToast('Verifica in corso...', 'loading');
-  try {
-    TOKEN = await decryptToken(enc, master);
-    const ok = await loadData();
-    if (ok) { startApp(); }
-    else { TOKEN = ''; showToast('❌ Token non valido o scaduto.', 'error'); }
-  } catch(e) {
-    TOKEN = '';
-    showToast('❌ Password master errata.', 'error');
-  }
-}
-
-function doLogout() {
-  ['crea_owner','crea_repo','crea_token_enc','crea_cloudinary_cloud','crea_cloudinary_preset'].forEach(k => localStorage.removeItem(k));
-  location.reload();
-}
-
-function startApp() {
-  document.getElementById('login-screen').style.display  = 'none';
-  document.getElementById('unlock-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('repo-label').textContent = `${OWNER}/${REPO}`;
-  // Ripristino bozza non salvata (es. dopo un crash o una chiusura accidentale)
-  try {
-    const raw = localStorage.getItem('crea_draft');
-    if (raw) {
-      const draft = JSON.parse(raw);
-      const when = new Date(draft.when).toLocaleString('it-IT');
-      if (draft.data && confirm(`📝 Trovata una bozza non salvata (${when}).\n\nOK = riprendi la bozza\nAnnulla = scartala e usa i dati pubblicati`)) {
-        DATA = draft.data;
-        DIRTY = true;
-      } else {
-        clearDraft();
-      }
-    }
-  } catch(e) { clearDraft(); }
-  populateForm();
-  updateSaveBtn();
-  showToast('✅ Connesso con successo!', 'success');
-}
-
-// ─── GITHUB API ────────────────────────────────────────────────────────────
-
-async function loadData() {
-  const res = await fetch(
-    `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/content.json`,
-    { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
-  );
-  if (!res.ok) { showToast('❌ File non trovato. Controlla username e nome repo.', 'error'); return false; }
-  const file = await res.json();
-  SHA = file.sha;
-  const bytes = Uint8Array.from(atob(file.content.replace(/\n/g,'')), c => c.charCodeAt(0));
-  DATA = JSON.parse(new TextDecoder('utf-8').decode(bytes));
-  return true;
-}
-
-async function saveAll() {
-  const btn = document.getElementById('save-btn');
-  btn.disabled = true;
-  showToast('Salvataggio in corso...', 'loading');
-  try {
-    collectForm();
-    const jsonString = JSON.stringify(DATA, null, 2);
-    const bytes = new TextEncoder().encode(jsonString);
-    const binString = Array.from(bytes, b => String.fromCodePoint(b)).join('');
-    const content = btoa(binString);
-    const res = await fetch(
-      `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/content.json`,
-      {
-        method: 'PUT',
-        headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: '✏️ Admin: aggiornamento contenuti', content, sha: SHA })
-      }
-    );
-    if (res.status === 409) {
-      // Conflitto: il file su GitHub è cambiato dopo l'ultimo caricamento.
-      // Recupera lo SHA aggiornato: al prossimo Salva le modifiche del form
-      // verranno pubblicate (sovrascrivendo quelle fatte altrove).
-      const fresh = await fetch(
-        `https://api.github.com/repos/${OWNER}/${REPO}/contents/data/content.json`,
-        { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' } }
-      );
-      if (fresh.ok) SHA = (await fresh.json()).sha;
-      showToast('⚠️ Qualcun altro ha salvato nel frattempo. Premi di nuovo «Salva modifiche»: pubblicherai la TUA versione (la sua verrà sovrascritta).', 'error');
-      btn.disabled = false;
-      return;
-    }
-    if (!res.ok) throw new Error((await res.json()).message);
-    SHA = (await res.json()).content.sha;
-    DIRTY = false;
-    clearDraft();
-    updateSaveBtn();
-    showToast('✅ Salvato! Il sito si aggiorna tra pochi secondi.', 'success');
-    return;
-  } catch(e) { showToast('❌ Errore nel salvataggio: ' + e.message, 'error'); }
-  btn.disabled = false;
-}
-
-// ─── POPULATE FORM ─────────────────────────────────────────────────────────
-
-function populateForm() {
-  const D = DATA, ev = D.featuredEvent || {};
-  // Evento
-  set('ev-title', ev.title); set('ev-sub', ev.sub); set('ev-day', ev.day);
-  set('ev-month', ev.month); set('ev-fulldate', ev.fullDate); set('ev-place', ev.place);
-  set('ev-prices', ev.prices); set('ev-wa', ev.wa); set('ev-img', ev.img);
-  setRich('ev-desc', ev.desc);
-  // Hero
-  set('hero-title', D.hero?.title); set('hero-cta', D.hero?.cta); set('hero-bg', D.hero?.bg);
-  // Overlay
-  const ov = D.hero?.overlay ?? 65;
-  const ovSlider = document.getElementById('hero-overlay-val');
-  if (ovSlider) { ovSlider.value = ov; document.getElementById('hero-overlay-label').textContent = ov + '%'; }
-  // Altezza
-  setHeroHeight(D.hero?.height || 'alta');
-  // Anteprima
-  setTimeout(updateHeroPreview, 100);
-  setRich('hero-subtitle', D.hero?.subtitle);
-  if (D.hero?.bg) updateHeroBgPreview(D.hero.bg);
-  // Community / banner
-  set('comm-count', D.community?.count); set('comm-caption', D.community?.caption);
-  set('comm-banner-title', D.community?.bannerTitle); set('comm-banner-text', D.community?.bannerText);
-  // Chi siamo
-  set('about-title', D.about?.title); set('about-tagline', D.about?.tagline);
-  setRich('about-text', D.about?.text);
-  renderPillars(D.about?.pillars || []);
-  // Decalogo
-  renderDecalogo(D.decalogo?.items || []);
-  // Footer
-  set('footer-email', D.footer?.email);
-  setRich('footer-quote', D.footer?.quote);
-  const fb = (D.footer?.socials||[]).find(s => s.icon==='facebook');
-  const ig = (D.footer?.socials||[]).find(s => s.icon==='instagram');
-  set('social-fb', fb?.url); set('social-ig', ig?.url);
-  set('settings-formspree', D.settings?.formspreeUrl);
-  // Cloudinary (da localStorage, non da content.json)
-  set('cloudinary-cloud',  CLOUDINARY_CLOUD);
-  set('cloudinary-preset', CLOUDINARY_PRESET);
-  updateCloudinaryStatus();
-  // Archivio
-  renderArchiveList();
-  // Anteprima locandina
-  updateEvImgPreview(ev.img || '');
-}
-
-function set(id, val) { const el = document.getElementById(id); if (el) el.value = val || ''; }
-
-// ─── COLLECT FORM ──────────────────────────────────────────────────────────
-
-function collectForm() {
-  const g = id => document.getElementById(id)?.value?.trim() || '';
-  DATA.featuredEvent = {
-    title: g('ev-title'), sub: g('ev-sub'), day: g('ev-day'),
-    month: g('ev-month').toUpperCase(), fullDate: g('ev-fulldate'),
-    place: g('ev-place'), prices: g('ev-prices'),
-    desc: getRich('ev-desc'), wa: g('ev-wa'), img: g('ev-img')
-  };
-  DATA.hero = { title: g('hero-title'), subtitle: getRich('hero-subtitle'), cta: g('hero-cta'), bg: g('hero-bg'), overlay: parseInt(document.getElementById('hero-overlay-val')?.value ?? 65), height: _heroHeight };
-  DATA.community = { count: g('comm-count'), caption: g('comm-caption'), bannerTitle: g('comm-banner-title'), bannerText: g('comm-banner-text') };
-  DATA.about = { ...DATA.about, title: g('about-title'), text: getRich('about-text'), tagline: g('about-tagline'), pillars: collectPillars() };
-  DATA.decalogo = { ...DATA.decalogo, items: collectDecalogo() };
-  DATA.footer = { ...DATA.footer, email: g('footer-email'), quote: getRich('footer-quote'),
-    socials: [{icon:'facebook',url:g('social-fb')},{icon:'instagram',url:g('social-ig')}].filter(s => s.url) };
-  DATA.settings = { ...DATA.settings, formspreeUrl: g('settings-formspree') };
-  // Salva Cloudinary in localStorage (non nel JSON del sito)
-  CLOUDINARY_CLOUD  = g('cloudinary-cloud');
-  CLOUDINARY_PRESET = g('cloudinary-preset');
-  if (CLOUDINARY_CLOUD)  localStorage.setItem('crea_cloudinary_cloud',  CLOUDINARY_CLOUD);
-  if (CLOUDINARY_PRESET) localStorage.setItem('crea_cloudinary_preset', CLOUDINARY_PRESET);
-  updateCloudinaryStatus();
-  collectArchive();
-}
-
-// ─── PILLARS ───────────────────────────────────────────────────────────────
-
-function renderPillars(pillars) {
-  const container = document.getElementById('pillars-list');
-  container.innerHTML = '';
-  for (let i = 0; i < 3; i++) {
-    const p = pillars[i] || {};
-    container.innerHTML += `
-      <div class="pillar-item">
-        <div class="pillar-num">Pilastro ${i+1}</div>
-        <div class="field-row3">
-          <div class="field"><label>Icona Lucide</label><input type="text" id="pillar-icon-${i}" value="${esc(p.icon||'')}" placeholder="es. users, heart, sparkles"></div>
-          <div class="field"><label>Titolo</label><input type="text" id="pillar-t-${i}" value="${esc(p.t||'')}" placeholder="es. Comunità"></div>
-          <div class="field"><label>Descrizione</label><input type="text" id="pillar-d-${i}" value="${esc(p.d||'')}" placeholder="es. Creiamo occasioni..."></div>
-        </div>
-      </div>`;
-  }
-}
-
-function collectPillars() {
-  return [0,1,2].map(i => ({
-    icon: document.getElementById(`pillar-icon-${i}`)?.value?.trim() || '',
-    t:    document.getElementById(`pillar-t-${i}`)?.value?.trim() || '',
-    d:    document.getElementById(`pillar-d-${i}`)?.value?.trim() || ''
-  })).filter(p => p.t || p.icon);
-}
-
-// ─── DECALOGO ──────────────────────────────────────────────────────────────
-
-function renderDecalogo(items) {
-  const container = document.getElementById('decalogo-list');
-  container.innerHTML = '';
-  items.forEach((item, idx) => {
-    const div = document.createElement('div');
-    div.className = 'decalogo-item';
-    div.id = `dec-${idx}`;
-    div.innerHTML = `
-      <div class="decalogo-item-header" onclick="toggleDec(${idx})">
-        <span class="dec-num">${esc(item.n || String(idx+1).padStart(2,'0'))}</span>
-        <span style="font-weight:700;font-size:.85rem;flex:1" id="dec-label-${idx}">${esc(item.t||'')}</span>
-        <span class="dec-arrow">▸</span>
-      </div>
-      <div class="decalogo-item-body">
-        <div class="field-row">
-          <div class="field"><label>Titolo voce</label><input type="text" id="dec-t-${idx}" value="${esc(item.t||'')}" oninput="document.getElementById('dec-label-${idx}').textContent=this.value"></div>
-          <div class="field"><label>Icona Lucide</label><input type="text" id="dec-i-${idx}" value="${esc(item.i||'')}" placeholder="es. home, heart, users, clock..."></div>
-        </div>
-        <div class="field">
-          <label>Descrizione — supporta <b>grassetto</b>, <i>corsivo</i>, colori</label>
-          ${richEditorHTML(`dec-d-${idx}`, item.d||'')}
-        </div>
-      </div>`;
-    container.appendChild(div);
-  });
-}
-
-function toggleDec(idx) { document.getElementById(`dec-${idx}`).classList.toggle('open'); }
-
-function collectDecalogo() {
-  return (DATA.decalogo?.items || []).map((item, idx) => ({
-    n: item.n || String(idx+1).padStart(2,'0'),
-    t: document.getElementById(`dec-t-${idx}`)?.value?.trim() || item.t,
-    d: getRich(`dec-d-${idx}`),
-    i: document.getElementById(`dec-i-${idx}`)?.value?.trim() || item.i
-  }));
-}
-
-// ─── ARCHIVIO ──────────────────────────────────────────────────────────────
-
-function renderArchiveList() {
-  const list = document.getElementById('archive-list');
-  list.innerHTML = '';
-  const items = [...(DATA.archive||[])].sort((a,b) => new Date(b.date) - new Date(a.date));
-  items.forEach(item => {
-    const el = document.createElement('div');
-    el.className = 'archive-item';
-    el.id = `ai-${item.id}`;
-    el.innerHTML = `
-      <div class="archive-item-header" onclick="toggleAI(${item.id})">
-        <div class="archive-item-title">
-          <span id="ai-label-${item.id}">${esc(item.t)||'Nuovo evento'}</span>
-          <span class="tag-badge tag-${item.tag||'famiglie'}">${item.tag||'famiglie'}</span>
-          <span style="font-size:.75rem;color:var(--text-light);font-weight:400;white-space:nowrap">${esc(item.d)}</span>
-        </div>
-        <div class="archive-item-actions">
-          <button class="btn-sm btn-danger"  onclick="event.stopPropagation();removeAI(${item.id})">🗑 Elimina</button>
-          <button class="btn-sm btn-primary" onclick="event.stopPropagation();toggleAI(${item.id})">✏️ Modifica</button>
-        </div>
-      </div>
-      <div class="archive-item-body">
-
-        <!-- INFORMAZIONI -->
-        <div class="section-block">
-          <div class="section-label">📋 Informazioni evento</div>
-          <div class="field-row">
-            <div class="field"><label>Nome evento *</label>
-              <input type="text" id="ai-t-${item.id}" value="${esc(item.t)}"
-                oninput="document.getElementById('ai-label-${item.id}').textContent=this.value||'Nuovo evento'">
-            </div>
-            <div class="field"><label>Data leggibile (es. Marzo 2026)</label><input type="text" id="ai-d-${item.id}" value="${esc(item.d)}"></div>
-          </div>
-          <div class="field-row3">
-            <div class="field"><label>Data per ordinamento</label><input type="date" id="ai-date-${item.id}" value="${esc(item.date)}"></div>
-            <div class="field"><label>Categoria</label>
-              <select id="ai-tag-${item.id}">
-                <option value="famiglie"   ${item.tag==='famiglie'?'selected':''}>👨‍👩‍👧 Famiglie</option>
-                <option value="tradizioni" ${item.tag==='tradizioni'?'selected':''}>🔥 Tradizioni</option>
-                <option value="spettacoli" ${item.tag==='spettacoli'?'selected':''}>🎭 Spettacoli</option>
-              </select>
-            </div>
-            <div class="field"><label>Nota breve (es. Sold Out)</label><input type="text" id="ai-n-${item.id}" value="${esc(item.n)}"></div>
+          <div class="row">
+            <div class="field"><label for="comm-btitle">Titolo banner</label><input id="comm-btitle"></div>
+            <div class="field"><label for="comm-btext">Testo banner</label><input id="comm-btext"></div>
           </div>
         </div>
 
-        <!-- MEDIA MANAGER -->
-        <div class="section-block">
-          <div class="section-label">🎬 Gestione Media</div>
-          <div class="dim-hint"><span class="ratio-icon">📐</span>
-            Copertina ideale: <strong>800 × 600 px</strong> orizzontale — trascina le foto nella zona qui sotto
-          </div>
-          <input type="hidden" id="ai-img-${item.id}" value="${esc(item.img)}">
-          <input type="hidden" id="ai-gallery-${item.id}" value="${esc((item.gallery||[]).join(', '))}">
-          <div id="media-mgr-${item.id}"><p class="media-empty" style="padding:1rem 0">Espandi l'evento per caricare il gestore media…</p></div>
+        <div class="card" id="t-about">
+          <h2>Chi siamo</h2><p class="sub">Presentazione dell'associazione e i tre pilastri</p>
+          <div class="field"><label for="about-title">Titolo</label><input id="about-title"></div>
+          <div class="field"><span class="lbl">Testo</span><div id="about-text-wrap"></div></div>
+          <div class="field"><label for="about-tagline">Frase finale</label><input id="about-tagline"></div>
+          <h3>Pilastri</h3>
+          <div id="pillars"></div>
+          <p class="help" style="font-size:.75rem;color:var(--muted)">Icone: nomi da <a href="https://lucide.dev/icons/" target="_blank" rel="noopener">lucide.dev</a> (es. users, heart, sparkles).</p>
         </div>
 
-        <!-- TESTI -->
-        <div class="section-block">
-          <div class="section-label">📝 Testi</div>
-          <div class="field"><label>Descrizione breve (nella card)</label>
-            <input type="text" id="ai-desc-${item.id}" value="${esc(item.desc)}">
+        <div class="card" id="t-decalogo">
+          <h2>Decalogo</h2><p class="sub">Titolo, sottotitolo e le 10 voci</p>
+          <div class="row">
+            <div class="field"><label for="dec-title">Titolo</label><input id="dec-title"></div>
+            <div class="field"><label for="dec-subtitle">Sottotitolo</label><input id="dec-subtitle"></div>
           </div>
-          <div class="field">
-            <label>Descrizione completa (nella scheda modale) — supporta <b>grassetto</b>, <i>corsivo</i>, colori</label>
-            ${richEditorHTML(`ai-fulldesc-${item.id}`, item.fullDesc||item.desc)}
-          </div>
+          <div id="decalogo"></div>
         </div>
 
-      </div>`;
-    list.appendChild(el);
-    renderMediaManager(item.id);
-  });
-}
-
-function toggleAI(id) { document.getElementById(`ai-${id}`).classList.toggle('editing'); }
-
-/* ── TRASFERIMENTO EVENTO → ARCHIVIO ── */
-function openTransferModal() {
-  // Legge i valori attuali dal form (anche non ancora salvati)
-  const g = id => document.getElementById(id)?.value?.trim() || '';
-  const title    = g('ev-title')   || DATA.featuredEvent?.title   || '—';
-  const fullDate = g('ev-fulldate') || DATA.featuredEvent?.fullDate || '';
-
-  document.getElementById('transfer-preview-title').textContent = title;
-  document.getElementById('transfer-preview-date').textContent  = fullDate;
-
-  // Pre-compila data ISO con oggi
-  document.getElementById('transfer-iso-date').value = new Date().toISOString().split('T')[0];
-
-  // Prova a estrarre "Mese Anno" dalla data completa (es. "Domenica 1 Marzo 2026 – Ore 16:00")
-  const match = fullDate.match(/([A-Za-zÀ-ÿ]+)\s+(20\d{2})/);
-  if (match) document.getElementById('transfer-month-label').value = match[1] + ' ' + match[2];
-  else        document.getElementById('transfer-month-label').value = '';
-
-  document.getElementById('transfer-note').value = '';
-  document.getElementById('transfer-overlay').classList.add('open');
-}
-
-function closeTransferModal() {
-  document.getElementById('transfer-overlay').classList.remove('open');
-}
-
-function confirmTransfer() {
-  const monthLabel = document.getElementById('transfer-month-label').value.trim();
-  const isoDate    = document.getElementById('transfer-iso-date').value;
-  if (!monthLabel) { alert('Inserisci il mese visualizzato (es. Marzo 2026).'); return; }
-  if (!isoDate)    { alert('Inserisci la data per l\'ordinamento.'); return; }
-
-  const g = id => document.getElementById(id)?.value?.trim() || '';
-  const title    = g('ev-title')    || DATA.featuredEvent?.title    || '';
-  const sub      = g('ev-sub')      || DATA.featuredEvent?.sub      || '';
-  const img      = g('ev-img')      || DATA.featuredEvent?.img      || '';
-  const place    = g('ev-place')    || DATA.featuredEvent?.place    || '';
-  const fullDate = g('ev-fulldate') || DATA.featuredEvent?.fullDate || '';
-  const richDesc = getRich('ev-desc') || DATA.featuredEvent?.desc || '';
-  const shortDesc = richDesc.replace(/<[^>]+>/g, '').substring(0, 120);
-  const tag      = document.getElementById('transfer-tag').value;
-  const note     = document.getElementById('transfer-note').value.trim();
-
-  const maxId = Math.max(0, ...(DATA.archive || []).map(i => i.id));
-  const newId = maxId + 1;
-
-  DATA.archive = DATA.archive || [];
-  DATA.archive.push({
-    id:       newId,
-    date:     isoDate,
-    tag,
-    t:        title,
-    d:        monthLabel,
-    n:        note,
-    desc:     sub || shortDesc,
-    fullDesc: richDesc,
-    img,
-    gallery:  img ? [img] : []
-  });
-
-  // Svuota featuredEvent nel DATA e nel form
-  const emptyEv = { title:'', sub:'', day:'', month:'', fullDate:'', place:'', prices:'', wa:'', img:'', desc:'' };
-  DATA.featuredEvent = { ...DATA.featuredEvent, ...emptyEv };
-  ['ev-title','ev-sub','ev-day','ev-month','ev-fulldate','ev-place','ev-prices','ev-wa','ev-img']
-    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  setRich('ev-desc', '');
-  markDirty();
-
-  closeTransferModal();
-  showToast('✅ Evento archiviato! Il sito mostrerà "stiamo lavorando" fino al prossimo salvataggio con un nuovo evento.', 'success');
-  showSection('archivio');
-  setTimeout(() => {
-    renderArchiveList();
-    const el = document.getElementById(`ai-${newId}`);
-    if (el) { el.classList.add('editing'); el.scrollIntoView({ behavior:'smooth', block:'center' }); }
-  }, 120);
-}
-
-function addArchiveItem() {
-  const maxId = Math.max(0,...(DATA.archive||[]).map(i=>i.id));
-  const newId = maxId + 1;
-  DATA.archive = DATA.archive || [];
-  DATA.archive.push({ id:newId, date:new Date().toISOString().split('T')[0], tag:'famiglie', t:'Nuovo Evento', d:'', n:'', desc:'', fullDesc:'', img:'', gallery:[] });
-  markDirty();
-  renderArchiveList();
-  setTimeout(() => {
-    const el = document.getElementById(`ai-${newId}`);
-    if (el) { el.classList.add('editing'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
-  }, 50);
-}
-
-function removeAI(id) {
-  if (!confirm('Eliminare questo evento dall\'archivio?')) return;
-  DATA.archive = DATA.archive.filter(i => i.id !== id);
-  markDirty();
-  renderArchiveList();
-}
-
-function collectArchive() {
-  const g = (id, fb='') => document.getElementById(id)?.value?.trim() || fb;
-  DATA.archive = (DATA.archive||[]).map(item => {
-    const id = item.id;
-    return {
-      id,
-      date:     g(`ai-date-${id}`, item.date),
-      tag:      g(`ai-tag-${id}`,  item.tag),
-      t:        g(`ai-t-${id}`,    item.t),
-      d:        g(`ai-d-${id}`,    item.d),
-      n:        g(`ai-n-${id}`,    item.n),
-      desc:     g(`ai-desc-${id}`, item.desc),
-      fullDesc: getRich(`ai-fulldesc-${id}`) || g(`ai-desc-${id}`, item.desc),
-      // img, gallery e imgPos sono gestiti direttamente nel media manager (DATA è già aggiornato)
-      img:      item.img     !== undefined ? item.img     : g(`ai-img-${id}`, ''),
-      gallery:  item.gallery !== undefined ? item.gallery : g(`ai-gallery-${id}`,'').split(',').map(s=>s.trim()).filter(Boolean),
-      ...(item.imgPos ? { imgPos: item.imgPos } : {})
-    };
-  });
-}
-
-// ─── MEDIA MANAGER ─────────────────────────────────────────────────────────
-
-function getRawUrl(filename) {
-  if (!filename) return '';
-  if (filename.startsWith('http')) return filename; // URL Cloudinary o altro CDN
-  return `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/${encodeURIComponent(filename)}`;
-}
-
-function isVideoUrl(u) {
-  return typeof u === 'string' && (/\/video\/upload\//.test(u) || /\.(mp4|mov|webm)(\?|#|$)/i.test(u));
-}
-
-/* Miniatura leggera per il pannello: video → poster jpg, immagini Cloudinary → w_220 */
-function mediaThumb(u) {
-  if (!u) return '';
-  if (u.includes('res.cloudinary.com') && u.includes('/upload/')) {
-    if (isVideoUrl(u)) {
-      return u.replace('/upload/', '/upload/so_0,f_auto,q_auto,w_220/')
-              .replace(/\.(mp4|mov|webm)(\?.*)?$/i, '.jpg');
-    }
-    return u.replace('/upload/', '/upload/f_auto,q_auto,w_220/');
-  }
-  return getRawUrl(u);
-}
-
-function updateHeroBgPreview(url) {
-  updateHeroPreview();
-  const wrap = document.getElementById('hero-bg-preview');
-  const img  = document.getElementById('hero-bg-preview-img');
-  if (!wrap || !img) return;
-  if (url) { img.src = url; wrap.style.display = 'block'; }
-  else      { wrap.style.display = 'none'; }
-}
-
-/* Upload unificato: Cloudinary se configurato, altrimenti GitHub.
- * Restituisce l'URL Cloudinary oppure il nome file GitHub. */
-async function uploadOne(file, commitMsgPrefix = '🖼️ Upload') {
-  if (CLOUDINARY_CLOUD && CLOUDINARY_PRESET) return uploadToCloudinary(file);
-  if (file.size > 5 * 1024 * 1024) throw new Error('File troppo grande (max 5MB su GitHub)');
-  const base64 = await fileToBase64(file);
-  const b64content = base64.split(',')[1];
-  const ghUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(file.name)}`;
-  const headers = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' };
-  let sha;
-  try {
-    const check = await fetch(ghUrl, { headers });
-    if (check.ok) sha = (await check.json()).sha;
-  } catch(e) {}
-  const body = { message: `${commitMsgPrefix}: ${file.name}`, content: b64content };
-  if (sha) body.sha = sha;
-  const res = await fetch(ghUrl, {
-    method: 'PUT',
-    headers: { ...headers, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) throw new Error((await res.json()).message);
-  return file.name;
-}
-
-async function uploadHeroBg(files) {
-  const file = files?.[0];
-  if (!file || !file.type.startsWith('image/')) { showToast('⚠️ Seleziona un file immagine', 'error'); return; }
-  showToast('Caricamento sfondo homepage…', 'loading');
-  try {
-    const url = await uploadOne(file, '🖼️ Hero bg');
-    set('hero-bg', url);
-    markDirty();
-    updateHeroBgPreview(url.startsWith('http') ? url : getRawUrl(url));
-    showToast('✅ Sfondo homepage aggiornato — clicca Salva tutto per pubblicare', 'success');
-  } catch(e) { showToast('❌ Errore: ' + e.message, 'error'); }
-}
-
-function updateCloudinaryStatus() {
-  const el = document.getElementById('cloudinary-status');
-  if (!el) return;
-  const cloud  = document.getElementById('cloudinary-cloud')?.value?.trim()  || CLOUDINARY_CLOUD;
-  const preset = document.getElementById('cloudinary-preset')?.value?.trim() || CLOUDINARY_PRESET;
-  if (cloud && preset) {
-    el.textContent = `☁️ Cloudinary attivo — ${cloud} / preset: ${preset}`;
-    el.style.cssText = 'display:block;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:8px;margin-top:.25rem';
-  } else {
-    el.textContent = '⚠️ Cloudinary non configurato — le foto vengono caricate su GitHub (pubblico), niente video';
-    el.style.cssText = 'display:block;background:#fffbe6;border:1px solid #ffe082;color:#92670a;font-size:.72rem;font-weight:700;padding:.5rem .9rem;border-radius:8px;margin-top:.25rem';
-  }
-}
-
-async function uploadToCloudinary(file) {
-  const resourceType = file.type.startsWith('video/') ? 'video' : 'image';
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', CLOUDINARY_PRESET);
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/${resourceType}/upload`,
-    { method: 'POST', body: formData }
-  );
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || 'Cloudinary upload failed');
-  }
-  const data = await res.json();
-  // Se è un video, pre-genera subito la versione ottimizzata che il sito servirà
-  // (MP4 H.264+AAC, max 1280px): così il primo visitatore non aspetta la transcodifica.
-  if (resourceType === 'video') prewarmVideo(data.secure_url);
-  return data.secure_url; // URL completo HTTPS
-}
-
-/* Richiesta in background (2 byte) che fa generare a Cloudinary la derivata video.
- * Deve produrre ESATTAMENTE lo stesso URL usato da cld() in index.html. */
-function prewarmVideo(url) {
-  const warm = url.replace('/upload/', '/upload/f_mp4,vc_h264,ac_aac,q_auto,w_1280,h_1280,c_limit/')
-                  .replace(/\.(mp4|mov|webm)(\?.*)?$/i, '.mp4');
-  fetch(warm, { headers: { Range: 'bytes=0-1' } }).catch(() => {});
-}
-
-function getArchiveItem(id) {
-  return (DATA.archive || []).find(i => i.id === id);
-}
-
-function syncHiddenInputs(id) {
-  const item = getArchiveItem(id);
-  if (!item) return;
-  const imgEl = document.getElementById(`ai-img-${id}`);
-  const galEl = document.getElementById(`ai-gallery-${id}`);
-  if (imgEl) imgEl.value = item.img || '';
-  if (galEl) galEl.value = (item.gallery || []).join(', ');
-}
-
-function renderMediaManager(id) {
-  const item = getArchiveItem(id);
-  const container = document.getElementById(`media-mgr-${id}`);
-  if (!item || !container) return;
-
-  const gallery = item.gallery || [];
-  const cover   = item.img    || '';
-  const imgPos  = item.imgPos || 'center center';
-
-  const POS_OPTIONS = [
-    ['center center','Centro (default)'],
-    ['center top','Alto — centra in alto'],
-    ['center bottom','Basso — centra in basso'],
-    ['left center','Sinistra'],
-    ['right center','Destra'],
-    ['left top','Angolo alto-sinistra'],
-    ['right top','Angolo alto-destra'],
-    ['left bottom','Angolo basso-sinistra'],
-    ['right bottom','Angolo basso-destra'],
-  ];
-
-  /* ── COPERTINA ── */
-  let html = `<span class="media-sub-label">🖼️ Copertina (card archivio)</span>`;
-  if (cover) {
-    const previewPos = imgPos;
-    html += `
-      <div class="media-cover-wrap">
-        <img src="${mediaThumb(cover)}" alt="" style="object-position:${previewPos}" onerror="this.style.opacity='.25'">
-        <div class="media-cover-info">
-          <span class="media-cover-badge">⭐ Copertina attiva</span>
-          <span class="media-filename">${esc(cover)}</span>
-          <div style="display:flex;align-items:center;gap:.5rem;margin-top:.45rem;flex-wrap:wrap">
-            <label style="font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-light);white-space:nowrap">📌 Posizione</label>
-            <select id="imgpos-${id}" onchange="updateImgPos(${id},this.value)"
-              style="flex:1;min-width:140px;padding:.3rem .5rem;border:1.5px solid var(--gray-mid);border-radius:7px;font-family:'Montserrat',sans-serif;font-size:.72rem;color:var(--text);background:white">
-              ${POS_OPTIONS.map(([val,label]) => `<option value="${val}"${imgPos===val?' selected':''}>${label}</option>`).join('')}
-            </select>
+        <div class="card" id="t-contatti">
+          <h2>Contatti</h2><p class="sub">Email, social e frase di fondo pagina</p>
+          <div class="field"><label for="footer-email">Email</label><input id="footer-email" type="email"></div>
+          <div class="row">
+            <div class="field"><label for="social-fb">Facebook</label><input id="social-fb" placeholder="https://www.facebook.com/…"></div>
+            <div class="field"><label for="social-ig">Instagram</label><input id="social-ig" placeholder="https://www.instagram.com/…"></div>
           </div>
-          <button class="btn-sm btn-danger" style="margin-top:.45rem" onclick="removeCoverPhoto(${id})">✕ Scollega copertina</button>
+          <div class="field"><span class="lbl">Frase di fondo pagina</span><div id="footer-quote-wrap"></div></div>
         </div>
-      </div>`;
-  } else {
-    html += `<p class="media-empty">Nessuna copertina — clicca ⭐ su una foto della galleria per impostarla.</p>`;
-  }
+      </section>
 
-  /* ── GALLERIA (foto e video) ── */
-  html += `<span class="media-sub-label">📸 Galleria foto e video (${gallery.length})</span>`;
-  if (gallery.length) {
-    html += `<div class="media-thumb-grid">`;
-    gallery.forEach((f, i) => {
-      const isFirst = i === 0, isLast = i === gallery.length - 1;
-      const isVid = isVideoUrl(f);
-      html += `
-        <div class="media-thumb">
-          <img src="${mediaThumb(f)}" alt="" onerror="this.style.opacity='.15'">
-          ${isVid ? '<span class="media-thumb-video-badge">🎬 video</span>' : ''}
-          <div class="media-thumb-overlay">
-            <span class="media-thumb-name">${esc(f)}</span>
-            <div class="media-thumb-actions">
-              ${!isFirst ? `<button class="media-thumb-btn" onclick="movePhoto(${id},${i},-1)" title="Sposta a sinistra">◀</button>` : ''}
-              ${!isLast  ? `<button class="media-thumb-btn" onclick="movePhoto(${id},${i},1)"  title="Sposta a destra">▶</button>` : ''}
-              ${!isVid   ? `<button class="media-thumb-btn star" onclick="setAsCover(${id},${i})" title="Imposta come copertina">⭐</button>` : ''}
-              <button class="media-thumb-btn danger" onclick="removePhoto(${id},${i})" title="Elimina">🗑</button>
-            </div>
+      <!-- ═══ IMPOSTAZIONI ═══ -->
+      <section id="area-impostazioni" data-area="impostazioni" hidden>
+        <div class="page-head"><h1>Impostazioni</h1></div>
+        <div class="card">
+          <h2>Modulo contatti</h2><p class="sub">Dove arrivano i messaggi scritti dal sito</p>
+          <div class="field"><label for="formspree">Indirizzo Formspree</label><input id="formspree" placeholder="https://formspree.io/f/…"><div class="help">Se vuoto, il modulo apre il programma di posta del visitatore.</div></div>
+        </div>
+        <div class="card" data-nodirty>
+          <h2>Cloudinary</h2><p class="sub">Dove vengono caricati foto e video. Salvato cifrato su questo computer, non nel sito.</p>
+          <div id="cld-status" class="status-pill"></div>
+          <div class="row">
+            <div class="field"><label for="cld-cloud">Cloud name</label><input id="cld-cloud" autocomplete="off"></div>
+            <div class="field"><label for="cld-preset">Upload preset (unsigned)</label><input id="cld-preset" autocomplete="off"></div>
           </div>
-        </div>`;
-    });
-    html += `</div>`;
-  } else {
-    html += `<p class="media-empty">Nessuna foto — trascinala qui sotto.</p>`;
-  }
-
-  /* ── UPLOAD DIRETTO NELL'EVENTO ── */
-  const useCloudinary = !!(CLOUDINARY_CLOUD && CLOUDINARY_PRESET);
-  html += `
-    <div class="upload-zone" style="margin-top:.9rem;padding:1rem"
-         ondragover="event.preventDefault();this.classList.add('drag-over')"
-         ondragleave="this.classList.remove('drag-over')"
-         ondrop="event.preventDefault();this.classList.remove('drag-over');uploadEventMedia(${id},Array.from(event.dataTransfer.files))">
-      <input type="file" multiple accept="${useCloudinary ? 'image/*,video/*' : 'image/*'}"
-             onchange="uploadEventMedia(${id},Array.from(this.files));this.value=''">
-      <div class="upload-icon" style="font-size:1.4rem;margin-bottom:.2rem">📤</div>
-      <div class="upload-text" style="font-size:.7rem">Trascina qui foto${useCloudinary ? ' e video' : ''} — o clicca per sceglierli</div>
-      <div class="upload-sub">${useCloudinary ? 'Caricati su Cloudinary e collegati subito a questo evento' : 'PNG/JPG max 5MB (GitHub) — collegati subito a questo evento'}</div>
-    </div>`;
-
-  container.innerHTML = html;
-}
-
-function setAsCover(id, index) {
-  const item = getArchiveItem(id);
-  const filename = item?.gallery?.[index];
-  if (!filename) return;
-  item.img = filename;
-  markDirty();
-  syncHiddenInputs(id);
-  renderMediaManager(id);
-  showToast(`⭐ "${filename}" impostata come copertina`, 'success');
-}
-
-function removeCoverPhoto(id) {
-  const item = getArchiveItem(id);
-  if (!item) return;
-  if (!confirm(`Scollegare la copertina dall'evento?\n\nIl file NON viene eliminato da GitHub, viene solo rimosso come copertina.`)) return;
-  item.img = '';
-  markDirty();
-  syncHiddenInputs(id);
-  renderMediaManager(id);
-  showToast('Copertina scollegata', 'success');
-}
-
-function updateImgPos(id, pos) {
-  const item = getArchiveItem(id);
-  if (!item) return;
-  item.imgPos = pos;
-  markDirty();
-  // Aggiorna l'anteprima live nella miniatura copertina
-  const wrap = document.querySelector(`#media-mgr-${id} .media-cover-wrap img`);
-  if (wrap) wrap.style.objectPosition = pos;
-}
-
-async function removePhoto(id, index) {
-  const item = getArchiveItem(id);
-  const filename = item?.gallery?.[index];
-  if (!filename) return;
-  const isGitHubFile = !filename.startsWith('http');
-  const warn = isGitHubFile
-    ? `Eliminare "${filename}" dalla galleria?\n\nATTENZIONE: il file verrà eliminato definitivamente da GitHub (azione irreversibile).`
-    : `Rimuovere questo file dalla galleria?\n\nIl file resta su Cloudinary, viene solo scollegato dall'evento.`;
-  if (!confirm(warn)) return;
-
-  const wasCover = item.img === filename;
-  item.gallery.splice(index, 1);
-  if (wasCover) item.img = '';
-  markDirty();
-  syncHiddenInputs(id);
-  renderMediaManager(id);
-
-  if (filename.startsWith('http')) {
-    // File Cloudinary: resta su Cloudinary, viene solo scollegato dall'evento
-    const shortName = filename.split('/').pop().split('?')[0];
-    showToast(`✅ "${shortName}" scollegato dall'evento${wasCover ? ' (era la copertina)' : ''}`, 'success');
-  } else {
-    // File GitHub: eliminazione fisica
-    showToast(`🗑 Eliminazione "${filename}" da GitHub…`, 'loading');
-    try {
-      await deleteFileFromGitHub(filename);
-      showToast(`✅ "${filename}" eliminato${wasCover ? ' (era anche la copertina)' : ''}`, 'success');
-    } catch(e) {
-      showToast(`⚠️ Rimosso dalla galleria, ma file GitHub non eliminato: ${e.message}`, 'error');
-    }
-  }
-}
-
-function movePhoto(id, index, dir) {
-  const item = getArchiveItem(id);
-  if (!item || !item.gallery) return;
-  const g = item.gallery;
-  const ni = index + dir;
-  if (ni < 0 || ni >= g.length) return;
-  [g[index], g[ni]] = [g[ni], g[index]];
-  markDirty();
-  syncHiddenInputs(id);
-  renderMediaManager(id);
-}
-
-async function deleteFileFromGitHub(filename) {
-  const headers = { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' };
-  const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(filename)}`, { headers });
-  if (!res.ok) throw new Error('File non trovato su GitHub');
-  const file = await res.json();
-  const del = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(filename)}`, {
-    method: 'DELETE',
-    headers: { ...headers, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: `🗑️ Admin: elimina ${filename}`, sha: file.sha })
-  });
-  if (!del.ok) throw new Error((await del.json()).message);
-}
-
-// ─── NAV ───────────────────────────────────────────────────────────────────
-
-function showSection(name) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById(`panel-${name}`).classList.add('active');
-  document.getElementById(`nav-${name}`).classList.add('active');
-}
-
-// ─── TOAST ─────────────────────────────────────────────────────────────────
-
-let toastTimer;
-function showToast(msg, type='success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = `show ${type}`;
-  clearTimeout(toastTimer);
-  if (type !== 'loading') toastTimer = setTimeout(() => { t.className = ''; }, 4500);
-}
-
-// ─── UTILS ─────────────────────────────────────────────────────────────────
-
-function esc(s) {
-  return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// ─── UPLOAD ────────────────────────────────────────────────────────────────
-
-/* Anteprima locandina Prossimo Evento */
-function updateEvImgPreview(val) {
-  const wrap = document.getElementById('ev-img-preview');
-  const img  = document.getElementById('ev-img-preview-img');
-  if (!wrap || !img) return;
-  if (val) { img.src = mediaThumb(val); wrap.style.display = 'block'; }
-  else     { wrap.style.display = 'none'; }
-}
-
-/* Upload locandina Prossimo Evento */
-async function uploadFeaturedImg(files) {
-  const file = files?.[0];
-  if (!file || !file.type.startsWith('image/')) { showToast('⚠️ Seleziona un file immagine', 'error'); return; }
-  showToast('Caricamento locandina…', 'loading');
-  try {
-    const url = await uploadOne(file, '🖼️ Locandina');
-    set('ev-img', url);
-    updateEvImgPreview(url);
-    markDirty();
-    showToast('✅ Locandina caricata — clicca Salva tutto per pubblicare', 'success');
-  } catch(e) { showToast('❌ Errore: ' + e.message, 'error'); }
-}
-
-/* Upload foto/video direttamente dentro un evento dell'archivio */
-async function uploadEventMedia(id, files) {
-  const item = getArchiveItem(id);
-  if (!item) return;
-  const useCloudinary = !!(CLOUDINARY_CLOUD && CLOUDINARY_PRESET);
-  const valid = files.filter(f => f.type.startsWith('image/') || (useCloudinary && f.type.startsWith('video/')));
-  if (!valid.length) {
-    showToast(useCloudinary ? '⚠️ Seleziona file immagine o video' : '⚠️ Solo immagini (configura Cloudinary in Contatti per i video)', 'error');
-    return;
-  }
-  const maxSize = useCloudinary ? 100*1024*1024 : 5*1024*1024;
-  const tooBig = valid.filter(f => f.size > maxSize);
-  if (tooBig.length) { showToast(`⚠️ File troppo grandi (max ${useCloudinary?'100MB':'5MB'}): ${tooBig.map(f=>f.name).join(', ')}`, 'error'); return; }
-
-  let ok = 0;
-  for (let i = 0; i < valid.length; i++) {
-    showToast(`⏳ Caricamento ${i+1}/${valid.length}: ${valid[i].name}`, 'loading');
-    try {
-      const ref = await uploadOne(valid[i]);
-      item.gallery = item.gallery || [];
-      if (!item.gallery.includes(ref)) item.gallery.push(ref);
-      // Prima immagine caricata su un evento senza copertina → diventa copertina
-      if (!item.img && !isVideoUrl(ref)) item.img = ref;
-      ok++;
-      markDirty();
-      syncHiddenInputs(id);
-      renderMediaManager(id);
-    } catch(e) { showToast(`❌ ${valid[i].name}: ${e.message}`, 'error'); }
-  }
-  if (ok) showToast(`✅ ${ok} file caricat${ok===1?'o':'i'} e collegat${ok===1?'o':'i'} — ricorda «Salva tutto»`, 'success');
-}
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload  = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-// ─── AUTO-LOGIN ────────────────────────────────────────────────────────────
-
-window.addEventListener('DOMContentLoaded', () => {
-  initStaticRichEditors();
-  // Traccia modifiche non salvate (input testuali, select, rich editor)
-  const app = document.getElementById('app');
-  app.addEventListener('input',  markDirty);
-  app.addEventListener('change', markDirty);
-  const o   = localStorage.getItem('crea_owner');
-  const r   = localStorage.getItem('crea_repo');
-  const enc = localStorage.getItem('crea_token_enc');
-  CLOUDINARY_CLOUD  = localStorage.getItem('crea_cloudinary_cloud')  || '';
-  CLOUDINARY_PRESET = localStorage.getItem('crea_cloudinary_preset') || '';
-  if (o && r && enc) {
-    // Token cifrato trovato → mostra schermata di sblocco
-    OWNER = o; REPO = r;
-    document.getElementById('login-screen').style.display  = 'none';
-    document.getElementById('unlock-screen').style.display = 'flex';
-    document.getElementById('inp-unlock-master').focus();
-  }
-});
-</script>
-
-<!-- ═══ MODAL ARCHIVIAZIONE ═══ -->
-<div id="transfer-overlay" onclick="if(event.target===this)closeTransferModal()">
-  <div class="transfer-box">
-    <h3>📦 Archivia Evento</h3>
-    <p class="sub">Completa i campi necessari per l'archivio, poi conferma. L'evento rimane visibile sul sito finché non salvi e inserisci il prossimo.</p>
-    <div class="transfer-preview">
-      <strong id="transfer-preview-title">—</strong>
-      <span id="transfer-preview-date"></span>
-    </div>
-    <div class="field">
-      <label>Categoria / Tag *</label>
-      <select id="transfer-tag">
-        <option value="famiglie">👨‍👩‍👧 Famiglie</option>
-        <option value="tradizioni">🎉 Tradizioni</option>
-        <option value="spettacoli">🎭 Spettacoli</option>
-      </select>
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label>Mese visualizzato * <span style="font-weight:400;text-transform:none">(es. Marzo 2026)</span></label>
-        <input id="transfer-month-label" type="text" placeholder="Marzo 2026">
-      </div>
-      <div class="field">
-        <label>Data per ordinamento *</label>
-        <input id="transfer-iso-date" type="date">
-      </div>
-    </div>
-    <div class="field">
-      <label>Nota breve <span style="font-weight:400;text-transform:none">(es. Sold Out · 200 persone)</span></label>
-      <input id="transfer-note" type="text" placeholder="opzionale">
-    </div>
-    <div class="transfer-actions">
-      <button class="btn-cancel-t" onclick="closeTransferModal()">Annulla</button>
-      <button class="btn-transfer" onclick="confirmTransfer()">✅ Conferma archiviazione</button>
-    </div>
+          <div class="row">
+            <div class="field"><label for="cld-master">Password master (per confermare)</label><input id="cld-master" type="password" autocomplete="current-password"></div>
+            <div class="field" style="align-self:end"><button class="btn" onclick="saveCloudinary()">Salva configurazione Cloudinary</button></div>
+          </div>
+        </div>
+        <div class="card danger-zone">
+          <h2>Account</h2><p class="sub">Connesso a <strong id="repo-label">—</strong></p>
+          <p style="font-size:.85rem;margin-bottom:1rem;line-height:1.6"><strong>Blocca</strong> chiude il pannello: riapri con la password master.<br><strong>Disconnetti</strong> cancella token e Cloudinary da questo computer: per rientrare servirà di nuovo il token GitHub.</p>
+          <button class="btn btn-danger" onclick="doDisconnect()">Disconnetti questo computer</button>
+        </div>
+      </section>
+    </main>
   </div>
 </div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/*__SCRIPT__*/
+</script>
 </body>
 </html>

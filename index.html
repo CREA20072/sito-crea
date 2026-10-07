@@ -449,6 +449,30 @@
             if (!u || !u.includes('res.cloudinary.com') || isVideoUrl(u)) return '';
             return `srcset="${widths.map(w => `${cld(u, w)} ${w}w`).join(', ')}" sizes="${sizes}"`;
         }
+        /* ── EVENTI ──
+         * Un'unica lista "events": il sito mostra in evidenza il primo evento con data
+         * di oggi o futura (resta in evidenza per tutto il giorno dell'evento) e mette
+         * in archivio quelli passati. Date e etichette sono calcolate da "date"/"time". */
+        const MESI = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+        const GIORNI = ['domenica','lunedì','martedì','mercoledì','giovedì','venerdì','sabato'];
+        const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+        const todayRome = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(new Date());
+        function parseISO(iso) { const [y, m, d] = (iso || '').split('-').map(Number); return { y, m, d, wd: new Date(Date.UTC(y, m - 1, d)).getUTCDay() }; }
+        const eventLabel = e => e.d || (e.date ? `${cap(MESI[parseISO(e.date).m - 1])} ${parseISO(e.date).y}` : '');
+        function eventFullDate(e) {
+            const p = parseISO(e.date);
+            return `${cap(GIORNI[p.wd])} ${p.d} ${MESI[p.m - 1]} ${p.y}${e.time ? ' – ore ' + e.time : ''}`;
+        }
+        /* Compatibilità col vecchio formato "archive" (evita pagine vuote durante il cambio, finché la cache non si aggiorna) */
+        const getEvents = D => Array.isArray(D.events) ? D.events : (D.archive || []);
+        function splitEvents(D) {
+            const today = todayRome();
+            const all = getEvents(D).filter(e => e.date && e.t);
+            const upcoming = all.filter(e => e.date >= today).sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')));
+            const past = all.filter(e => e.date < today).sort((a, b) => b.date.localeCompare(a.date));
+            return { featured: upcoming[0] || null, past };
+        }
+
         /* Escape per testi inseriti nei template HTML */
         function esc(s) {
             return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -565,7 +589,7 @@
                     <div class="modal-hero-text">
                         <span class="${tagCls} px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block mb-3">${esc(item.tag)}</span>
                         <h2 class="text-white text-2xl md:text-4xl font-extrabold uppercase leading-tight tracking-tight">${esc(item.t)}</h2>
-                        <p class="text-white/70 text-sm mt-1 font-medium uppercase tracking-wider">${esc(item.d)}</p>
+                        <p class="text-white/70 text-sm mt-1 font-medium uppercase tracking-wider">${esc(eventLabel(item))}</p>
                     </div>
                 </div>
                 <div style="padding:2rem 2.5rem 2.5rem">
@@ -618,7 +642,7 @@
                         </div>
                         <div class="p-4 md:p-7 flex flex-col justify-between flex-1">
                             <div>
-                                <p class="text-xs font-bold text-crea-honey uppercase tracking-widest mb-1 md:mb-2">${esc(item.d)}</p>
+                                <p class="text-xs font-bold text-crea-honey uppercase tracking-widest mb-1 md:mb-2">${esc(eventLabel(item))}</p>
                                 <h3 class="text-sm md:text-xl font-bold uppercase headline-strong text-black leading-tight">${esc(item.t)}</h3>
                                 <p class="hidden md:block text-sm text-gray-500 mt-2 line-clamp-2">${esc(item.desc)}</p>
                             </div>
@@ -635,9 +659,7 @@
             const grid = document.getElementById('archive-grid');
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.id === `btn-${tag}`));
 
-            const items = window._ARCHIVE
-                .filter(item => tag === 'all' || item.tag === tag)
-                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            const items = window._ARCHIVE.filter(item => tag === 'all' || item.tag === tag);  // già ordinati dal più recente
 
             if (!items.length) {
                 grid.innerHTML = '<p class="col-span-full text-gray-400 text-center py-12">Nessun evento in questa categoria.</p>';
@@ -679,8 +701,9 @@
         fetch('data/content.json')
             .then(r => { if(!r.ok) throw new Error(); return r.json(); })
             .then(D => {
+                const { featured: ev, past } = splitEvents(D);
                 window._DATA    = D;
-                window._ARCHIVE = D.archive;
+                window._ARCHIVE = past;
 
                 window.addEventListener('scroll', () => { document.getElementById('main-nav').classList.toggle('shadow-lg', window.scrollY > 30); });
                 setTimeout(() => document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible')), 150);
@@ -702,7 +725,7 @@
                 const heroHeights = { bassa: '55vh', media: '72vh', alta: '90vh' };
                 document.getElementById('hero-section').style.height = heroHeights[D.hero.height] || '90vh';
                 // Nascondi il bottone CTA se non c'è un evento in evidenza
-                if (!D.featuredEvent?.title) document.getElementById('hero-cta').style.display = 'none';
+                if (!ev) document.getElementById('hero-cta').style.display = 'none';
 
                 // CHI SIAMO
                 document.getElementById('about-title').innerText   = D.about.title;
@@ -719,23 +742,23 @@
                     `<div class="decalogo-card decalogo-snap-card"><div class="font-bold tracking-widest text-crea-honey text-xs">${esc(v.n)}</div><div class="text-gray-800"><i data-lucide="${esc(v.i)}" class="w-8 h-8"></i></div><div><h3 class="font-bold text-lg mb-2 uppercase headline-strong text-black">${esc(v.t)}</h3><p class="text-sm leading-relaxed text-gray-600">${v.d}</p></div></div>`
                 ).join('');
 
-                // EVENTO IN EVIDENZA
-                const ev = D.featuredEvent;
-                if (ev?.title) {
+                // EVENTO IN EVIDENZA (calcolato dalla data, vedi splitEvents)
+                if (ev) {
+                    const p = parseISO(ev.date);
                     document.getElementById('featured-event-slot').innerHTML = `
                         <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden flex flex-col lg:flex-row">
                             <div class="relative lg:w-5/12 h-96 lg:h-auto bg-gray-100">
-                                <div class="date-badge"><span class="text-3xl font-extrabold leading-none">${esc(ev.day)}</span><span class="text-xs font-bold tracking-widest mt-1 block">${esc(ev.month)}</span></div>
-                                ${ev.img ? `<img src="${cld(ev.img, 900)}" ${srcsetAttr(ev.img, [600, 900, 1200], '(min-width:1024px) 40vw, 100vw')} class="img-contain w-full h-full" alt="Locandina ${esc(ev.title)}" decoding="async">` : `<img src="logo.png" class="img-contain w-full h-full p-16" alt="CREA 20072">`}
+                                <div class="date-badge"><span class="text-3xl font-extrabold leading-none">${String(p.d).padStart(2, '0')}</span><span class="text-xs font-bold tracking-widest mt-1 block">${MESI[p.m - 1].slice(0, 3).toUpperCase()}</span></div>
+                                ${ev.img ? `<img src="${cld(ev.img, 900)}" ${srcsetAttr(ev.img, [600, 900, 1200], '(min-width:1024px) 40vw, 100vw')} class="img-contain w-full h-full" alt="Locandina ${esc(ev.t)}" decoding="async">` : `<img src="logo.png" class="img-contain w-full h-full p-16" alt="CREA 20072">`}
                             </div>
                             <div class="p-8 lg:p-16 lg:w-7/12 flex flex-col justify-center text-left">
-                                <h3 class="text-4xl md:text-6xl headline-strong mb-4 uppercase text-black leading-tight">${esc(ev.title)}</h3>
-                                <h4 class="text-xl font-bold text-gray-400 mb-8 uppercase tracking-tight">${esc(ev.sub)}</h4>
-                                <p class="text-lg text-body-crea mb-12 font-light">${ev.desc}</p>
+                                <h3 class="text-4xl md:text-6xl headline-strong mb-4 uppercase text-black leading-tight">${esc(ev.t)}</h3>
+                                ${ev.sub ? `<h4 class="text-xl font-bold text-gray-400 mb-8 uppercase tracking-tight">${esc(ev.sub)}</h4>` : ''}
+                                <p class="text-lg text-body-crea mb-12 font-light">${ev.fullDesc || esc(ev.desc)}</p>
                                 <div class="space-y-6 mb-12 border-t border-b border-gray-100 py-10">
-                                    <div class="flex items-center gap-4"><i data-lucide="calendar" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Quando</span><span class="font-bold text-sm uppercase">${esc(ev.fullDate)}</span></div></div>
-                                    <div class="flex items-center gap-4"><i data-lucide="map-pin" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Luogo</span><span class="font-bold text-sm uppercase">${esc(ev.place)}</span></div></div>
-                                    <div class="flex items-center gap-4"><i data-lucide="ticket" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Contributo</span><span class="font-bold text-sm uppercase">${esc(ev.prices)}</span></div></div>
+                                    <div class="flex items-center gap-4"><i data-lucide="calendar" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Quando</span><span class="font-bold text-sm uppercase">${esc(eventFullDate(ev))}</span></div></div>
+                                    ${ev.place ? `<div class="flex items-center gap-4"><i data-lucide="map-pin" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Luogo</span><span class="font-bold text-sm uppercase">${esc(ev.place)}</span></div></div>` : ''}
+                                    ${ev.prices ? `<div class="flex items-center gap-4"><i data-lucide="ticket" class="text-crea-honey w-6 h-6 flex-shrink-0"></i><div><span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Contributo</span><span class="font-bold text-sm uppercase">${esc(ev.prices)}</span></div></div>` : ''}
                                 </div>
                                 <div class="flex flex-col lg:flex-row items-center gap-6">
                                     <button onclick="openBookingModal()" class="cta-button w-full lg:w-auto">Prenota il tuo posto</button>
@@ -744,9 +767,9 @@
                             </div>
                         </div>`;
                     // Popola modal prenotazione
-                    document.getElementById('booking-event-title').textContent = ev.title;
+                    document.getElementById('booking-event-title').textContent = ev.t;
                     document.getElementById('booking-wa').href   = ev.wa || '#';
-                    document.getElementById('booking-mail').href = `mailto:${D.footer.email}?subject=Prenotazione%20${encodeURIComponent(ev.title)}`;
+                    document.getElementById('booking-mail').href = `mailto:${D.footer.email}?subject=Prenotazione%20${encodeURIComponent(ev.t)}`;
                     if (!ev.wa) document.getElementById('booking-wa').style.display = 'none';
                 } else {
                     // Nessun evento in evidenza — mostra placeholder
@@ -810,7 +833,7 @@
 
                 // STICKY BOTTOM BAR
                 const stickyTitle = document.getElementById('sticky-bar-title');
-                if (stickyTitle && ev?.title) stickyTitle.textContent = ev.title;
+                if (stickyTitle && ev) stickyTitle.textContent = ev.t;
                 // Mostra la barra solo dopo che l'utente ha scrollato oltre la hero
                 const heroObs = new IntersectionObserver(([entry]) => {
                     document.getElementById('sticky-bar').style.transform =
