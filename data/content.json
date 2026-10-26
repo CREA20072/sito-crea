@@ -101,6 +101,22 @@
   },
   "events": [
     {
+      "id": 11,
+      "date": "2026-10-31",
+      "time": "17:30",
+      "tag": "famiglie",
+      "t": "Halloween Tour!",
+      "sub": "",
+      "place": "Scuola M.L. King",
+      "prices": "",
+      "wa": "",
+      "n": "",
+      "desc": "Una serata spaventosa!",
+      "fullDesc": "<span style=\"color: rgb(75, 85, 99);\">Dolcetto o scherzetto? Una sfilata in maschera per terrorizzare le vie di Pieve Emanuele e una degna conclusione al Bar ComeTe tra musica e buon cibo!</span>",
+      "img": "https://res.cloudinary.com/daxrdik7k/image/upload/v1793036930/ktn1cxrduaqf4rimdu5l.png",
+      "gallery": []
+    },
+    {
       "id": 10,
       "date": "2026-10-17",
       "time": "21:00",
